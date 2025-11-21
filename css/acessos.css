@@ -1,0 +1,231 @@
+:root {
+  --verde-principal: #1c8c4c;
+  --branco: #ffffff;
+  --cinza-borda: #dcdcdc;
+  --sombra: rgba(0, 0, 0, 0.1);
+  --texto: #333;
+  --fundo: #f9f9f9;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--fundo);
+  color: var(--texto);
+  margin: 0;
+  padding: 20px;
+}
+
+h2, h3 {
+  color: var(--verde-principal);
+  margin-bottom: 10px;
+}
+
+p {
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: var(--branco);
+  box-shadow: 0 2px 4px var(--sombra);
+}
+
+table th, table td {
+  padding: 12px;
+  border: 1px solid var(--cinza-borda);
+  text-align: left;
+}
+
+table th {
+  background-color: var(--verde-principal);
+  color: var(--branco);
+}
+
+input[type="text"] {
+  padding: 8px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 4px;
+  width: 250px;
+}
+
+button, .btn {
+  padding: 10px 16px;
+  background-color: var(--verde-principal);
+  color: var(--branco);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button:hover, .btn:hover {
+  background-color: #006f3c;
+  transform: scale(1.03);
+}
+
+form {
+  margin-top: 20px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; width: 20px;
+  left: 2px; bottom: 2px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: var(--verde-principal);
+}
+
+.switch input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.tabela-funcionarios {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: var(--branco);
+  box-shadow: 0 2px 4px var(--sombra);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tabela-funcionarios th, .tabela-funcionarios td {
+  padding: 12px;
+  border-bottom: 1px solid var(--cinza-borda);
+  text-align: left;
+}
+
+.tabela-funcionarios th {
+  background-color: var(--verde-principal);
+  color: var(--branco);
+}
+
+.tabela-funcionarios tr:hover {
+  background-color: #f0fdf4;
+}
+
+.paginacao-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.paginacao a {
+  padding: 6px 12px;
+  background-color: var(--cinza-borda);
+  color: var(--texto);
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.paginacao a.ativo {
+  background-color: var(--verde-principal);
+  color: var(--branco);
+}
+
+.limite-form select {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid var(--cinza-borda);
+}
+
+.limpar-btn {
+  background-color: #e0e0e0;
+  color: var(--texto);
+  font-weight: normal;
+}
+
+.limpar-btn:hover {
+  background-color: #d0d0d0;
+  transform: scale(1.02);
+}
+/* aLERTA SUCESSO */
+
+.alerta-sucesso {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 20px;
+  font-size: 16px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.alerta-sucesso ul {
+  margin: 10px 0 0 20px;
+  padding: 0;
+}
+
+.alerta-sucesso {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.paginacao-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .paginacao a {
+      margin: 0 5px;
+      padding: 5px 10px;
+      background: #eee;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .paginacao a.ativo {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

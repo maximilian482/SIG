@@ -1,0 +1,9 @@
+# Ignorar credenciais e arquivos sensíveis
+.env
+
+# Ignorar dependências do Composer
+/vendor/
+
+# Ignorar arquivos temporários
+*.log
+*.tmp

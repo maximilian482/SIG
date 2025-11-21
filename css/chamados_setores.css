@@ -1,0 +1,123 @@
+/* Layout geral */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #F4F6F9;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+h2, h3 {
+  color: #006437; /* verde Palmeiras */
+}
+
+p {
+  color: #555;
+}
+
+/* Tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+}
+
+th {
+  background: #006437;
+  color: #fff;
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background: #f9f9f9;
+}
+
+tr:hover {
+  background: #e6f4ea; /* verde bem claro */
+}
+
+/* Botões */
+button, .btn {
+  background: #009739;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+button:hover, .btn:hover {
+  background: #006437;
+}
+
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  margin-right: 10px;
+}
+
+/* Badges de status */
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badge-reaberto {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.badge-avaliacao {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.badge-encerrado {
+  background: #006437;
+  color: #fff;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.modal > div {
+  background: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modal h3 {
+  margin-top: 0;
+  color: #006437;
+}
+
+.modal textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-family: inherit;
+}

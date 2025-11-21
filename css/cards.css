@@ -1,0 +1,84 @@
+/* CARDS */
+
+.card {
+  background: var(--branco);
+  border: 1px solid var(--cinza-borda);
+  border-left: 6px solid var(--verde-principal);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px var(--sombra);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 320px;
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px var(--sombra);
+}
+
+.card h2 {
+  color: var(--verde-principal);
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95em;
+  color: #333;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.card a {
+  text-align: center;
+  padding: 10px;
+  background-color: var(--verde-principal);
+  color: var(--branco);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.card a:hover {
+  background-color: #006f3c;
+  transform: scale(1.03);
+}
+
+/* Container de cards */
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+  padding: 0 10px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .card {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .card h2 {
+    font-size: 1.1em;
+  }
+
+  .card p {
+    font-size: 1em;
+  }
+
+  .card a {
+    font-size: 1em;
+    padding: 12px;
+  }
+}

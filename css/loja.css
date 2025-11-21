@@ -1,0 +1,223 @@
+/* 🌿 Paleta de Cores */
+:root {
+  --verde-palmeiras: #1E513D;
+  --verde-hover: #DFF5E3;
+  --cinza-fundo: #F4F6F8;
+  --cinza-borda: #DDE2E5;
+  --texto-principal: #1C1C1C;
+  --branco: #FFFFFF;
+}
+
+/* 🌐 Estrutura Geral */
+body {
+  background-color: var(--cinza-fundo);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--texto-principal);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* 🧾 Tabela de Lojas */
+.tabela-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--branco);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+table th, table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--cinza-borda);
+  text-align: left;
+}
+
+table th {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  text-transform: uppercase;
+  font-size: 0.9em;
+}
+
+table tbody tr:hover {
+  background-color: var(--verde-hover);
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* 🔘 Botões */
+button,
+.btn {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+button:hover,
+.btn:hover {
+  background-color: #15402f;
+}
+
+/* 🧭 Botões de Ação */
+.botoes-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.botoes-acoes .btn {
+  flex: 1;
+  max-width: 200px;
+  text-align: center;
+  padding: 10px;
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.botoes-acoes .btn:hover {
+  background-color: #15402f;
+}
+
+/* ✅ Alertas de Certificado */
+.status-certificado {
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.status-certificado.expirado {
+  color: red;
+}
+
+.status-certificado.alerta {
+  color: orange;
+}
+
+.status-certificado.valido {
+  color: green;
+}
+
+.status-certificado.nao-cadastrado {
+  color: gray;
+}
+
+/* 📦 Seções */
+.secao {
+  background-color: var(--branco);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.secao h3 {
+  margin-top: 0;
+  color: var(--verde-palmeiras);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 📋 Info-box */
+.info-box {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--cinza-borda);
+}
+
+.info-box:last-child {
+  border-bottom: none;
+}
+
+/* 🧾 Tabelas */
+.tabela-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--branco);
+  border-radius: 6px;
+}
+
+table th, table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--cinza-borda);
+  text-align: left;
+}
+
+table th {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+
+table tbody tr:hover {
+  background-color: var(--verde-hover);
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* 🟢 Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 0.85em;
+}
+
+.badge.verde {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.badge.amarelo {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge.vermelho {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+/* 📱 Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .btn {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  table th, table td {
+    white-space: nowrap;
+  }
+}

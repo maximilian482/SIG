@@ -1,0 +1,195 @@
+/* Paleta Palmeiras:
+   - Verde principal: #006437
+   - Verde claro: #e6f4ea
+   - Cinza claro: #f5f5f5
+   - Cinza médio: #cccccc
+   - Vermelho alerta: #d9534f
+   - Verde sucesso: #28a745
+*/
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 20px;
+  color: #333;
+}
+
+h2 {
+  color: #006437;
+  margin-bottom: 20px;
+}
+
+/* Formulário de filtros */
+form {
+  background: #e6f4ea;
+  padding: 10px 15px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+form label {
+  font-weight: bold;
+  color: #006437;
+}
+
+form select,
+form input[type="text"] {
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  padding: 6px;
+}
+
+.btn-filtro {
+  background: #006437;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-filtro:hover {
+  background: #004d2a;
+}
+
+/* Tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+table th {
+  background: #006437;
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #cccccc;
+}
+
+table tr:nth-child(even) {
+  background: #e6f4ea;
+}
+
+table tr:hover {
+  background: #cde5d6;
+}
+
+/* Botões principais */
+.btn {
+  background: #006437;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  margin-right: 5px;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #004d2a;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal > div {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.modal h3 {
+  color: #d9534f;
+  margin-bottom: 15px;
+}
+
+.modal button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal button[type="submit"] {
+  background: #d9534f;
+  color: #fff;
+}
+
+.modal button[type="button"] {
+  background: #cccccc;
+  color: #333;
+}
+
+.modal button:hover {
+  opacity: 0.9;
+}
+/* 📄 Paginação */
+.paginacao {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.paginacao a {
+  display: inline-block;
+  margin: 0 5px;
+  padding: 6px 12px;
+  background-color: var(--branco);
+  border: 1px solid var(--verde-palmeiras);
+  color: var(--verde-palmeiras);
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.paginacao a:hover {
+  background-color: var(--verde-hover);
+}
+
+.paginacao a.ativo {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+}
+
+.alert-sucesso {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.alert-erro {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
