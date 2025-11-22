@@ -31,8 +31,8 @@ include '../includes/head.php';
 include '../perfil/menu_perfil.php';
 
 // Mês e ano atuais
-$mesAtual = date('m');
-$anoAtual = date('Y');
+$mesAtual = (int)date('m');
+$anoAtual = (int)date('Y');
 
 // Aniversariantes do mês
 $sqlAniversario = "
@@ -60,11 +60,66 @@ $stmt->execute();
 $tempoEmpresa = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
+// Conheça outros colaboradores (não aniversariantes nem tempo de empresa)
+$searchNome = $_GET['search'] ?? '';
+$like = "%" . $searchNome . "%";
+
+// Paginação
+$limite = isset($_GET['limite']) ? max(1, (int)$_GET['limite']) : 10;
+$pagina = isset($_GET['pagina']) ? max(1, (int)$_GET['pagina']) : 1;
+
+// Total de registros
+$sqlTotal = "
+  SELECT COUNT(*) AS total
+  FROM funcionarios f
+  WHERE f.desligamento IS NULL
+    AND (f.nascimento IS NULL OR MONTH(f.nascimento) <> ?)
+    AND (f.contratacao IS NULL OR MONTH(f.contratacao) <> ?)
+    AND f.nome LIKE ?
+";
+$stmt = $conn->prepare($sqlTotal);
+$stmt->bind_param("iis", $mesAtual, $mesAtual, $like);
+$stmt->execute();
+$totalRegistros = (int)($stmt->get_result()->fetch_assoc()['total'] ?? 0);
+$stmt->close();
+
+$totalPaginas = ($totalRegistros > 0) ? ceil($totalRegistros / $limite) : 1;
+if ($pagina > $totalPaginas) $pagina = $totalPaginas;
+$offset = ($pagina - 1) * $limite;
+
+// Consulta paginada
+$sqlOutros = "
+  SELECT f.id, f.nome, f.cargo_id, c.nome_cargo, f.sobre_mim, f.foto
+  FROM funcionarios f
+  LEFT JOIN cargos c ON f.cargo_id = c.id
+  WHERE f.desligamento IS NULL
+    AND (f.nascimento IS NULL OR MONTH(f.nascimento) <> ?)
+    AND (f.contratacao IS NULL OR MONTH(f.contratacao) <> ?)
+    AND f.nome LIKE ?
+  ORDER BY f.nome ASC
+  LIMIT ? OFFSET ?
+";
+
+$stmt = $conn->prepare($sqlOutros);
+$stmt->bind_param("iisii", $mesAtual, $mesAtual, $like, $limite, $offset);
+$stmt->execute();
+$outrosColaboradores = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// Totais para exibir nos títulos das abas
+$totalAniversariantes = count($aniversariantes);
+$totalTempoEmpresa    = count($tempoEmpresa);
+$totalOutros          = $totalRegistros;
+
+
 // Função para contar reconhecimentos do mês por tipo
 function contarReconhecimentos($conn, $funcionarioId, $ano, $mes, $tipo) {
   $sql = "SELECT COUNT(*) AS total 
           FROM reconhecimentos 
-          WHERE funcionario_id = ? AND ano = ? AND mes = ? AND tipo = ?";
+          WHERE funcionario_id = ? 
+            AND YEAR(data) = ? 
+            AND MONTH(data) = ? 
+            AND tipo = ?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("iiis", $funcionarioId, $ano, $mes, $tipo);
   $stmt->execute();
@@ -90,39 +145,35 @@ function caminhoFoto($fotoBanco) {
   return $foto;
 }
 ?>
+
+
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Comunidade</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
-    h2 { color: #333; margin-bottom: 20px; }
-    .quadro { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .quadro h3 { margin-top: 0; color: #444; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .lista { display: flex; flex-wrap: wrap; gap: 20px; }
-    .card { background: #fafafa; border: 1px solid #ddd; border-radius: 6px; padding: 15px; width: 220px; text-align: center; }
-    .card img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; }
-    .card strong { display: block; margin-bottom: 5px; color: #333; }
-    .card span { font-size: 14px; color: #666; }
-    .card p { font-size: 13px; color: #555; margin-top: 8px; }
-    .parabens { margin-top: 10px; background: #28a745; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
-    .parabens:hover { background: #218838; }
-    @keyframes pulse {
-      0% { transform: scale(1); color: #28a745; }
-      50% { transform: scale(1.3); color: #28a745; }
-      100% { transform: scale(1); color: inherit; }
-    }
-    .contador.pulsar {
-      animation: pulse 0.8s ease;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/comunidade.css">
+  <title>Comunidade</title> 
 </head>
 <body>
 
-<h2>🌟 Comunidade</h2>
+<h2>🌟 Comunidade Souza Farma</h2>
 
-<div class="quadro">
+<!-- Navegação das abas -->
+<div class="tabs">
+  <button class="tablink" onclick="abrirAba(event, 'aniversario')" id="defaultOpen">
+    🎂 Aniversariantes (<?= $totalAniversariantes ?>)
+  </button>
+  <button class="tablink" onclick="abrirAba(event, 'tempo')">
+    🏆 Tempo de Empresa (<?= $totalTempoEmpresa ?>)
+  </button>
+  <button class="tablink" onclick="abrirAba(event, 'colaboradores')">
+    👥 Colaboradores (<?= $totalOutros ?>)
+  </button>
+</div>
+
+<!-- Conteúdo das abas -->
+<div id="aniversario" class="tabcontent">
   <h3>🎂 Aniversariantes do Mês</h3>
   <div class="lista">
     <?php foreach ($aniversariantes as $f): 
@@ -130,21 +181,21 @@ function caminhoFoto($fotoBanco) {
       $foto = caminhoFoto($f['foto']);
     ?>
       <div class="card">
-        <img src="<?= htmlspecialchars($foto) ?>" alt="Foto do colaborador">
+        <img src="<?= htmlspecialchars($foto) ?>" alt="Foto"
+             onclick="abrirPerfilPublico(<?= $f['id'] ?>)">
         <strong><?= htmlspecialchars($f['nome']) ?></strong>
         <span><?= htmlspecialchars($f['nome_cargo']) ?></span><br>
         <span>🎂 <?= date('d/m', strtotime($f['nascimento'])) ?></span><br>
-        <?php if (!empty($f['sobre_mim'])): ?>
-          <p>"<?= htmlspecialchars($f['sobre_mim']) ?>"</p>
-        <?php endif; ?>
-        <span class="contador">🎉 <?= $contador ?> reconhecimentos de aniversário</span><br>
-        <button class="parabens" onclick="reconhecerFuncionario(<?= $f['id'] ?>, 'aniversario')">Dar os parabéns 🎉</button>
+        <span class="contador">🎉 <?= $contador ?> reconhecimentos</span><br>
+        <button class="parabens" onclick="reconhecerFuncionario(<?= $f['id'] ?>, 'aniversario')">
+          Dar os parabéns 🎉
+        </button>
       </div>
     <?php endforeach; ?>
   </div>
 </div>
 
-<div class="quadro">
+<div id="tempo" class="tabcontent">
   <h3>🏆 Tempo de Empresa</h3>
   <div class="lista">
     <?php foreach ($tempoEmpresa as $f): 
@@ -153,21 +204,101 @@ function caminhoFoto($fotoBanco) {
       $foto = caminhoFoto($f['foto']);
     ?>
       <div class="card">
-        <img src="<?= htmlspecialchars($foto) ?>" alt="Foto do colaborador">
+        <img src="<?= htmlspecialchars($foto) ?>" alt="Foto"
+             onclick="abrirPerfilPublico(<?= $f['id'] ?>)">
         <strong><?= htmlspecialchars($f['nome']) ?></strong>
         <span><?= htmlspecialchars($f['nome_cargo']) ?></span><br>
         <span>🏆 <?= $anosEmpresa ?> anos de empresa</span><br>
-        <?php if (!empty($f['sobre_mim'])): ?>
-          <p>"<?= htmlspecialchars($f['sobre_mim']) ?>"</p>
-        <?php endif; ?>
-        <span class="contador">👏 <?= $contador ?> reconhecimentos de tempo de empresa</span><br>
-        <button class="parabens" onclick="reconhecerFuncionario(<?= $f['id'] ?>, 'tempo_empresa')">Reconhecer 👏</button>
+        <span class="contador">👏 <?= $contador ?> reconhecimentos</span><br>
+        <button class="parabens" onclick="reconhecerFuncionario(<?= $f['id'] ?>, 'tempo_empresa')">
+          Reconhecer 👏
+        </button>
       </div>
     <?php endforeach; ?>
   </div>
 </div>
 
+<div id="colaboradores" class="tabcontent">
+  <h3>👥 Conheça outros colaboradores</h3>
+
+   <form method="GET" style="margin-bottom:15px;">
+    <input type="text" name="search" placeholder="Pesquisar por nome..."
+           value="<?= htmlspecialchars($searchNome) ?>">
+    <!-- preserva aba e limite -->
+    <input type="hidden" name="aba" value="colaboradores">
+    <input type="hidden" name="limite" value="<?= $limite ?>">
+    <button type="submit">🔍 Buscar</button>
+  </form>
+
+ <!-- Lista de cards -->
+  <div class="lista">
+    <?php foreach ($outrosColaboradores as $f): 
+      $foto = caminhoFoto($f['foto']);
+    ?>
+      <div class="card">
+        <img src="<?= htmlspecialchars($foto) ?>" alt="Foto"
+             onclick="abrirPerfilPublico(<?= $f['id'] ?>)">
+        <strong><?= htmlspecialchars($f['nome']) ?></strong>
+        <span><?= htmlspecialchars($f['nome_cargo']) ?></span><br>
+        <?php if (!empty($f['sobre_mim'])): ?>
+          <p>"<?= htmlspecialchars($f['sobre_mim']) ?>"</p>
+        <?php endif; ?>
+      </div>
+    <?php endforeach; ?>
+  </div>
+
+  <!-- Paginação -->
+  <div class="paginacao">
+    <?php if ($totalPaginas > 1): ?>
+      <?php
+        $inicio = max(1, $pagina - 2);
+        $fim = min($totalPaginas, $pagina + 2);
+      ?>
+      <!-- Botão anterior -->
+      <?php if ($pagina > 1): ?>
+        <a href="?pagina=<?= $pagina-1 ?>&search=<?= urlencode($searchNome) ?>&limite=<?= $limite ?>&aba=colaboradores">&lsaquo; Anterior</a>
+      <?php endif; ?>
+
+      <!-- Números limitados -->
+      <?php for ($i = $inicio; $i <= $fim; $i++): ?>
+        <a href="?pagina=<?= $i ?>&search=<?= urlencode($searchNome) ?>&limite=<?= $limite ?>&aba=colaboradores"
+           <?= ($i == $pagina) ? 'class="ativo"' : '' ?>>
+          <?= $i ?>
+        </a>
+      <?php endfor; ?>
+
+      <!-- Botão próximo -->
+      <?php if ($pagina < $totalPaginas): ?>
+        <a href="?pagina=<?= $pagina+1 ?>&search=<?= urlencode($searchNome) ?>&limite=<?= $limite ?>&aba=colaboradores">Próxima &rsaquo;</a>
+      <?php endif; ?>
+    <?php endif; ?>
+  </div>
+</div>
+  <!-- Seletor de limite -->
+  <form method="GET" style="margin-bottom:15px;">
+    <label for="limite">Mostrar:</label>
+    <select name="limite" id="limite" onchange="this.form.submit()">
+      <option value="10" <?= $limite==10?'selected':'' ?>>10</option>
+      <option value="20" <?= $limite==20?'selected':'' ?>>20</option>
+      <option value="50" <?= $limite==50?'selected':'' ?>>50</option>
+    </select>
+    <input type="hidden" name="aba" value="colaboradores">
+    <input type="hidden" name="search" value="<?= htmlspecialchars($searchNome) ?>">
+  </form>
+</div>
+
+
+
+<!-- Modal de perfil -->
+<div id="perfilModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharPerfilModal()">&times;</span>
+    <div id="perfilInfo"></div>
+  </div>
+</div>
+
 <script>
+// Função para reconhecer funcionário (incrementa contador e desabilita botão)
 function reconhecerFuncionario(id, tipo) {
   fetch('reconhecer.php?funcionario_id=' + id + '&tipo=' + tipo, {
     credentials: 'same-origin'
@@ -205,7 +336,28 @@ function reconhecerFuncionario(id, tipo) {
     alert("Erro de comunicação com o servidor.");
   });
 }
+
+// Funções para abrir/fechar modal de perfil
+function abrirPerfilPublico(id) {
+  fetch('/perfil/publico.php?id=' + id)
+    .then(res => {
+      if (!res.ok) throw new Error("Erro ao carregar perfil");
+      return res.text();
+    })
+    .then(html => {
+      document.getElementById('perfilInfo').innerHTML = html;
+      document.getElementById('perfilModal').style.display = 'block';
+    })
+    .catch(err => alert(err.message));
+}
+
+function fecharPerfilModal() {
+  document.getElementById('perfilModal').style.display = 'none';
+}
 </script>
+
+<script src="/js/abas.js"></script>
+<script src="/js/paginacao.js"></script>
 
 </body>
 </html>

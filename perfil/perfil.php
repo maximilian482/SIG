@@ -145,6 +145,7 @@ $caminhoFoto = ($foto === '' || !file_exists(__DIR__ . "/../uploads/$foto"))
   </form>
 </div>
 
+
 <!-- Modal de senha -->
 <div id="modalSenha" class="modal">
   <div class="modal-content">
