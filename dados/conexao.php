@@ -8,8 +8,8 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
 function conectar() {
-    $host    = $_ENV['DB_HOST'] ?? 'localhost';
-    $usuario = $_ENV['DB_USER'] ?? 'sig_user';
+    $host    = $_ENV['DB_HOST'] ?? '';
+    $usuario = $_ENV['DB_USER'] ?? '';
     $senha   = $_ENV['DB_PASS'] ?? '';
     $banco   = $_ENV['DB_NAME'] ?? '';
 

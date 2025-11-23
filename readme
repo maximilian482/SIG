@@ -1,0 +1,36 @@
+**Clone do repositório
+git clone https://github.com/seu-usuario/sigsfe.git
+cd sigsfe
+
+**Instale as dependências
+composer install
+
+**Configure o ambiente
+*Crie um arquivo .env na raiz do projeto com os dados do banco:
+DB_HOST=localhost
+DB_USER=seu_usuario_mysql
+DB_PASS=sua_senha_mysql
+DB_NAME=nome_do_banco
+
+**Importe o banco de dados
+Use o arquivo .sql disponível (se houver) e importe via phpMyAdmin ou CLI.
+
+**Configure o servidor
+Aponte o servidor para a pasta public_html ou equivalente.
+Certifique-se de que o PHP está na versão 8.3 ou superior.
+
+**ESTRUTURA
+public_html/
+├── index.php
+├── login.php
+├── logout.php
+├── dados/
+│   └── conexao.php
+├── vendor/
+├── .env
+├── .gitignore
+├── composer.json
+└── composer.lock
+
+**Autor
+Desenvolvido por Max Augusto
