@@ -1,10 +1,11 @@
 <?php
-require_once __DIR__ . '/../vendor/autoload.php';
+// conexao.php dentro de public_html/dados
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
 
-// Carrega variáveis do .env
-$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+// Carrega o .env da raiz (public_html)
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
 $dotenv->load();
 
 function conectar() {
@@ -13,12 +14,13 @@ function conectar() {
     $senha   = $_ENV['DB_PASS'] ?? '';
     $banco   = $_ENV['DB_NAME'] ?? '';
 
-    $conn = new mysqli($host, $usuario, $senha, $banco);
+    $conn = new mysqli($host, $usuario, $senha, $banco, 3306);
 
     if ($conn->connect_error) {
-        die("❌ Falha na conexão com o banco: " . $conn->connect_error);
+        die("❌ Falha na conexão: " . $conn->connect_error);
     }
 
-    $conn->set_charset("utf8");
+    $conn->set_charset("utf8mb4");
     return $conn;
 }
+?>

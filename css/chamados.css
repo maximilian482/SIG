@@ -191,3 +191,30 @@ button:hover,
     white-space: nowrap;
   }
 }
+.status {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.status.aberto {
+  background-color: #e74c3c; /* vermelho */
+}
+
+.status.reaberto {
+  background-color: #d35400; /* laranja */
+}
+
+.status.aguardando {
+  background-color: #f1c40f; /* amarelo */
+  color: #000; /* texto preto para contraste */
+}
+
+.status.avaliacao {
+  background-color: #3498db; /* azul */
+}
+
+.status.encerrado {
+  background-color: #2ecc71; /* verde */
+}

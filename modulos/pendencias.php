@@ -37,6 +37,66 @@ $pendenciasLoja       = contarInconformidadesLoja($conn, $lojaId);
   <title>Document</title>
 </head>
 <body>
+<style>
+  .card {
+    position: relative;
+    padding: 16px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    width: 280px;
+  }
+  .card h2 { margin: 0 0 8px; }
+  .card p { margin: 6px 0; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+  .badge .count {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  /* Estados */
+  .badge-ok {
+    background: #eafaf1;
+    color: #1e8449;
+    border: 2px solid #2ecc71;
+  }
+  .badge-warn {
+    background: #fdecea;
+    color: #943126;
+    border: 2px solid #e74c3c;
+    box-shadow: 0 0 0 4px rgba(231,76,60,0.12);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  /* Pulso sutil para chamar atenção */
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 4px rgba(231,76,60,0.12); transform: translateZ(0); }
+    50%  { box-shadow: 0 0 0 8px rgba(231,76,60,0.08); transform: translateZ(0); }
+    100% { box-shadow: 0 0 0 4px rgba(231,76,60,0.12); transform: translateZ(0); }
+  }
+
+  /* Layout do menu */
+  .menu {
+    display: flex; flex-wrap: wrap; gap: 20px;
+  }
+  .card a {
+    display: inline-block;
+    margin-top: 10px;
+    background: #34495e; color: #fff;
+    padding: 8px 12px; border-radius: 8px; text-decoration: none;
+  }
+  .card a:hover { background: #2c3e50; }
+</style>
 
 <h1>📌 Acompanhamento de Pendências</h1>
   <p>Olá, <strong><?= htmlspecialchars($usuario) ?></strong>. Abaixo estão os módulos com pendências disponíveis para você:</p>
@@ -47,68 +107,97 @@ $pendenciasLoja       = contarInconformidadesLoja($conn, $lojaId);
       <div class="card">
         <h2>🧭 Chamados Supervisão</h2>
         <p>Gerencie chamados relacionados à supervisão de loja</p>
-        <p style="font-weight:bold; color:<?= $pendenciasSupervisao > 0 ? '#c0392b' : '#2ecc71' ?>">
-          <?= $pendenciasSupervisao > 0 ? '⚠️' : '✅' ?> Pendências: <?= $pendenciasSupervisao ?>
-        </p>
+
+        <?php $warn = $pendenciasSupervisao > 0; ?>
+        <div class="badge <?= $warn ? 'badge-warn pulse' : 'badge-ok' ?>">
+          <span><?= $warn ? '⚠️ Pendências' : '✅ Sem pendências' ?></span>
+          <span class="count"><?= (int)$pendenciasSupervisao ?></span>
+        </div>
+
         <a href="chamados_supervisao.php">Acessar</a>
       </div>
     <?php endif; ?>
+
 
     <?php if (($cargo === 'ti' || temAcesso($conn, $cpf, 'chamados_ti'))): ?>
       <div class="card">
         <h2>🖥️ Chamados TI</h2>
         <p>Gerencie chamados técnicos</p>
-        <p style="font-weight:bold; color:<?= $pendenciasTI > 0 ? '#c0392b' : '#2ecc71' ?>">
-          <?= $pendenciasTI > 0 ? '⚠️' : '✅' ?> Pendências: <?= $pendenciasTI ?>
-        </p>
+
+        <?php $warn = $pendenciasTI > 0; ?>
+        <div class="badge <?= $warn ? 'badge-warn pulse' : 'badge-ok' ?>">
+          <span><?= $warn ? '⚠️ Pendências' : '✅ Sem pendências' ?></span>
+          <span class="count"><?= (int)$pendenciasTI ?></span>
+        </div>
+
         <a href="chamados_ti.php">Acessar</a>
       </div>
     <?php endif; ?>
+
 
     <?php if (($cargo === 'manutencao' || temAcesso($conn, $cpf, 'chamados_manutencao'))): ?>
       <div class="card">
         <h2>🔧 Chamados Manutenção</h2>
         <p>Gerencie chamados de infraestrutura</p>
-        <p style="font-weight:bold; color:<?= $pendenciasManutencao > 0 ? '#c0392b' : '#2ecc71' ?>">
-          <?= $pendenciasManutencao > 0 ? '⚠️' : '✅' ?> Pendências: <?= $pendenciasManutencao ?>
-        </p>
+
+        <?php $warn = $pendenciasManutencao > 0; ?>
+        <div class="badge <?= $warn ? 'badge-warn pulse' : 'badge-ok' ?>">
+          <span><?= $warn ? '⚠️ Pendências' : '✅ Sem pendências' ?></span>
+          <span class="count"><?= (int)$pendenciasManutencao ?></span>
+        </div>
+
         <a href="chamados_manutencao.php">Acessar</a>
       </div>
     <?php endif; ?>
 
     <?php if ($cargo === 'gerente' || temAcesso($conn, $cpf, 'painel_tratamento_inconformidades')): ?>
-  <div class="card">
-    <h2>🛠️ Tratar Inconformidades</h2>
-    <p>Visualize e resolva inconformidades</p>
-    <p style="font-weight:bold; color:<?= $pendenciasLoja > 0 ? '#c0392b' : '#2ecc71' ?>">
-      <?= $pendenciasLoja > 0 ? '⚠️' : '✅' ?> Pendências: <?= $pendenciasLoja ?>
-    </p>
-    <a href="painel_tratamento_inconformidades.php">Acessar</a>
-  </div>
-<?php endif; ?>
+      <div class="card">
+        <h2>🛠️ Tratar Inconformidades</h2>
+        <p>Visualize e resolva inconformidades</p>
+
+        <?php $warn = $pendenciasLoja > 0; ?>
+        <div class="badge <?= $warn ? 'badge-warn pulse' : 'badge-ok' ?>">
+          <span><?= $warn ? '⚠️ Pendências' : '✅ Sem pendências' ?></span>
+          <span class="count"><?= (int)$pendenciasLoja ?></span>
+        </div>
+
+        <a href="painel_tratamento_inconformidades.php">Acessar</a>
+      </div>
+    <?php endif; ?>
 
 
-    <?php if ($acessoTotal || temAcesso($conn, $cpf, 'painel_chamados')): ?>
+
+   <?php if ($acessoTotal || temAcesso($conn, $cpf, 'painel_chamados')): ?>
       <div class="card">
         <h2>📊 Painel de Chamados</h2>
         <p>Visão geral dos chamados por setor</p>
-        <p style="font-weight:bold; color:<?= $pendenciasPainel > 0 ? '#34495e' : '#2ecc71' ?>">
-          Chamados totais: <?= $pendenciasPainel ?>
-        </p>
-        <a href="acompanhar_chamados_publico.php">Acessar</a>
+
+        <?php $warn = $pendenciasPainel > 0; ?>
+        <div class="badge <?= $warn ? 'badge-warn pulse' : 'badge-ok' ?>">
+          <span><?= $warn ? '📈 Chamados totais' : '✅ Nenhum chamado' ?></span>
+          <span class="count"><?= (int)$pendenciasPainel ?></span>
+        </div>
+
+        <a href="chamados_admin.php">Acessar</a>
       </div>
     <?php endif; ?>
 
+
     <?php if ($acessoTotal || temAcesso($conn, $cpf, 'inconformidade_lojas')): ?>
       <div class="card">
-        <h2>🛠️ Inconformidades Lojas</h2>
+        <h2>🏬 Inconformidades Lojas</h2>
         <p>Verifique problemas reportados pelas lojas</p>
-        <p style="font-weight:bold; color:<?= $pendenciasInconformidades > 0 ? '#c0392b' : '#2ecc71' ?>">
-          <?= $pendenciasInconformidades > 0 ? '⚠️' : '✅' ?> Pendências: <?= $pendenciasInconformidades ?>
-        </p>
+
+        <?php $warn = $pendenciasInconformidades > 0; ?>
+        <div class="badge <?= $warn ? 'badge-warn pulse' : 'badge-ok' ?>">
+          <span><?= $warn ? '⚠️ Pendências' : '✅ Sem pendências' ?></span>
+          <span class="count"><?= (int)$pendenciasInconformidades ?></span>
+        </div>
+
         <a href="inconformidade_lojas.php">Acessar</a>
       </div>
     <?php endif; ?>
+
 
   </div>
 </main>

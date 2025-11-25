@@ -40,7 +40,7 @@ $result = $stmt->get_result();
 
 while ($c = $result->fetch_assoc()) {
   $status = strtolower(trim($c['status'] ?? ''));
-  if (in_array($status, ['aberto','em andamento','reaberto','aguardando avaliacao'])) {
+  if (in_array($status, ['aberto','em andamento','reaberto','aguardando avaliação'])) {
     $abertos[] = $c;
   } elseif (in_array($status, ['encerrado','cancelado','finalizado'])) {
     $fechados[] = $c;
@@ -112,7 +112,7 @@ function tempoAbertoStr(?string $dataAbertura): string {
                 <em><?= nl2br(htmlspecialchars($c['justificativa'])) ?></em>
               <?php endif; ?>
             </div>
-          <?php elseif ($status === 'aguardando avaliacao'): ?>
+          <?php elseif ($status === 'aguardando avaliação'): ?>
             <div style="background:#fff3cd; padding:8px; border-radius:6px; font-size:14px; color:#856404;">
               📝 Aguardando avaliação do solicitante
             </div>
@@ -121,7 +121,7 @@ function tempoAbertoStr(?string $dataAbertura): string {
           <?php endif; ?>
         </td>
         <td>
-          <?php if ($status === 'aguardando avaliacao'): ?>
+          <?php if ($status === 'aguardando avaliação'): ?>
             <div style="color:#2980b9; font-weight:bold;">📝 Aguardando avaliação</div>
           <?php else: ?>
             <button onclick="abrirModalFecharChamado('<?= $c['id'] ?>')">✅ Fechar</button>

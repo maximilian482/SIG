@@ -16,7 +16,7 @@ if ($id <= 0 || empty($solucao)) {
 // Atualiza chamado: grava solução, responsável e muda status para "aguardando avaliacao"
 $stmt = $conn->prepare("
   UPDATE chamados
-     SET status = 'aguardando avaliacao',
+     SET status = 'aguardando avaliação',
          solucao = ?,
          responsavel_id = ?,
          data_avaliacao = NOW()

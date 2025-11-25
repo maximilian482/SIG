@@ -2,44 +2,63 @@
 session_start();
 date_default_timezone_set('America/Sao_Paulo');
 
-$arquivo = '../dados/chamados.json';
-$chamados = json_decode(@file_get_contents($arquivo), true);
-$chamados = is_array($chamados) ? $chamados : [];
+require_once '../dados/conexao.php'; // sua função conectar()
 
-$titulo    = $_POST['titulo'] ?? '';
-$descricao = $_POST['descricao'] ?? '';
-$setor     = $_POST['cargo'] ?? '';
+$conn = conectar();
 
-$usuario     = $_SESSION['usuario'] ?? '';
-$nomeUsuario = $_SESSION['nome'] ?? $usuario;
-$lojaUsuario = $_SESSION['loja'] ?? '';
+// --- Geração de código sequencial CHM + 3 dígitos ---
+$result = $conn->query("SELECT MAX(CAST(SUBSTRING(codigo_chamado, 4) AS SIGNED)) AS ultimo FROM chamados");
+$row = $result->fetch_assoc();
+$ultimoCodigo = isset($row['ultimo']) ? intval($row['ultimo']) : 0;
 
-if (!$titulo || !$descricao || !$setor || !$lojaUsuario) {
-  header('Location: chamados_publico.php?erro=' . urlencode('Preencha todos os campos.'));
-  exit;
+$novoCodigo   = str_pad($ultimoCodigo + 1, 3, '0', STR_PAD_LEFT);
+$codigoChamado = 'CHM' . $novoCodigo;
+
+
+// --- Preparar dados ---
+$titulo        = $_POST['titulo'] ?? '';
+$descricao     = $_POST['descricao'] ?? '';
+$setorDestino  = $_POST['setor_destino'] ?? '';
+$lojaOrigem    = $_SESSION['loja'] ?? '';
+$solicitanteId = $_SESSION['funcionario_id'] ?? 0;
+$dataAbertura  = date('Y-m-d H:i:s');
+$status        = 'Aberto';
+
+// --- Inserir no banco ---
+$stmt = $conn->prepare("INSERT INTO chamados 
+  (codigo_chamado, titulo, descricao, setor_destino, loja_origem, solicitante_id, data_abertura, status) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param(
+  "ssssisss",
+  $codigoChamado,
+  $titulo,
+  $descricao,
+  $setorDestino,
+  $lojaOrigem,
+  $solicitanteId,
+  $dataAbertura,
+  $status
+);
+
+$ok = $stmt->execute();
+
+// --- Resposta em JSON ---
+header('Content-Type: application/json; charset=utf-8');
+
+if ($ok) {
+  echo json_encode([
+    'ok'       => true,
+    'mensagem' => "✅ Chamado {$codigoChamado} registrado com sucesso!",
+    'codigo'   => $codigoChamado
+  ]);
+} else {
+  echo json_encode([
+    'ok'       => false,
+    'mensagem' => "❌ Erro ao salvar chamado: " . $stmt->error
+  ]);
 }
 
-$id = 'CHM' . str_pad(strval(rand(10000, 99999)), 5, '0', STR_PAD_LEFT);
-
-$chamados[] = [
-  'id' => $id,
-  'titulo' => $titulo,
-  'descricao' => $descricao,
-  'setor_destino' => $setor,
-  'loja_origem' => $lojaUsuario,
-  'usuario_solicitante' => $nomeUsuario,
-  'data_abertura' => date('Y-m-d H:i:s'),
-  'status' => 'aberto',
-  'usuario_responsavel' => '',
-  'data_assumido' => '',
-  'solucao' => '',
-  'data_solucao' => '',
-  'avaliacao' => '',
-  'data_avaliacao' => ''
-];
-
-file_put_contents($arquivo, json_encode($chamados, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
-header('Location: acompanhar_chamados_publico.php?sucesso=' . urlencode('Chamado registrado com sucesso.'));
+$stmt->close();
+$conn->close();
 exit;
 ?>

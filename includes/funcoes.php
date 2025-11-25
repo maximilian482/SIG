@@ -129,7 +129,7 @@ function listarChamados($conn) {
 function contarPendenciasPorSetor($chamados, $setorAlvo) {
   $total = 0;
   $setorAlvo = normalizar($setorAlvo);
-  $statusValidos = ['aberto', 'em andamento', 'reaberto', 'aguardando avaliacao'];
+  $statusValidos = ['aberto', 'em andamento', 'reaberto', 'aguardando avaliação'];
   foreach ($chamados as $c) {
     $setor = normalizar($c['setor_destino'] ?? '');
     $status = normalizar($c['status'] ?? '');
@@ -160,7 +160,7 @@ function contarInconformidades($conn) {
   $total = 0;
   while ($i = $res->fetch_assoc()) {
     $status = normalizar($i['status'] ?? '');
-    if (in_array($status, ['aberto', 'aguardando avaliacao', 'reaberto'])) {
+    if (in_array($status, ['aberto', 'aguardando avaliação', 'reaberto'])) {
       $total++;
     }
   }

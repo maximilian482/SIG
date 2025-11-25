@@ -99,7 +99,7 @@ while ($row = $res->fetch_assoc()) {
   <section id="feed">
     <div class="logo-mural">
        <img src="imagens/logo.jpg" alt="Logo Atacadão Souza Farma Express">
-     <h2> Mural da Empresa</h2>
+     <h2> Feed da Empresa</h2>
     </div>
   
 

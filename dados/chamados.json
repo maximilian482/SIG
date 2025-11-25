@@ -1,0 +1,91 @@
+[
+    {
+        "id": "CHM69252094765E6",
+        "titulo": "Teste",
+        "descricao": "teste",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 00:20:52",
+        "status": "Aberto",
+        "usuario_responsavel": "",
+        "data_assumido": "",
+        "solucao": "",
+        "data_solucao": "",
+        "avaliacao": "",
+        "data_avaliacao": ""
+    },
+    {
+        "id": "CHM692520D509D73",
+        "titulo": "asdfasdf",
+        "descricao": "444444",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 00:21:57",
+        "status": "Aberto",
+        "usuario_responsavel": "",
+        "data_assumido": "",
+        "solucao": "",
+        "data_solucao": "",
+        "avaliacao": "",
+        "data_avaliacao": ""
+    },
+    {
+        "id": "CHM69252094765000001",
+        "titulo": "Teste",
+        "descricao": "Teste",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 12:24:39",
+        "status": "Aberto"
+    },
+    {
+        "id": "CHM69252094765000002",
+        "titulo": "Teste",
+        "descricao": "Teste",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 12:33:16",
+        "status": "Aberto"
+    },
+    {
+        "id": "CHM69252094765000003",
+        "titulo": "Teste",
+        "descricao": "Teste",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 12:33:30",
+        "status": "Aberto"
+    },
+    {
+        "codigo_chamado": "CHM001",
+        "titulo": "Teste",
+        "descricao": "tESTE",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 12:35:44",
+        "status": "Aberto"
+    },
+    {
+        "codigo_chamado": "CHM002",
+        "titulo": "Teste",
+        "descricao": "tESTE 2",
+        "setor_destino": "TI",
+        "loja_origem": 5,
+        "usuario_solicitante": "Administrador Geral",
+        "solicitante_id": 1,
+        "data_abertura": "2025-11-25 12:37:08",
+        "status": "Aberto"
+    }
+]

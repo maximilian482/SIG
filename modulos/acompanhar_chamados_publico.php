@@ -155,14 +155,14 @@ function tempoAbertoStr(?string $dataAbertura): string {
       $corStatus = match ($statusNorm) {
         'aberto'               => 'background:#fff3cd; color:#856404;',
         'em andamento'         => 'background:#cce5ff; color:#004085;',
-        'aguardando avaliacao' => 'background:#ffeeba; color:#856404;',
+        'aguardando avaliação' => 'background:#ffeeba; color:#856404;',
         'reaberto'             => 'background:#f8d7da; color:#721c24;',
         default                => '',
       };
 
       $tempoAberto   = tempoAbertoStr($c['data_abertura'] ?? null);
       $solicitanteId = intval($c['solicitante_id'] ?? 0);
-      $podeAvaliar   = (strpos($statusNorm, 'aguardando avaliacao') !== false && $solicitanteId === $usuarioId);
+      $podeAvaliar   = (strpos($statusNorm, 'aguardando avaliação') !== false && $solicitanteId === $usuarioId);
     ?>
     <tr>
       <td><?= htmlspecialchars($c['id']) ?></td>
@@ -175,7 +175,7 @@ function tempoAbertoStr(?string $dataAbertura): string {
             📋 Avaliar atendimento
           </button>
 
-        <?php elseif (strpos($statusNorm, 'aguardando avaliacao') !== false): ?>
+        <?php elseif (strpos($statusNorm, 'aguardando avaliação') !== false): ?>
           <span style="color:#999;">Aguardando avaliação pelo solicitante</span>
         <?php else: ?>
           -

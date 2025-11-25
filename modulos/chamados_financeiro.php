@@ -18,7 +18,7 @@ function normalizar($texto) {
 }
 
 $status = normalizar($c['status'] ?? '');
-if (in_array($status, ['aberto', 'em andamento', 'reaberto', 'aguardando avaliacao'])) {
+if (in_array($status, ['aberto', 'em andamento', 'reaberto', 'aguardando avaliação'])) {
   $abertos[] = ['i' => $i, 'c' => $c];
 }
 

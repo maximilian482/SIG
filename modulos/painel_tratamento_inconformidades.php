@@ -44,7 +44,7 @@ $stmt = $conn->prepare("
   FROM inconformidades i
   JOIN funcionarios f ON f.id = i.solicitante_id
   WHERE i.loja_id = ? 
-    AND i.status IN ('Aberto','Reaberto')
+    AND i.status IN ('Aberto','Reaberto', 'Aguardando resposta')
   ORDER BY i.abertura ASC
 ");
 $stmt->bind_param("i", $lojaId);
