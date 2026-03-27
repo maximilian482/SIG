@@ -1,0 +1,77 @@
+/* Botão de perfil fixo */
+.perfil-topo {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 1100;
+}
+
+.perfil-container {
+  position: relative;
+  display: inline-block;
+}
+
+.perfil-foto {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .perfil-foto {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+.perfil-foto:hover {
+  border-color: var(--verde-principal);
+}
+
+/* Dropdown */
+.perfil-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--branco);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 10px;
+  min-width: 200px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease;
+  z-index: 1200;
+}
+
+.perfil-dropdown a {
+  display: block;
+  padding: 18px 40px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 1.3em;
+  white-space: nowrap;
+  min-width: 220px;
+  transition: background 0.2s ease;
+}
+
+.perfil-dropdown a:hover {
+  background: var(--verde-claro);
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .perfil-dropdown {
+    min-width: 260px;
+  }
+
+  .perfil-dropdown a {
+    font-size: 1.4em;
+    padding: 10px 16px;
+  }
+}
+
+

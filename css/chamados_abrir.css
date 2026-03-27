@@ -1,0 +1,121 @@
+/* ===============================
+   FORMULÁRIO DE ABERTURA DE CHAMADO
+   (Visual compacto e padrão Palmeiras)
+================================ */
+
+/* Container visual da página */
+.container-chamado {
+  max-width: 480px;
+  margin: 40px auto;
+  background: var(--branco);
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Títulos */
+.container-chamado h2 {
+  margin-bottom: 10px;
+  color: var(--verde-palmeiras);
+}
+
+.container-chamado p {
+  color: var(--cinza-texto);
+  margin-bottom: 20px;
+  font-size: 0.95em;
+}
+
+/* Labels */
+.form-chamado label {
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: var(--verde-palmeiras);
+}
+
+/* Inputs */
+.form-chamado input,
+.form-chamado select,
+.form-chamado textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  font-size: 1em;
+  margin-bottom: 15px;
+  background: var(--branco);
+}
+
+.form-chamado input:focus,
+.form-chamado select:focus,
+.form-chamado textarea:focus {
+  border-color: var(--verde-palmeiras);
+  outline: none;
+  box-shadow: 0 0 5px rgba(0,100,55,0.3);
+}
+
+/* ===============================
+   BOTÕES — MAIS VIVOS E MAIS ENCORPADOS
+================================ */
+
+/* Agrupamento dos botões */
+.botoes-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* Botão principal */
+.btn-submit {
+  padding: 12px 22px;
+  background-color: var(--verde-palmeiras-claro);
+  color: var(--branco);
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 140px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-submit:hover {
+  background-color: var(--verde-palmeiras);
+  transform: translateY(-1px);
+}
+
+/* Botão voltar */
+.btn-voltar {
+  padding: 12px 22px;
+  background-color: var(--cinza-borda);
+  color: var(--texto-principal);
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  min-width: 140px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-voltar:hover {
+  background-color: #c9d1d6;
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   RESPONSIVO
+================================ */
+@media (max-width: 600px) {
+  .container-chamado {
+    margin: 20px;
+    padding: 20px;
+    max-width: 90%;
+  }
+
+  .botoes-acoes {
+    flex-direction: column;
+  }
+
+  .btn-submit,
+  .btn-voltar {
+    width: 100%;
+  }
+}

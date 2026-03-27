@@ -1,0 +1,39 @@
+.detalhes-box {
+    font-size: 15px;
+    color: #333;
+}
+
+.detalhes-box p {
+    margin: 6px 0;
+}
+
+.detalhes-box hr {
+    margin: 12px 0;
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+.detalhes-box strong {
+    color: #1A5D2E; /* Verde Palmeiras */
+}
+
+.assinatura-img {
+    max-width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-top: 8px;
+}
+
+.lista-itens {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+
+.lista-itens li {
+    background: #F7FAF9;
+    border: 1px solid #DDE2E5;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}

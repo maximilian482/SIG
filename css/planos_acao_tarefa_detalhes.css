@@ -1,0 +1,121 @@
+/* CONTAINER */
+.detalhes-container {
+    display: flex;
+    gap: 24px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+/* CAIXA DE INFORMAÇÕES */
+.detalhes-info {
+    flex: 1;
+    min-width: 320px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.detalhes-info h3 {
+    color: #006437;
+    border-left: 6px solid #00A859;
+    padding-left: 10px;
+    margin-bottom: 14px;
+}
+
+/* CABEÇALHO */
+.detalhes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.detalhes-solicitante {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #006437;
+}
+
+.detalhes-id {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    background: #f3f3f3;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+/* DESCRIÇÃO */
+.detalhes-descricao {
+    display: inline-block;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 6px;
+    color: #444;
+    font-size: 0.9rem;
+}
+
+/* TIMELINE */
+.detalhes-timeline {
+    flex: 1;
+    min-width: 320px;
+}
+
+.detalhes-timeline h3 {
+    color: #006437;
+    border-left: 6px solid #00A859;
+    padding-left: 10px;
+    margin-bottom: 14px;
+}
+
+.timeline-box {
+    background: #fff;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* MENSAGENS */
+.msg {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: #f8f8f8;
+}
+
+.msg-eu {
+    background: #e9f7ef;
+    border-left: 4px solid #00A859;
+}
+
+.msg-outro {
+    background: #f3f3f3;
+    border-left: 4px solid #ccc;
+}
+
+.msg-nome {
+    font-weight: 700;
+    color: #006437;
+}
+
+.msg-texto {
+    margin-top: 6px;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.msg-data {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #777;
+    text-align: right;
+}
+
+.sem-historico {
+    color: #777;
+    font-size: 0.9rem;
+}

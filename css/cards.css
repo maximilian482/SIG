@@ -1,0 +1,133 @@
+/* ===============================
+   CONTAINER DE CARDS
+=============================== */
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 30px;
+  padding: 0 10px;
+}
+
+/* ===============================
+   CARD — ISOLADO
+   Só funciona dentro de .cards-container
+=============================== */
+.cards-container .card {
+  background: var(--branco);
+  border: 1px solid var(--cinza-borda);
+  border-left: 6px solid var(--verde-palmeiras);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  max-width: 320px;
+  flex: 1 1 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.cards-container .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+/* ===============================
+   TÍTULO DO CARD
+=============================== */
+.cards-container .card h2 {
+  color: var(--verde-palmeiras);
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+/* ===============================
+   TEXTO DO CARD
+=============================== */
+.cards-container .card p {
+  font-size: 0.95em;
+  color: var(--texto-principal);
+  margin-bottom: 12px;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+/* ===============================
+   BOTÃO DO CARD
+=============================== */
+.cards-container .card a {
+  text-align: center;
+  padding: 10px;
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.cards-container .card a:hover {
+  background-color: var(--verde-palmeiras-escuro);
+  transform: scale(1.03);
+}
+
+/* ===============================
+   RESPONSIVO
+=============================== */
+@media (max-width: 768px) {
+  .cards-container .card {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .cards-container .card h2 {
+    font-size: 1.1em;
+  }
+
+  .cards-container .card p {
+    font-size: 1em;
+  }
+
+  .cards-container .card a {
+    font-size: 1em;
+    padding: 12px;
+  }
+}
+
+/* ===============================
+   CORES DOS STATUS
+=============================== */
+
+.cards-container .card h2.status-aberto {
+  color: #2563eb !important;
+  border-left-color: #2563eb !important;
+}
+
+.cards-container .card h2.status-reaberto {
+  color: #7c3aed !important;
+  border-left-color: #7c3aed !important;
+}
+
+.cards-container .card h2.status-reaberto-pelo-setor {
+  color: #9333ea !important;
+  border-left-color: #9333ea !important;
+}
+
+.cards-container .card h2.status-aguardando-avaliacao {
+  color: #16a34a !important;
+  border-left-color: #16a34a !important;
+}
+
+.cards-container .card h2.status-em-andamento {
+  color: #f59e0b !important;
+  border-left-color: #f59e0b !important;
+}
+
+.cards-container .card h2.status-encerrado {
+  color: #6b7280 !important;
+  border-left-color: #6b7280 !important;
+}

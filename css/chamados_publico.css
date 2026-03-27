@@ -1,0 +1,181 @@
+/* 🌿 Paleta de Cores */
+:root {
+  --verde-palmeiras: #1E513D;
+  --verde-hover: #DFF5E3;
+  --cinza-fundo: #F4F6F8;
+  --cinza-borda: #DDE2E5;
+  --texto-principal: #1C1C1C;
+  --branco: #FFFFFF;
+}
+
+/* 🌐 Estrutura Geral */
+body {
+  background-color: var(--cinza-fundo);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--texto-principal);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* 🧾 Tabela de Chamados */
+.tabela-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--branco);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+table th, table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--cinza-borda);
+  text-align: left;
+}
+
+table th {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  text-transform: uppercase;
+  font-size: 0.9em;
+}
+
+table tbody tr:hover {
+  background-color: var(--verde-hover);
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* 🟢 Status */
+.status {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.status.aberto     { background-color: #e74c3c; }
+.status.reaberto   { background-color: #d35400; }
+.status.aguardando { background-color: #f1c40f; color: #000; }
+.status.avaliacao  { background-color: #3498db; }
+.status.encerrado  { background-color: #2ecc71; }
+
+/* 🔘 Botões Gerais */
+.btn {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background-color: #15402f;
+}
+
+/* 🔘 Botões Detalhes e Avaliar */
+.btn-detalhes,
+.btn-avaliar {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-detalhes:hover,
+.btn-avaliar:hover {
+  background-color: #15402f;
+}
+
+/* ⭐ Estrelas do Modal */
+.modal-estrelas-container {
+  display: flex;
+  gap: 8px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.modal-estrela {
+  color: #ccc;
+  transition: 0.2s;
+}
+
+.modal-estrela:hover {
+  transform: scale(1.2);
+}
+
+/* ⭐ Estrelas do Modal */
+.modal-estrelas-container {
+  display: flex;
+  gap: 8px;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.modal-estrela {
+  color: #ccc;              /* cinza por padrão */
+  transition: 0.2s;
+}
+
+.modal-estrela.selecionada {
+  color: #f1c40f;           /* amarelo quando selecionada */
+}
+
+.modal-estrela:hover {
+  transform: scale(1.2);
+}
+
+
+/* 📱 Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  table th, table td {
+    white-space: nowrap;
+  }
+
+  .btn {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+.modal-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* Responsivo para celular */
+@media (max-width: 480px) {
+    .modal-botoes {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .modal-botoes button,
+    .modal-botoes a {
+        width: 100%;
+    }
+}

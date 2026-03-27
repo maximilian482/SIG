@@ -1,0 +1,346 @@
+/* Paleta moderna: verde Palmeiras (#006437), branco, cinza suave */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4fdf4;
+  margin: 0;
+  padding: 20px;
+  color: #333;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+
+h2 {
+  color: #006437;
+  margin-bottom: 20px;
+}
+
+.resumo {
+  background: #e6f7e6;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.filtros label {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #006437;
+}
+
+.filtros select {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 20px;
+}
+
+.tabela-inventario {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.tabela-inventario th {
+  background: #006437;
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+.tabela-inventario td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabela-inventario tr:hover {
+  background: #f0fdf0;
+}
+
+.acao {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.acao.editar {
+  color: #006437;
+}
+
+.acao.excluir {
+  color: #c0392b;
+}
+
+.acoes-gerais {
+  margin-top: 20px;
+}
+
+.btn {
+  display: inline-block;
+  background: #006437;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: #004225;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  width: 400px;
+  border-radius: 8px;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  color: #006437;
+}
+
+.modal-acoes {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn.confirmar {
+  background: #006437;
+}
+
+.btn.cancelar {
+  background: #c0392b;
+}
+
+/* ===== FORMULÁRIO DE ADIÇÃO DE ITEM ===== */
+
+.form-container {
+  max-width: 700px;
+  margin: auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+
+form label {
+  display: block;
+  font-weight: bold;
+  color: #006437;
+  margin-bottom: 6px;
+}
+
+form input[type="text"],
+form input[type="number"],
+form select,
+form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  font-size: 1em;
+  background: #fdfdfd;
+}
+
+form input[readonly] {
+  background: #e8f5e8;
+  font-weight: bold;
+  color: #444;
+}
+
+button[type="submit"] {
+  background: #006437;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.1em;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%;
+}
+
+button[type="submit"]:hover {
+  background: #004225;
+}
+
+/* ===== TÍTULO ===== */
+
+h2 {
+  text-align: center;
+  color: #006437;
+  margin-bottom: 25px;
+}
+
+/* ===== BOTÃO VOLTAR ===== */
+
+.btn-voltar {
+  display: inline-block;
+  margin-top: 20px;
+  background: #006437;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.btn-voltar:hover {
+  background: #004225;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+@media (max-width: 600px) {
+  .form-container {
+    padding: 15px;
+  }
+
+  button[type="submit"] {
+    font-size: 1em;
+  }
+}
+
+.limpar-filtros {
+  background: #e6f7e6 !important;
+  color: #006437 !important;
+  border: 1px solid #b5e6b5;
+}
+
+.limpar-filtros:hover {
+  background: #d4f0d4 !important;
+}
+
+@media (max-width: 600px) {
+  form label {
+    margin-top: 10px;
+    display: block;
+  }
+
+  form select,
+  form input[type="text"],
+  form input[type="number"],
+  form textarea {
+    width: 100% !important;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .modal-content {
+    width: 90% !important;
+  }
+}
+
+/* Container da paginação */
+.paginacao {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  padding: 8px 14px;
+  background: #006437;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.page-btn:hover {
+  background: #008f4f;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.page-number {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #eaeaea;
+  color: #333;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.2s;
+  border: 1px solid #ccc;
+}
+
+.page-number:hover {
+  background: #dcdcdc;
+}
+
+.page-number.ativo {
+  background: #006437;
+  color: white;
+  border-color: #006437;
+  transform: scale(1.05);
+}
+
+.ellipsis {
+  padding: 0 6px;
+  font-size: 18px;
+  color: #666;
+}
+
+/* Wrapper geral */
+.paginacao-wrapper {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+/* Seletor ao lado */
+.por-pagina {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.por-pagina select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Paginação já existente */
+.paginacao {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}

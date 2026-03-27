@@ -1,0 +1,101 @@
+/* ISOLA O CSS DO PERFIL PARA NÃO AFETAR O LAYOUT */
+main.layout-principal .perfil-container {
+  max-width: 800px;
+  margin: 30px auto;
+  background-color: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+main.layout-principal .foto {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--verde-palmeiras);
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+main.layout-principal .nome-usuario {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: var(--verde-palmeiras);
+  margin-bottom: 20px;
+}
+
+main.layout-principal .info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--cinza-borda);
+  line-height: 1.5;
+  font-size: 1em;
+}
+
+main.layout-principal .info strong {
+  min-width: 160px;
+  font-weight: bold;
+  color: var(--verde-palmeiras);
+}
+
+main.layout-principal .botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+main.layout-principal .botoes button {
+  flex: 1;
+  min-width: 140px;
+  padding: 14px;
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+main.layout-principal .botoes button:hover {
+  background-color: #15402f;
+}
+
+/* MODAIS */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal.aberto {
+  display: flex;
+}
+
+.modal-content {
+  background-color: var(--branco);
+  padding: 30px;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 92%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 1.6em;
+  cursor: pointer;
+  color: var(--verde-palmeiras);
+}

@@ -1,0 +1,266 @@
+/* ===============================
+   FUNDO GERAL
+================================= */
+body {
+    background-color: #f4f4f4;
+}
+
+
+
+/* ===============================
+   ABAS DO TRILHO
+================================= */
+.abas-trilho {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.aba {
+    background-color: #fff;
+    border: 1px solid #1A5D2E;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #1A5D2E;
+    transition: 0.2s;
+}
+
+.aba:hover {
+    background-color: #e8f3ec;
+}
+
+.aba.ativa {
+    background-color: #1A5D2E;
+    color: #fff;
+}
+
+/* Conteúdo das abas */
+.conteudo-aba {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.conteudo-aba.ativo {
+    display: block;
+}
+
+
+
+/* ===============================
+   CARDS DO TRILHO
+================================= */
+.card-trilho {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Produto em destaque */
+.card-produto {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #1A5D2E;
+    margin-bottom: 10px;
+}
+
+/* Cabeçalho */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.protocolo {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Status */
+.tag-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    color: white;
+}
+
+.tag-status.aberto {
+    background-color: #1A5D2E;
+}
+
+.tag-status.faturado {
+    background-color: #0066cc;
+}
+
+.tag-status.rota {
+    background-color: #2E8B57;
+}
+
+.tag-status.entregue {
+    background-color: #28a745;
+}
+
+/* Corpo */
+.card-body p {
+    margin: 3px 0;
+    font-size: 0.95em;
+}
+
+
+
+/* ===============================
+   BOTÕES PADRÃO DO TRILHO
+================================= */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-trilho {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: 0.2s;
+    text-align: center;
+    min-width: 100px;
+    color: white;
+}
+
+/* Detalhes */
+.btn-detalhes {
+    background: #0077cc;
+}
+.btn-detalhes:hover {
+    background: #005fa3;
+}
+
+/* Editar */
+.btn-editar {
+    background: #ffaa00;
+    color: #4a3300;
+}
+.btn-editar:hover {
+    background: #e69900;
+}
+
+/* Excluir */
+.btn-excluir {
+    background: #ff4444;
+}
+.btn-excluir:hover {
+    background: #cc0000;
+}
+
+/* Faturar */
+.btn-faturar {
+    background: #1A5D2E;
+}
+.btn-faturar:hover {
+    background: #144722;
+}
+
+/* Coletar */
+.btn-coletar {
+    background: #0066cc;
+}
+.btn-coletar:hover {
+    background: #004c99;
+}
+
+/* Entregar */
+.btn-entregar {
+    background: #2E8B57;
+}
+.btn-entregar:hover {
+    background: #256f46;
+}
+
+
+
+/* ===============================
+   MODAL DO TRILHO
+================================= */
+.modal-trilho {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.modal-conteudo {
+    background: #fff;
+    width: 90%;
+    max-width: 450px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    animation: modalFade 0.3s ease;
+    position: relative;
+}
+
+@keyframes modalFade {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-fechar {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #1A5D2E;
+    font-weight: bold;
+}
+
+.modal-fechar:hover {
+    color: #2E8B57;
+}
+
+
+
+/* ===============================
+   BOTÕES DO TOPO
+================================= */
+.trilho-acoes-topo {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.trilho-acoes-topo a {
+    background: #1A5D2E;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-voltar {
+    background: #555;
+}
+
+.btn-historico {
+    background: #003366;
+}

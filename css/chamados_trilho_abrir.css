@@ -1,0 +1,217 @@
+/* ===============================
+   ESTILO GERAL DO MODAL
+================================ */
+.container-chamado {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 25px 30px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #1C1C1C;
+    background: #fff;
+}
+
+/* ===============================
+   TÍTULOS
+================================ */
+.container-chamado h2 {
+    text-align: center;
+    color: #1E513D;
+    margin-bottom: 8px;
+    font-size: 1.9em;
+    font-weight: 700;
+}
+
+.container-chamado p {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #555;
+    font-size: 1.05em;
+}
+
+/* ===============================
+   LABELS
+================================ */
+.form-chamado label {
+    font-weight: 600;
+    color: #1E513D;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.95em;
+}
+
+/* ===============================
+   CAMPOS DO FORMULÁRIO
+================================ */
+.form-chamado input,
+.form-chamado select,
+.form-chamado textarea {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #C9D3D8;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 1.05em;
+    background: #FAFAFA;
+    transition: 0.2s ease;
+}
+
+.form-chamado input:focus,
+.form-chamado select:focus,
+.form-chamado textarea:focus {
+    border-color: #1E513D;
+    background: #fff;
+    box-shadow: 0 0 6px rgba(30, 81, 61, 0.25);
+    outline: none;
+}
+
+/* ===============================
+   SUBTÍTULOS INTERNOS
+================================ */
+.form-chamado h3 {
+    margin-top: 25px;
+    margin-bottom: 12px;
+    color: #1E513D;
+    font-size: 1.25em;
+    font-weight: 700;
+    border-left: 4px solid #1E513D;
+    padding-left: 10px;
+}
+
+/* ===============================
+   BOTÕES
+================================ */
+.botoes-acoes {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+    gap: 12px;
+}
+
+.btn-voltar,
+.btn-submit {
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+    text-align: center;
+    font-size: 1.05em;
+}
+
+/* Botão voltar */
+.btn-voltar {
+    background-color: #8A8A8A;
+    color: #fff;
+}
+
+.btn-voltar:hover {
+    background-color: #6E6E6E;
+}
+
+/* Botão enviar */
+.btn-submit {
+    background-color: #1E513D;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(30, 81, 61, 0.3);
+}
+
+.btn-submit:hover {
+    background-color: #15402F;
+    box-shadow: 0 3px 6px rgba(30, 81, 61, 0.35);
+}
+
+/* ===============================
+   RESPONSIVIDADE
+================================ */
+@media (max-width: 600px) {
+    .container-chamado {
+        padding: 15px;
+    }
+
+    .botoes-acoes {
+        flex-direction: column;
+    }
+
+    .btn-voltar,
+    .btn-submit {
+        width: 100%;
+    }
+}
+
+/* CONTAINER GERAL (centraliza o card) */
+.container-chamado {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 25px 15px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #1C1C1C;
+}
+
+/* CARD FLUTUANTE */
+.card-chamado {
+    background: #fff;          /* mais claro que o fundo padrão */
+    border-radius: 12px;
+    padding: 25px 30px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    border: 1px solid #E0E6E3;
+}
+
+/* TÍTULOS */
+.card-chamado h2 {
+    text-align: center;
+    color: #1E513D;
+    margin-bottom: 8px;
+    font-size: 1.9em;
+    font-weight: 700;
+}
+
+.card-chamado p {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #555;
+    font-size: 1.05em;
+}
+
+/* Bloco de item */
+.item-bloco {
+    background: #ffffff;
+    border: 1px solid #DDE2E5;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Botão adicionar item */
+.btn-add-item {
+    background: #1E513D;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.btn-add-item:hover {
+    background: #15402F;
+}
+
+/* Botão remover item */
+.btn-remover-item {
+    background: #b30000;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-remover-item:hover {
+    background: #8a0000;
+}
+

@@ -1,0 +1,116 @@
+/* ============================
+   FORMULÁRIO PADRÃO
+============================ */
+
+.form-padrao {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.form-padrao label {
+    font-weight: 600;
+    color: #1E513D;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-padrao input,
+.form-padrao select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #DDE2E5;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-padrao input:focus,
+.form-padrao select:focus {
+    border-color: #1E513D;
+    outline: none;
+    box-shadow: 0 0 5px rgba(30,81,61,0.3);
+}
+
+/* ============================
+   TÍTULO DA PÁGINA
+============================ */
+
+.titulo-pagina {
+    text-align: center;
+    color: #1E513D;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    font-weight: bold;
+}
+
+/* ============================
+   BOTÕES
+============================ */
+
+.btn-primary {
+    background-color: #1E513D;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #15402f;
+}
+
+.btn-secondary {
+    background-color: #888;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    margin-left: 10px;
+    transition: 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #666;
+}
+
+/* ============================
+   ALERTAS
+============================ */
+
+.alert {
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* ============================
+   RESPONSIVIDADE
+============================ */
+
+@media (max-width: 600px) {
+    .form-padrao {
+        padding: 15px;
+        max-width: 100%;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        margin: 5px 0;
+    }
+}

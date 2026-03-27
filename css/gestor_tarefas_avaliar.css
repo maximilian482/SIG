@@ -1,0 +1,123 @@
+/* APLICA O ESTILO NOVO DENTRO DO LAYOUT NOVO */
+.plano-modal-content.modal-avaliacao-content {
+    background: #fff;
+    width: 90%;
+    max-width: 480px;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+    position: relative;
+    animation: fadeIn .25s ease;
+    font-family: Inter, Arial, sans-serif;
+}
+
+/* Botão de fechar */
+.modal-avaliacao-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: 0;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Título */
+.modal-avaliacao-content h2 {
+    margin: 0 0 18px 0;
+    color: #006437;
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+/* Texto */
+.modal-avaliacao-content p {
+    color: #444;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+/* Textarea */
+.modal-avaliacao-content textarea {
+    width: 100%;
+    height: 110px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    font-size: 1rem;
+    resize: vertical;
+    margin-top: 10px;
+}
+
+.modal-avaliacao-content textarea:focus {
+    outline: 2px solid #00A859;
+}
+
+/* Botões */
+.modal-avaliacao-content .btn-acoes button {
+    padding: 18px 16px !important;
+    min-height: 58px !important;
+    font-size: 1.15rem !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    font-weight: 700 !important;
+    display: block !important;
+    cursor: pointer;
+}
+
+/* Cores */
+.btn-aprovar {
+    background: #28a745;
+    color: #fff;
+}
+.btn-aprovar:hover {
+    background: #218838;
+}
+
+.btn-reabrir {
+    background: #ffc107;
+    color: #000;
+}
+.btn-reabrir:hover {
+    background: #e0a800;
+}
+
+.btn-excluir {
+    background: #dc3545;
+    color: #fff;
+}
+.btn-excluir:hover {
+    background: #c82333;
+}
+
+.plano-modal-content .btn-acoes button {
+    padding: 18px 16px !important;
+    min-height: 58px !important;
+    font-size: 1.15rem !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+    font-weight: 700 !important;
+    display: block !important;
+}
+
+/* Força o alerta premium a ficar acima de qualquer modal */
+.mensagem-flutuante,
+#mensagem-flutuante,
+.flash-message,
+.alerta-premium {
+    position: fixed !important;
+    z-index: 999999 !important;
+}
+
+.banner-reaberta {
+    background: #b30000;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

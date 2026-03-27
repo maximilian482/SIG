@@ -1,0 +1,135 @@
+/* ===============================
+   CONTAINER PRINCIPAL
+=============================== */
+.gestao-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: var(--branco);
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.gestao-container h2 {
+  margin-bottom: 10px;
+}
+
+.resumo-total {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+
+/* ===============================
+   AÇÕES (BOTÕES SUPERIORES)
+=============================== */
+.acoes-gestao {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.acoes-gestao .btn,
+.acoes-gestao .btn-secondary {
+  flex: 0 0 auto; /* NÃO vira card */
+  padding: 10px 18px;
+}
+
+/* No mobile, eles apenas quebram linha */
+@media (max-width: 600px) {
+  .acoes-gestao {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ===============================
+   GRÁFICOS — AJUSTE DE TAMANHO
+=============================== */
+.relatorio-funcionarios {
+  margin-top: 30px;
+}
+
+/* Cada gráfico fica dentro de um card visual */
+.relatorio-funcionarios canvas {
+  width: 100% !important;
+  max-width: 500px; /* limite visual */
+  height: auto !important;
+  margin: 0 auto;
+  display: block;
+  background: var(--branco);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Títulos dos gráficos */
+.relatorio-funcionarios h3 {
+  margin: 25px 0 10px;
+  text-align: center;
+}
+
+/* ===============================
+   BOTÃO VOLTAR
+=============================== */
+.voltar {
+  margin-top: 30px;
+  text-align: right;
+}
+
+/* ===============================
+   MODAL — PADRÃO
+=============================== */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 5000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-conteudo {
+  background: var(--branco);
+  padding: 25px 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 750px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  animation: fadeIn .25s ease-in-out;
+}
+
+.modal-conteudo .close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--verde-palmeiras);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ===============================
+   RESPONSIVO
+=============================== */
+@media (max-width: 768px) {
+  .gestao-container {
+    padding: 20px;
+  }
+
+  .voltar {
+    text-align: center;
+  }
+
+  .modal-conteudo {
+    width: 95%;
+    padding: 20px;
+  }
+}

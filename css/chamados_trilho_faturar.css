@@ -1,0 +1,83 @@
+/* Container geral */
+.container-trilho {
+    max-width: 520px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+/* Título */
+.container-trilho h2 {
+    text-align: center;
+    color: #1A5D2E;
+    margin-bottom: 10px;
+}
+
+/* Texto de instrução */
+.container-trilho p {
+    text-align: center;
+    color: #444;
+}
+
+/* Card com informações */
+.card-trilho {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+/* Produto */
+.card-produto {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #1A5D2E;
+    margin-bottom: 10px;
+}
+
+/* Inputs */
+.input-trilho {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    margin-top: 5px;
+    font-size: 1em;
+}
+
+/* Botões */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-trilho {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+    color: #fff;
+    transition: 0.2s;
+}
+
+.btn-detalhes {
+    background: #6c757d;
+}
+.btn-detalhes:hover {
+    background: #5a6268;
+}
+
+.btn-faturar {
+    background: #1A5D2E;
+}
+.btn-faturar:hover {
+    background: #144722;
+}

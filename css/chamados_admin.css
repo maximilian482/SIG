@@ -1,0 +1,133 @@
+/* Botões padrão */
+/* Botão padrão do sistema (verde escuro) */
+.btn {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    background: var(--verde-palmeiras-escuro);
+    color: var(--branco);
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn:hover {
+    background: var(--verde-palmeiras-claro);
+}
+
+
+/* Botão de ação secundária (se quiser usar depois) */
+.btn-secundario {
+    background: var(--cinza-claro);
+    color: var(--texto-principal);
+}
+
+.btn-secundario:hover {
+    background: var(--cinza-medio);
+}
+
+
+/* Botão de alerta (caso precise no futuro) */
+.btn-alerta {
+    background: var(--warning-bg);
+    color: var(--warning-texto);
+}
+
+.btn-alerta:hover {
+    filter: brightness(0.9);
+}
+
+/* Container geral */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 15px 20px;
+}
+
+/* Alertas de chamados > 48h */
+.alerta {
+    background: var(--erro-bg);
+    color: var(--erro-texto);
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--erro-texto);
+}
+
+/* Linha em alerta */
+.linha-alerta {
+    background: var(--erro-bg) !important;
+    color: var(--erro-texto) !important;
+}
+
+/* Tabela */
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 15px;
+}
+
+.tabela-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.tabela-container th {
+    background: var(--cinza-claro);
+    color: var(--texto-principal);
+    padding: 10px;
+    text-align: left;
+}
+
+.tabela-container td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--cinza-medio);
+}
+
+/* Paginação */
+.paginacao a {
+    display: inline-block;
+    margin: 0 3px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    border: 1px solid var(--cinza-medio);
+    color: var(--texto-principal);
+}
+
+.paginacao a.ativo {
+    background: var(--primaria);
+    color: var(--branco);
+    border-color: var(--primaria);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+}
+
+.modal-content {
+    background: var(--branco);
+    margin: 5% auto;
+    padding: 20px;
+    width: 70%;
+    max-width: 800px;
+    border-radius: 8px;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    color: var(--texto-principal);
+}

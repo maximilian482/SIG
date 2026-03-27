@@ -1,0 +1,180 @@
+.mensagens {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mensagens li {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 12px;
+  position: relative;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mensagens li.lida {
+  background: #f9f9f9;
+}
+
+.mensagens li.nao-lida {
+  background: #fff;
+}
+
+.mensagens .cabecalho {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.mensagens .conteudo {
+  flex: 1;
+  margin: 10px 0;
+  font-size: 1.05em;
+  line-height: 1.5;
+  color: #2c3e50;
+  font-weight: 500; /* deixa mais evidente */
+}
+
+.mensagens .anexo {
+  margin-top: 12px;
+}
+
+.btn-download {
+  display: inline-block;
+  background: #3498db; /* azul */
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background: #2980b9; /* azul mais escuro */
+}
+
+.rodape-card {
+  display: grid;
+  grid-template-columns: 1fr auto auto; /* esquerda ocupa espaço, centro e direita fixos */
+  align-items: center;
+  margin-top: 12px;
+  gap: 10px;
+}
+
+.celula-download {
+  justify-self: start;
+}
+
+.celula-lido {
+  justify-self: center;
+  min-width: 40px; /* reserva espaço mesmo quando vazio */
+  text-align: center;
+}
+
+.celula-excluir {
+  justify-self: end;
+  min-width: 40px;
+  text-align: right;
+}
+
+.btn-download {
+  background: #3498db;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-download:hover {
+  background: #2980b9;
+}
+
+.btn-lido {
+  background: #006437;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-lido:hover {
+  background: #004225;
+}
+
+.btn-excluir {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-excluir:hover {
+  color: #e74c3c;
+}
+
+
+.status-lida {
+  font-size: 0.9em;
+  color: #006437; /* verde Palmeiras */
+  margin-left: 8px;
+  align-self: center;
+}
+
+/* Paginação */
+.paginacao {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.paginacao a,
+.paginacao span {
+  display: inline-block;
+  margin: 0 4px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.paginacao a {
+  background: #006437;
+  color: #fff;
+  border: 1px solid #004225;
+}
+
+.paginacao a:hover {
+  background: #004225;
+}
+
+.paginacao span.ativo {
+  background: #004225;
+  color: #fff;
+  border: 1px solid #004225;
+}
+
+.paginacao span {
+  background: #f0f0f0;
+  color: #2c3e50;
+  border: 1px solid #ccc;
+}
+
+#contador-nao-lidas {
+  font-size: 0.9em;
+  color: #006437;
+  margin-left: 10px;
+}

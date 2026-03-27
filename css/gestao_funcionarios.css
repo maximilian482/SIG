@@ -1,0 +1,132 @@
+:root {
+  --verde-palmeiras: #1E513D;
+  --verde-hover: #DFF5E3;
+  --cinza-fundo: #F4F6F8;
+  --cinza-borda: #DDE2E5;
+  --texto-principal: #1C1C1C;
+  --branco: #FFFFFF;
+}
+
+body {
+  background-color: var(--cinza-fundo);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--texto-principal);
+  margin: 0;
+  padding: 20px;
+}
+
+.gestao-container {
+  max-width: 900px;
+  margin: 30px auto;
+  background-color: var(--branco);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.gestao-container h2 {
+  color: var(--verde-palmeiras);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.acoes-gestao {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+}
+
+.btn-gestao {
+  background-color: var(--verde-palmeiras);
+  color: var(--branco);
+  padding: 12px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1em;
+  transition: background-color 0.2s ease;
+}
+
+.btn-gestao:hover {
+  background-color: #15402f;
+}
+
+.relatorio-funcionarios h3 {
+  color: var(--verde-palmeiras);
+  margin: 20px 0 10px;
+  text-align: center;
+}
+
+.relatorio-funcionarios canvas {
+  max-width: 100%;
+  margin: 0 auto 30px;
+  display: block;
+}
+
+.voltar {
+  text-align: center;
+  margin-top: 20px;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  overflow-y: auto; /* habilita rolagem vertical */
+}
+
+.modal-content {
+  background-color: var(--branco);
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  max-height: 90vh; /* limita altura ao tamanho da tela */
+  overflow-y: auto; /* rolagem interna se necessário */
+}
+
+.modal-content h3, .modal-content h4 {
+  color: var(--verde-palmeiras);
+}
+
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 0.9em; /* reduz fonte para caber melhor em telas pequenas */
+}
+
+.modal-content th {
+  background: var(--verde-palmeiras);
+  color: var(--branco);
+  padding: 6px;
+}
+
+.modal-content td {
+  border: 1px solid var(--cinza-borda);
+  padding: 6px;
+}
+
+.close {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--verde-palmeiras);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95%;
+    font-size: 0.85em;
+  }
+  .modal-content table {
+    font-size: 0.8em;
+  }
+}

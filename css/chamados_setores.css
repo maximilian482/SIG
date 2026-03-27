@@ -1,0 +1,292 @@
+/* ================================
+   CONTAINER PRINCIPAL
+================================ */
+.container-minhas-tarefas,
+.layout-principal {
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 24px 22px 26px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.layout-principal h2 {
+    color: #006437;
+    border-left: 6px solid #00A859;
+    padding-left: 10px;
+    margin: 0 0 8px 0;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 14px;
+}
+
+/* ================================
+   ABAS
+================================ */
+.tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.tab {
+    background: transparent;
+    border: 0;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #2b2b2b;
+    transition: 0.2s;
+}
+
+.tab:hover {
+    background: #f3f3f3;
+}
+
+.tab[aria-selected="true"] {
+    background: #e9f7ef;
+    color: #006437;
+    box-shadow: inset 0 -3px 0 #00A859;
+}
+
+.tab .count {
+    color: #666;
+    font-weight: 700;
+    margin-left: 8px;
+}
+
+/* ================================
+   GRID DE TAREFAS
+================================ */
+.tarefas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 16px;
+}
+
+/* ================================
+   CARD DA TAREFA
+================================ */
+.tarefa-card {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    padding: 12px;
+    width: 240px;
+    min-height: 170px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    transition: 0.2s;
+}
+
+.tarefa-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 600px) {
+    .tarefa-card {
+        width: 100%;
+    }
+}
+
+.linha-status-prazo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.status-legenda {
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: #777;
+}
+
+.descricao {
+    margin-top: 8px;
+    font-size: 0.85rem;
+}
+
+/* ================================
+   BADGE REABERTA
+================================ */
+.badge-reaberta {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fff3cd;
+    color: #856404;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid #ffeeba;
+}
+
+/* ================================
+   BOTÕES PADRÃO (PEQUENOS)
+================================ */
+.btn,
+.btn-secondary,
+.btn-sec {
+    padding: 8px 14px;
+    background: #006437;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    width: auto;          /* <<< AQUI ESTÁ A MUDANÇA */
+    display: inline-block; /* <<< IMPORTANTE */
+}
+
+.btn:hover {
+    background: #00A859;
+}
+
+.btn-sec {
+    background: #e6e6e6;
+    color: #333;
+}
+
+.btn-sec:hover {
+    background: #d5d5d5;
+}
+
+/* ================================
+   BOTÕES DENTRO DOS CARDS
+================================ */
+.tarefa-card .btn,
+.tarefa-card .btn-sec {
+    width: 100%;   /* <<< SOMENTE AQUI OS BOTÕES SÃO GRANDES */
+    margin-top: 10px;
+}
+
+/* ================================
+   BOTÕES DA PAGINAÇÃO
+================================ */
+.paginacao .btn {
+    width: auto;
+    margin-top: 0;
+}
+
+/* ================================
+   BOTÕES DO RODAPÉ (Voltar / Encerrados)
+================================ */
+.botoes-acoes .btn {
+    width: auto;
+    margin-top: 0;
+}
+
+/* ================================
+   SELECT DE ITENS POR PÁGINA
+================================ */
+.paginacao-itens select {
+    width: auto;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* ================================
+   GRUPOS / EMPTY
+================================ */
+.empty {
+    color: #777;
+    font-size: 0.95rem;
+    margin-top: 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ================================
+   MODAIS
+================================ */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    z-index: 2600;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-conteudo {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px 24px 20px;
+    max-width: 480px;
+    width: 90%;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+    position: relative;
+}
+
+.modal-conteudo h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    color: #006437;
+}
+
+.modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: #444;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+textarea {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-size: 0.9rem;
+    resize: vertical;
+}
+
+/* Nome do solicitante no topo */
+.solicitante-topo {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #006437; /* verde institucional */
+    margin-bottom: 4px;
+}
+
+/* Código do chamado menor e discreto */
+.codigo-chamado {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 8px;
+}

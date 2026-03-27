@@ -1,0 +1,98 @@
+/* Área geral dentro do layout */
+.pagina-conteudo {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+/* Cartão central */
+.card-mensagem {
+    width: 100%;
+    max-width: 650px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid #e5e5e5;
+}
+
+/* Título */
+.card-mensagem h1 {
+    color: #006437;
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+}
+
+/* Labels */
+.card-mensagem label {
+    display: block;
+    margin-top: 12px; /* reduzido */
+    font-weight: bold;
+    color: #333;
+}
+
+/* Aviso */
+.aviso-lista {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 4px 0 6px 0; /* super compacto */
+}
+
+/* Select */
+.card-mensagem select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    font-size: 1rem;
+    margin-top: 4px; /* reduzido */
+}
+
+/* Inputs */
+.card-mensagem input,
+.card-mensagem textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fafafa;
+}
+
+/* Botão */
+.card-mensagem button {
+    margin-top: 20px; /* reduzido */
+    width: 100%;
+    background: #006437;
+    color: #fff;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.card-mensagem button:hover {
+    background: #004d2a;
+}
+
+/* Mensagens */
+.msg-sucesso {
+    color: #0a7a0a;
+    background: #e8ffe8;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.msg-erro {
+    color: #a30000;
+    background: #ffe8e8;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+}

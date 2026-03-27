@@ -1,0 +1,55 @@
+.card {
+    position: relative;
+    padding: 16px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    width: 280px;
+  }
+  .card h2 { margin: 0 0 8px; }
+  .card p { margin: 6px 0; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-top: 8px;
+    font-size: 1rem;
+  }
+  .badge .count {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .badge-ok {
+    background: #eafaf1;
+    color: #1e8449;
+    border: 2px solid #2ecc71;
+  }
+  .badge-warn {
+    background: #fdecea;
+    color: #943126;
+    border: 2px solid #e74c3c;
+    box-shadow: 0 0 0 4px rgba(231,76,60,0.12);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 4px rgba(231,76,60,0.12); }
+    50%  { box-shadow: 0 0 0 8px rgba(231,76,60,0.08); }
+    100% { box-shadow: 0 0 0 4px rgba(231,76,60,0.12); }
+  }
+
+  .menu {
+    display: flex; flex-wrap: wrap; gap: 20px;
+  }
+  .card a {
+    display: inline-block;
+    margin-top: 10px;
+    background: #34495e; color: #fff;
+    padding: 8px 12px; border-radius: 8px; text-decoration: none;
+  }
+  .card a:hover { background: #2c3e50; }

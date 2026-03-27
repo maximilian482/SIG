@@ -1,0 +1,110 @@
+/* ================================
+   FORMULÁRIO PADRÃO DO MÓDULO
+   planos_acao_form.css
+================================ */
+
+/* Container principal */
+.form-container {
+    max-width: 750px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 14px rgba(0,0,0,0.08);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Título */
+.form-container h2 {
+    color: #006437;
+    border-left: 6px solid #00A859;
+    padding-left: 12px;
+    margin-bottom: 25px;
+    font-size: 1.6rem;
+}
+
+/* Labels */
+.form-container label {
+    font-weight: bold;
+    color: #006437;
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 4px;
+}
+
+/* Inputs, selects e textarea */
+.form-container input,
+.form-container select,
+.form-container textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1rem;
+    background: #fafafa;
+    transition: border-color .2s;
+}
+
+.form-container input:focus,
+.form-container select:focus,
+.form-container textarea:focus {
+    border-color: #00A859;
+    outline: none;
+    background: #fff;
+}
+
+/* Botão principal */
+.btn-primary {
+    margin-top: 25px;
+    padding: 12px 18px;
+    background: #006437;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background .2s;
+}
+
+.btn-primary:hover {
+    background: #008f4f;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Alertas */
+.alert {
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.alert-error {
+    background: #ffe5e5;
+    color: #b30000;
+    border-left: 5px solid #b30000;
+}
+
+.alert-success {
+    background: #e6ffed;
+    color: #006437;
+    border-left: 5px solid #00A859;
+}
+
+/* Texto auxiliar */
+.small {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Responsável carregando */
+#responsavel_id option:first-child {
+    font-style: italic;
+}

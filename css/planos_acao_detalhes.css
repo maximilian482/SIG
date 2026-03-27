@@ -1,0 +1,256 @@
+/* ============================
+   BASE / ESTRUTURA
+============================ */
+body {
+    background:#f5f5f5;
+    font-family:Inter,Arial,Helvetica,sans-serif;
+    color:#222;
+    margin:0;
+}
+
+.plano-detalhes-container {
+    max-width:1100px;
+    margin:0 auto;
+}
+
+h1 {
+    color:#006437;
+    border-left:6px solid #00A859;
+    padding-left:10px;
+    margin:0 0 12px 0;
+}
+
+.small {
+    color:#666;
+    font-size:0.95rem;
+    margin-top:6px;
+}
+
+.top-actions {
+    display:flex;
+    gap:10px;
+    margin:16px 0 8px 0;
+    flex-wrap:wrap;
+}
+
+/* Botões específicos do módulo */
+.btn-plano {
+    padding:8px 14px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:700;
+    display:inline-block;
+}
+
+.btn-plano.primary {
+    background:#006437;
+    color:#fff;
+}
+
+.btn-plano.primary:hover {
+    background:#008f4f;
+}
+
+.btn-plano.secondary {
+    background:#00A859;
+    color:#fff;
+}
+
+.btn-plano.secondary:hover {
+    background:#00c96b;
+}
+
+.btn-plano.ghost {
+    background:transparent;
+    border:1px solid #ccc;
+    color:#555;
+}
+
+/* ============================
+   ABAS
+============================ */
+.tabs {
+    display:flex;
+    gap:8px;
+    margin:12px 0 6px 0;
+    flex-wrap:wrap;
+}
+
+.tab {
+    background:transparent;
+    border:0;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+    color:#2b2b2b;
+}
+
+.tab[aria-selected="true"] {
+    background:#e9f7ef;
+    color:#006437;
+    box-shadow:inset 0 -3px 0 #00A859;
+}
+
+/* ============================
+   TABELA
+============================ */
+.table-wrapper {
+    background:#fff;
+    border-radius:10px;
+    padding:14px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.04);
+}
+
+.table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    background:#fff;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.table td {
+    padding:12px 14px;
+    border-bottom:1px solid #e6e6e6;
+    color:#444;
+    font-size:0.92rem;
+}
+
+.table tr:nth-child(even) {
+    background:#fafafa;
+}
+
+.table tr:hover {
+    background:#eef6ff;
+}
+
+/* ============================
+   PÍLULAS DE PRAZO
+============================ */
+.prazo-pill {
+    display:inline-block;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:0.85rem;
+    font-weight:600;
+    color:#fff;
+}
+
+.prazo-verde { background:#28a745; }
+.prazo-amarelo { background:#ffc107; color:#000; }
+.prazo-vermelho { background:#dc3545; }
+.prazo-encerrado { background:#6c757d; }
+
+/* ============================
+   AÇÕES
+============================ */
+.actions {
+    display:flex;
+    gap:10px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.action-icon {
+    font-size:1.35rem;
+    cursor:pointer;
+    background:none;
+    border:none;
+    padding:4px;
+    transition:transform .15s ease, opacity .15s ease;
+}
+
+.action-icon:hover {
+    transform:scale(1.25);
+    opacity:0.85;
+}
+
+.action-icon.danger { color:#a00; }
+.action-icon.warning { color:#f0ad4e; }
+.action-icon.info { color:#0275d8; }
+.action-icon.clone { color:#5bc0de; }
+
+/* ============================
+   MODAIS
+============================ */
+.plano-modal {
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.plano-modal.hidden {
+    display:none;
+}
+
+.plano-modal-content {
+    background:#fff;
+    padding:22px;
+    border-radius:10px;
+    width:90%;
+    max-width:520px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.2);
+    position:relative;
+}
+
+.plano-modal-close {
+    position:absolute;
+    top:10px; right:10px;
+    background:transparent;
+    border:0;
+    font-size:1.4rem;
+    cursor:pointer;
+}
+
+/* ============================
+   RESPONSIVIDADE
+============================ */
+@media (max-width:768px) {
+    .header-row {
+        flex-direction:column;
+        gap:15px;
+    }
+
+    .actions {
+        gap:6px;
+    }
+
+    .action-icon {
+        font-size:1.25rem;
+    }
+}
+
+.hidden {
+    display:none;
+}
+
+
+/* Força QUALQUER alerta flutuante a ficar acima do modal */
+body > div[style*="position"],
+body > div[class*="mensagem"],
+body > div[class*="alert"],
+body > div[class*="flash"],
+body > div[id*="mensagem"],
+body > div[id*="alert"],
+body > div[id*="flash"] {
+    z-index: 999999 !important;
+    position: fixed !important;
+}
+
+/* Força o alerta premium a ficar acima de qualquer modal */
+.mensagem-flutuante,
+#mensagem-flutuante,
+.flash-message,
+.alerta-premium {
+    position: fixed !important;
+    z-index: 999999 !important;
+}
+
+

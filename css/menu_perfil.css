@@ -1,0 +1,69 @@
+/* Container do topo */
+.perfil-topo {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  z-index: 2000;
+}
+
+/* Foto pequena */
+.perfil-foto {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+  border: 3px solid var(--verde-palmeiras);
+}
+
+/* Badge */
+.perfil-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+
+.badge-red { background-color: #e53935; }
+.badge-blue { background-color: #1e88e5; }
+.badge-yellow { background-color: #fbc02d; color: #333; }
+
+.badge-pulse {
+  animation: badgePulse 1.4s infinite ease-in-out;
+}
+
+@keyframes badgePulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+/* Dropdown */
+.perfil-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--branco);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-top: 8px;
+  min-width: 200px;
+  z-index: 1000;
+}
+
+.perfil-dropdown a {
+  display: block;
+  padding: 10px;
+  color: var(--texto-principal);
+  text-decoration: none;
+}
+
+.perfil-dropdown a:hover {
+  background: var(--verde-hover);
+}
