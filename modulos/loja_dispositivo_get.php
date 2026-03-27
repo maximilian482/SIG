@@ -1,8 +1,13 @@
 <?php
-require_once '../dados/conexao.php';
+require_once __DIR__ . '/../dados/conexao.php';
 $conn = conectar();
 
-$id = intval($_GET['id']);
+$id = intval($_GET['id'] ?? 0);
+
+if ($id <= 0) {
+    echo json_encode(["erro" => "ID inválido"]);
+    exit;
+}
 
 $stmt = $conn->prepare("
     SELECT id, nome, localizacao, descricao

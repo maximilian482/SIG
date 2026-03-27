@@ -1,6 +1,5 @@
 <?php
 ob_start();
-
 session_start();
 
 require_once '../dados/conexao.php';
@@ -9,10 +8,13 @@ $conn = conectar();
 require_once __DIR__ . '/../config/bootstrap.php';
 require_once ROOT_PATH . '/includes/funcoes.php';
 
+// 🔥 ESSENCIAL: define o ID da loja atual
+$lojaId = intval($_GET['id'] ?? 0);
+
+
 // ===============================
 // VALIDAR LOJA
 // ===============================
-$lojaId = intval($_GET['id'] ?? 0);
 
 if ($lojaId <= 0) {
     echo "<p>Loja inválida.</p>";
@@ -44,6 +46,7 @@ $stmtCert = $conn->prepare("
 $stmtCert->bind_param("i", $lojaId);
 $stmtCert->execute();
 $certificado = $stmtCert->get_result()->fetch_assoc();
+
 
 // Função para status do certificado
 function alertaCertificado($dataValidade) {
@@ -136,6 +139,7 @@ $pendencias = $conn->query("
 ?>
 
 <link rel="stylesheet" href="/css/loja_painel.css">
+<!-- <link rel="stylesheet" href="/css/alerta_premium.css"> -->
 
 <div class="topo-loja">
 
@@ -181,6 +185,7 @@ $pendencias = $conn->query("
 <?php
 // Define qual aba deve iniciar ativa
 $abaAtiva = $_GET['aba'] ?? 'gerais';
+
 ?>
 
 <!-- ===============================
@@ -271,63 +276,4 @@ function abrirModalCertificado() {
 }
 </script>
 
-<!-- ===============================
-     MODAL PARA ADICIONAR / EDITAR DISPOSITIVO
-=============================== -->
-<div id="modalDispositivo" class="plano-modal hidden">
-    <div class="plano-modal-conteudo">
-
-        <button type="button" class="plano-modal-close modal-fechar-x">✖</button>
-
-        <h3 id="tituloModalDispositivo">➕ Adicionar Dispositivo</h3>
-
-        <form method="post" action="loja_dispositivo_salvar.php">
-
-            <input type="hidden" name="loja_id" value="<?= $lojaId ?>">
-            <input type="hidden" name="id" id="idDispositivo">
-
-            <label>Nome:</label>
-            <input type="text" name="nome" id="nomeDispositivo" required>
-
-            <label>Localização:</label>
-            <input type="text" name="localizacao" id="localizacaoDispositivo" required>
-
-            <label>Descrição:</label>
-            <textarea name="descricao" id="descricaoDispositivo" rows="4"></textarea>
-
-            <div class="modal-botoes">
-                <button class="btn-salvar">Salvar</button>
-                <button type="button" class="btn-cancelar plano-modal-close">Cancelar</button>
-            </div>
-
-        </form>
-
-    </div>
-</div>
-
-<script>
-function abrirModalDispositivo() {
-    document.getElementById('tituloModalDispositivo').innerText = "➕ Adicionar Dispositivo";
-    document.getElementById('idDispositivo').value = "";
-    document.getElementById('nomeDispositivo').value = "";
-    document.getElementById('localizacaoDispositivo').value = "";
-    document.getElementById('descricaoDispositivo').value = "";
-
-    document.getElementById('modalDispositivo').classList.remove('hidden');
-}
-
-function editarDispositivo(id) {
-    fetch("loja_dispositivo_get.php?id=" + id)
-        .then(r => r.json())
-        .then(d => {
-            document.getElementById('tituloModalDispositivo').innerText = "✏️ Editar Dispositivo";
-            document.getElementById('idDispositivo').value = d.id;
-            document.getElementById('nomeDispositivo').value = d.nome;
-            document.getElementById('localizacaoDispositivo').value = d.localizacao;
-            document.getElementById('descricaoDispositivo').value = d.descricao;
-
-            document.getElementById('modalDispositivo').classList.remove('hidden');
-        });
-}
-</script>
 

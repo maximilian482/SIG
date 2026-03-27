@@ -44,6 +44,15 @@ while ($row = $resSetores->fetch_assoc()) {
     $setores[$row['id']] = $row['nome'];
 }
 
+// ===============================
+// CARREGAR FUNÇÕES SECUNDÁRIAS
+// ===============================
+$funcoesSec = [];
+$resFuncoes = $conn->query("SELECT id, nome FROM funcoes_secundarias ORDER BY nome");
+while ($row = $resFuncoes->fetch_assoc()) {
+    $funcoesSec[$row['id']] = $row['nome'];
+}
+
 // Buscar ID da loja GERAL
 $lojaGeral = $conn->query("SELECT id FROM lojas WHERE nome = 'GERAL' LIMIT 1")->fetch_assoc()['id'];
 
@@ -136,13 +145,11 @@ ob_start();
   <label>Setor:</label>
   <div class="linha-flex">
       <select name="id_setor" id="id_setor" required>
-    <option value="" disabled selected>Selecione um setor</option>
-    <?php foreach ($setores as $id => $nome): ?>
-        <option value="<?= $id ?>"><?= htmlspecialchars($nome) ?></option>
-    <?php endforeach; ?>
-</select>
-
-
+        <option value="" disabled selected>Selecione um setor</option>
+        <?php foreach ($setores as $id => $nome): ?>
+            <option value="<?= $id ?>"><?= htmlspecialchars($nome) ?></option>
+        <?php endforeach; ?>
+      </select>
       <button type="button" class="btn-add" onclick="abrirModalSetor()">+</button>
   </div>
 
@@ -153,6 +160,19 @@ ob_start();
         <?= htmlspecialchars($nome) ?>
       </option>
     <?php endforeach; ?>
+  </select>
+
+  <!-- =============================== -->
+  <!-- FUNÇÃO SECUNDÁRIA (NOVO CAMPO) -->
+  <!-- =============================== -->
+  <label>Função Secundária:</label>
+  <select name="funcao_secundaria_id">
+      <option value="0">Nenhuma</option>
+      <?php foreach ($funcoesSec as $idFunc => $nomeFunc): ?>
+          <option value="<?= $idFunc ?>">
+              <?= htmlspecialchars($nomeFunc) ?>
+          </option>
+      <?php endforeach; ?>
   </select>
 
   <label>Email:</label>

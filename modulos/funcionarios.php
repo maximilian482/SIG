@@ -299,6 +299,8 @@ ob_start();
   <a class="btn" href="/modulos/funcionarios_menu.php">🏠 Voltar</a>
   <a class="btn" href="funcionarios_adicionar.php">➕</a>
   <a class="btn" href="funcionarios_inativos.php">🗂️ Inativos</a>
+  <a href="funcionarios_gerar_hc.php" class="btn btn-success">📊 GERAR HC</a>
+
 </div>
 
 <!-- ===============================

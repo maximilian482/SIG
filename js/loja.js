@@ -34,9 +34,10 @@ function toggleSenhaCert() {
 }
 
 
-function excluirDispositivo(id) {
-    if (!confirm("Tem certeza que deseja excluir este dispositivo?")) return;
-
-    window.location = "loja_dispositivo_excluir.php?id=" + id + "&loja=<?= $lojaId ?>";
+function excluirDispositivo(id, lojaId) {
+    if (confirm("Tem certeza que deseja excluir este dispositivo?")) {
+        window.location = "loja_dispositivo_excluir.php?id=" + id + "&loja=" + lojaId;
+    }
 }
+
 
