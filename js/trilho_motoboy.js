@@ -29,34 +29,46 @@ document.addEventListener("DOMContentLoaded", () => {
     atualizarContadores();
 
 
-    // ============================
-    // MODAL DE DETALHES
-    // ============================
-    const modal = document.getElementById("modalDetalhes");
-    const modalBody = document.getElementById("modal-body-detalhes");
-    const fechar = document.querySelector(".modal-fechar");
+   // ============================
+// MODAL DE DETALHES
+// ============================
+const modal = document.getElementById("modalDetalhes");
+const modalBody = document.getElementById("modal-body-detalhes");
+const fechar = document.querySelector(".modal-fechar");
 
-    fechar.addEventListener("click", () => modal.style.display = "none");
+// Fechar modal no X
+fechar.addEventListener("click", () => {
+    modal.style.display = "none";
+});
 
-    window.onclick = e => {
-        if (e.target === modal) modal.style.display = "none";
-    };
+// Fechar clicando fora do conteúdo
+window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+    }
+});
 
-    // Abrir modal (delegação)
-    document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("btn-detalhes")) {
+// Abrir modal (delegação)
+document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("btn-detalhes")) {
 
-            const id = e.target.dataset.id;
+        const id = e.target.dataset.id;
+        if (!id) return;
 
-            modal.style.display = "flex";
-            modalBody.innerHTML = "Carregando...";
+        modal.style.display = "flex";
+        modalBody.innerHTML = "Carregando...";
 
-            fetch("chamados_trilho_detalhes.php?id=" + id)
-                .then(r => r.text())
-                .then(html => modalBody.innerHTML = html)
-                .catch(() => modalBody.innerHTML = "<p style='color:red;'>Erro ao carregar detalhes.</p>");
-        }
-    });
+        fetch("chamados_trilho_detalhes.php?id=" + id)
+            .then(r => r.text())
+            .then(html => {
+                modalBody.innerHTML = html;
+            })
+            .catch(() => {
+                modalBody.innerHTML = "<p style='color:red;'>Erro ao carregar detalhes.</p>";
+            });
+    }
+});
+
 
 
     // ============================
@@ -70,8 +82,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!confirm("Confirmar coleta?")) return;
 
-            fetch("trilho_coletar.php?id=" + id)
-                .then(() => location.reload());
+            fetch("trilho_motoboy_coletar.php?id=" + id)
+                .then(r => r.json())
+                .then(res => {
+                    if (res.sucesso) {
+                        mostrarMensagem("Coleta registrada com sucesso!", "sucesso");
+                        setTimeout(() => location.reload(), 1200);
+                    } else {
+                        mostrarMensagem(res.mensagem || "Erro ao coletar.", "erro");
+                    }
+                })
+                .catch(() => mostrarMensagem("Erro de comunicação com o servidor.", "erro"));
         }
     });
 
@@ -85,7 +106,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const id = e.target.dataset.id;
             if (!id) return;
 
-            window.location.href = "trilho_assinar.php?id=" + id;
+            mostrarMensagem("Redirecionando para assinatura...", "info");
+
+            setTimeout(() => {
+                window.location.href = "trilho_assinar.php?id=" + id;
+            }, 600);
         }
     });
 

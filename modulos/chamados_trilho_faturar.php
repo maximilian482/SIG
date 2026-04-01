@@ -3,24 +3,32 @@ session_start();
 
 require_once '../includes/funcoes.php';
 require_once __DIR__ . '/../config/bootstrap.php';
+
+header('Content-Type: application/json');
+
 $conn = conectar();
 
 // ===============================
 // VALIDAR LOGIN
 // ===============================
 if (!isset($_SESSION['cpf'])) {
-    header("Location: /login.php");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Sessão expirada. Faça login novamente."
+    ]);
     exit;
 }
 
 // ===============================
 // VALIDAR ID
 // ===============================
-$id = intval($_GET['id'] ?? 0);
+$id = intval($_POST['id'] ?? 0);
 
 if ($id <= 0) {
-    setFlash("erro", "Protocolo inválido.");
-    header("Location: chamados_trilho.php");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Protocolo inválido."
+    ]);
     exit;
 }
 
@@ -45,8 +53,10 @@ $sql = "
 $dados = $conn->query($sql)->fetch_assoc();
 
 if (!$dados) {
-    setFlash("erro", "Protocolo não encontrado.");
-    header("Location: chamados_trilho.php");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Protocolo não encontrado."
+    ]);
     exit;
 }
 
@@ -56,28 +66,30 @@ if (!$dados) {
 $status = strtolower(trim($dados['status'] ?? ''));
 
 if ($status !== 'aberto') {
-    setFlash("erro", "Este protocolo não está mais em status 'aberto'.");
-    header("Location: chamados_trilho.php");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Este protocolo não está mais em status 'aberto'."
+    ]);
     exit;
 }
 
 // ===============================
-// PROCESSAR FORMULÁRIO
+// PROCESSAR FATURAMENTO
 // ===============================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
 
-    $nota = trim($_POST['nota_transferencia'] ?? '');
+    $nota = trim($_REQUEST['nota_transferencia'] ?? '');
 
     if (empty($nota)) {
-        setFlash("erro", "Informe o número da nota de transferência.");
-        header("Location: chamados_trilho_faturar.php?id={$id}");
+        echo json_encode([
+            "sucesso" => false,
+            "mensagem" => "Informe o número da nota de transferência."
+        ]);
         exit;
     }
 
-    // Registrar quem faturou
     $funcionarioId = intval($_SESSION['funcionario_id']);
 
-    // Atualizar protocolo
     $stmt = $conn->prepare("
         UPDATE chamados_trilho
         SET nota_transferencia = ?, 
@@ -88,44 +100,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ");
 
     $stmt->bind_param("sii", $nota, $funcionarioId, $id);
-    $stmt->execute();
 
-    setFlash("success", "Protocolo faturado com sucesso!");
-    header("Location: chamados_trilho.php");
+    if ($stmt->execute()) {
+        echo json_encode([
+            "sucesso" => true,
+            "mensagem" => "Protocolo faturado com sucesso!"
+        ]);
+    } else {
+        echo json_encode([
+            "sucesso" => false,
+            "mensagem" => "Erro ao faturar protocolo."
+        ]);
+    }
+
     exit;
 }
 
 ?>
-
-<link rel="stylesheet" href="/css/chamados_trilho_faturar.css">
-
-<div class="container-trilho">
-
-    <h2>📄 Faturar Protocolo</h2>
-    <p>Preencha o número da nota para faturar este protocolo.</p>
-
-    <div class="card-trilho" style="max-width:500px; margin:auto;">
-
-        <div class="card-produto"><?= htmlspecialchars($dados['descricao']) ?></div>
-
-        <p><strong>Protocolo:</strong> <?= htmlspecialchars($dados['protocolo']) ?></p>
-        <p><strong>Origem:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
-        <p><strong>Destino:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
-
-        <hr>
-
-        <form method="POST">
-
-            <label><strong>Número da nota de transferência:</strong></label>
-            <input type="text" name="nota_transferencia" class="input-trilho" required>
-
-            <div class="card-actions" style="margin-top:20px;">
-                <a href="chamados_trilho.php" class="btn-trilho btn-detalhes">Cancelar</a>
-                <button type="submit" class="btn-trilho btn-faturar">Faturar</button>
-            </div>
-
-        </form>
-
-    </div>
-
-</div>

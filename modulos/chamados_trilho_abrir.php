@@ -58,6 +58,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $solicitado_id   = intval($_POST['solicitado_id'] ?? 0);
     $observacao      = trim($_POST['item_observacao'] ?? '');
 
+    // ===============================
+    // NOVA VALIDAÇÃO: origem ≠ destino
+    // ===============================
+    if ($loja_origem === $loja_solicitada) {
+        $erro = "❌ A loja de origem e a loja de destino não podem ser iguais.";
+    }
+
     // ITENS NO NOVO FORMATO
     $itens = $_POST['itens'] ?? [];
 
@@ -87,13 +94,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($erro)) {
 
         // ===============================
-        // GERAR PROTOCOLO CT0001
+        // GERAR PROTOCOLO — CORRIGIDO
+        // Agora funciona mesmo com DOC0001, ITEM0001 etc.
         // ===============================
         $res = $conn->query("SELECT protocolo FROM chamados_trilho ORDER BY id DESC LIMIT 1");
 
         if ($res->num_rows > 0) {
             $ultimo = $res->fetch_assoc()['protocolo'];
-            $numero = intval(substr($ultimo, 2)) + 1;
+
+            // Extrai apenas números, ignorando prefixos
+            $numero = intval(preg_replace('/\D/', '', $ultimo)) + 1;
         } else {
             $numero = 1;
         }
@@ -108,9 +118,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // ===============================
         $stmt = $conn->prepare("
             INSERT INTO chamados_trilho (
-                protocolo, loja_origem_id, loja_destino_id, solicitante_id,
+                protocolo, tipo, loja_origem_id, loja_destino_id, solicitante_id,
                 solicitado_id, descricao, observacoes, status, data_criacao
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, 'aberto', NOW())
+            ) VALUES (?, 'medicamento', ?, ?, ?, ?, ?, ?, 'aberto', NOW())
         ");
 
         $descricao = $titulo;
@@ -158,6 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 ob_start();
+include ROOT_PATH . '/includes/flash.php';   // ← agora funciona
 ?>
 
 <link rel="stylesheet" href="/css/chamados_trilho_abrir.css">
@@ -168,13 +179,8 @@ ob_start();
 <h2>🚚 Novo Protocolo do Trilho</h2>
 <p>Preencha os dados abaixo para registrar uma entrega.</p>
 
-<?php if (!empty($erro)): ?>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            mostrarMensagem("<?= addslashes($erro) ?>", "erro");
-        });
-    </script>
-<?php endif; ?>
+
+
 
 <form method="POST" class="form-chamado">
 

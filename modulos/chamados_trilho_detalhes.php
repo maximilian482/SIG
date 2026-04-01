@@ -40,12 +40,6 @@ $sql = "
 
 $dados = $conn->query($sql)->fetch_assoc();
 
-$itens = $conn->query("
-    SELECT codigo, descricao, quantidade
-    FROM trilho_itens
-    WHERE trilho_id = {$id}
-")->fetch_all(MYSQLI_ASSOC);
-
 if (!$dados) {
     echo "<p>Protocolo não encontrado.</p>";
     exit;
@@ -53,7 +47,9 @@ if (!$dados) {
 
 // Normalizar status
 $status = $dados['status'] === 'em_rota' ? 'Em rota' : ucfirst($dados['status']);
+$tipo = $dados['tipo'] ?? 'medicamento';
 
+// Função para nome curto
 function nomeCurto($nome) {
     $partes = explode(' ', trim($nome));
     if (count($partes) <= 1) return $nome;
@@ -72,6 +68,7 @@ function nomeCurto($nome) {
     <h3>📄 Informações Gerais</h3>
 
     <p><strong>Protocolo:</strong> <?= htmlspecialchars($dados['protocolo']) ?></p>
+    <p><strong>Tipo:</strong> <?= ucfirst(htmlspecialchars($tipo)) ?></p>
     <p><strong>Status:</strong> <?= htmlspecialchars($status) ?></p>
     <p><strong>Data de criação:</strong> <?= date('d/m/Y H:i', strtotime($dados['data_criacao'])) ?></p>
 
@@ -82,76 +79,81 @@ function nomeCurto($nome) {
     ================================ -->
     <h3>👥 Participantes</h3>
 
-        <p><strong>Solicitante:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitante_nome'])) ?></p>
+    <p><strong>Solicitante:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitante_nome'])) ?></p>
+
+    <?php if ($tipo === 'medicamento'): ?>
         <p><strong>Solicitado para:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitado_nome'])) ?></p>
+    <?php else: ?>
+        <p><strong>Responsável pelo item:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitado_nome'])) ?></p>
+    <?php endif; ?>
 
-        <?php if (!empty($dados['faturado_por_nome'])): ?>
-            <p><strong>Faturado por:</strong> <?= htmlspecialchars(nomeCurto($dados['faturado_por_nome'])) ?></p>
-        <?php endif; ?>
+    <?php if (!empty($dados['faturado_por_nome'])): ?>
+        <p><strong>Faturado por:</strong> <?= htmlspecialchars(nomeCurto($dados['faturado_por_nome'])) ?></p>
+    <?php endif; ?>
 
-        <?php if (!empty($dados['motoboy_nome'])): ?>
-            <p><strong>Motoboy:</strong> <?= htmlspecialchars(nomeCurto($dados['motoboy_nome'])) ?></p>
-        <?php endif; ?>
+    <?php if (!empty($dados['motoboy_nome'])): ?>
+        <p><strong>Motoboy:</strong> <?= htmlspecialchars(nomeCurto($dados['motoboy_nome'])) ?></p>
+    <?php endif; ?>
 
-        <hr>
-
+    <hr>
 
     <!-- ===============================
          3. LOGÍSTICA
     ================================ -->
     <h3>🚚 Logística</h3>
 
-    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
-    <p><strong>Loja de entrega:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
+    <p><strong>Loja de Origem:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
+    <p><strong>Loja de Destino:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
 
     <?php if (!empty($dados['data_coleta'])): ?>
         <p><strong>Data da coleta:</strong> <?= date('d/m/Y H:i', strtotime($dados['data_coleta'])) ?></p>
     <?php endif; ?>
 
-    <hr>
-
-    <!-- ===============================
-         4. ITENS DO PROTOCOLO
-    ================================ -->
-    <h3>📦 Itens do Protocolo</h3>
-
-    <?php if (!empty($itens)): ?>
-        <ul class="lista-itens">
-            <?php foreach ($itens as $item): ?>
-                <li>
-                    <strong><?= htmlspecialchars($item['descricao']) ?></strong><br>
-                    Código: <?= htmlspecialchars($item['codigo']) ?><br>
-                    Quantidade: <?= intval($item['quantidade']) ?>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php else: ?>
-        <p>Nenhum item registrado.</p>
+    <?php if (!empty($dados['data_entrega'])): ?>
+        <p><strong>Data da entrega:</strong> <?= date('d/m/Y H:i', strtotime($dados['data_entrega'])) ?></p>
     <?php endif; ?>
 
     <hr>
 
     <!-- ===============================
-         5. DOCUMENTOS
+         4. DETALHES DO ITEM
     ================================ -->
-    <h3>🧾 Documentos</h3>
+    <h3>📦 Detalhes do Item</h3>
 
-    <p><strong>Nota de transferência:</strong> 
-        <?= $dados['nota_transferencia'] ? htmlspecialchars($dados['nota_transferencia']) : '—' ?>
-    </p>
+    <p><strong>Descrição:</strong> <?= htmlspecialchars($dados['descricao']) ?></p>
+    <p><strong>Quantidade:</strong> <?= intval($dados['quantidade'] ?? 1) ?></p>
 
     <?php if (!empty($dados['observacoes'])): ?>
         <p><strong>Observações:</strong><br><?= nl2br(htmlspecialchars($dados['observacoes'])) ?></p>
     <?php endif; ?>
 
+    <hr>
+
+    <!-- ===============================
+     5. ASSINATURA 
+    =============================== -->
+    <h3>🖊 Assinatura</h3>
+
     <?php if (!empty($dados['assinatura_path'])): ?>
         <p><strong>Assinatura:</strong></p>
-        <img src="/uploads/assinaturas/<?= $dados['assinatura_path'] ?>" class="assinatura-img">
+        <img src="/uploads/assinaturas/<?= htmlspecialchars($dados['assinatura_path']) ?>" class="assinatura-img">
     <?php endif; ?>
 
     <?php if (!empty($dados['assinatura_nome'])): ?>
         <p><strong>Recebido por:</strong> <?= htmlspecialchars($dados['assinatura_nome']) ?></p>
-        <p><strong>Data da assinatura:</strong> <?= date('d/m/Y H:i', strtotime($dados['assinatura_data'])) ?></p>
+    <?php endif; ?>
+
+    <?php if (!empty($dados['assinatura_data'])): ?>
+        <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($dados['assinatura_data'])) ?></p>
+    <?php endif; ?>
+
+    <?php if ($tipo === 'medicamento'): ?>
+        <hr>
+        <h3>🧾 Documentos</h3>
+
+        <p><strong>Nota de transferência:</strong> 
+            <?= $dados['nota_transferencia'] ? htmlspecialchars($dados['nota_transferencia']) : '—' ?>
+        </p>
     <?php endif; ?>
 
 

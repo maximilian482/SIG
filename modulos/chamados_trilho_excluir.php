@@ -3,14 +3,18 @@ session_start();
 require_once '../includes/funcoes.php';
 require_once __DIR__ . '/../config/bootstrap.php';
 
+header('Content-Type: application/json');
+
 $conn = conectar();
 
 // ===============================
 // VERIFICA LOGIN
 // ===============================
 if (!isset($_SESSION['funcionario_id'])) {
-    setFlash("error", "Sessão expirada. Faça login novamente.");
-    header("Location: ../login.php");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Sessão expirada. Faça login novamente."
+    ]);
     exit;
 }
 
@@ -22,8 +26,10 @@ $usuarioLogado = intval($_SESSION['funcionario_id']);
 $id = intval($_POST['id'] ?? 0);
 
 if ($id <= 0) {
-    setFlash("error", "ID inválido.");
-    header("Location: chamados_trilho.php?aba=aberto");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "ID inválido."
+    ]);
     exit;
 }
 
@@ -43,8 +49,10 @@ $sql = "
 $protocolo = $conn->query($sql)->fetch_assoc();
 
 if (!$protocolo) {
-    setFlash("error", "Protocolo não encontrado.");
-    header("Location: chamados_trilho.php?aba=aberto");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Protocolo não encontrado."
+    ]);
     exit;
 }
 
@@ -52,17 +60,21 @@ if (!$protocolo) {
 // PERMISSÃO: SÓ EXCLUI QUEM CRIOU
 // ===============================
 if ($protocolo['solicitante_id'] != $usuarioLogado) {
-    setFlash("error", "Você não tem permissão para excluir este protocolo.");
-    header("Location: chamados_trilho.php?aba=aberto");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Você não tem permissão para excluir este protocolo."
+    ]);
     exit;
 }
 
 // ===============================
 // BLOQUEAR EXCLUSÃO SE NÃO ESTIVER ABERTO
 // ===============================
-if ($protocolo['status'] !== 'aberto') {
-    setFlash("error", "Somente protocolos em estado ABERTO podem ser excluídos.");
-    header("Location: chamados_trilho.php?aba=aberto");
+if ($protocolo['tipo'] === 'medicamento' && $protocolo['status'] !== 'aberto') {
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Somente protocolos em estado ABERTO podem ser excluídos."
+    ]);
     exit;
 }
 
@@ -90,15 +102,16 @@ $stmt = $conn->prepare("DELETE FROM chamados_trilho WHERE id = ?");
 $stmt->bind_param("i", $id);
 
 if ($stmt->execute()) {
-    setFlash("warning", "Protocolo excluído com sucesso!");
+    echo json_encode([
+        "sucesso" => true,
+        "mensagem" => "Protocolo excluído com sucesso!"
+    ]);
 } else {
-    setFlash("error", "Erro ao excluir protocolo.");
+    echo json_encode([
+        "sucesso" => false,
+        "mensagem" => "Erro ao excluir protocolo."
+    ]);
 }
 
 $stmt->close();
-
-// ===============================
-// REDIRECIONAR
-// ===============================
-header("Location: chamados_trilho.php?aba=aberto");
 exit;

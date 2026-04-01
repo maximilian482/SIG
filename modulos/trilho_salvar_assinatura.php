@@ -3,22 +3,55 @@ session_start();
 require_once '../dados/conexao.php';
 $conn = conectar();
 
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
+
+// ===============================
+// VALIDA LOGIN
+// ===============================
+if (!isset($_SESSION['cpf'])) {
+    die("Acesso negado.");
+}
+
+$cpf = $_SESSION['cpf'];
+
+// ===============================
+// VALIDA PERMISSÃO TRILHO
+// ===============================
+if (!temAcesso($conn, $cpf, 'trilho_motoboy')) {
+    die("Acesso negado.");
+}
+
+// ===============================
+// RECEBE DADOS
+// ===============================
 $id = intval($_POST['id'] ?? 0);
 $nome = trim($_POST['assinatura_nome'] ?? '');
 $assinatura_base64 = $_POST['assinatura_base64'] ?? '';
 $observacoes = trim($_POST['observacoes'] ?? '');
 
 if ($id <= 0 || empty($nome)) {
-    echo "❌ Dados inválidos.";
-    exit;
+    die("Dados inválidos.");
 }
 
+// Escapar campos
 $nome = $conn->real_escape_string($nome);
+$observacoes = $conn->real_escape_string($observacoes);
+
+// ===============================
+// VERIFICA SE O PROTOCOLO EXISTE
+// ===============================
+$sqlCheck = "SELECT id FROM chamados_trilho WHERE id = {$id}";
+$resCheck = $conn->query($sqlCheck);
+
+if ($resCheck->num_rows == 0) {
+    die("Protocolo não encontrado.");
+}
 
 // ===============================
 // SALVAR ARQUIVO DA ASSINATURA
 // ===============================
-$caminhoFinal = null;
+$nomeArquivo = null;
 
 if (!empty($assinatura_base64)) {
 
@@ -29,17 +62,17 @@ if (!empty($assinatura_base64)) {
     $binario = base64_decode($assinatura_base64);
 
     if (!$binario) {
-        echo "❌ Erro ao processar assinatura.";
-        exit;
+        die("Erro ao processar assinatura.");
     }
 
     // Criar pasta se não existir
-    if (!is_dir("../uploads/assinaturas")) {
-        mkdir("../uploads/assinaturas", 0777, true);
+    $pasta = "../uploads/assinaturas";
+    if (!is_dir($pasta)) {
+        mkdir($pasta, 0777, true);
     }
 
     $nomeArquivo = "assinatura_trilho_" . $id . "_" . time() . ".png";
-    $caminhoFinal = "../uploads/assinaturas/" . $nomeArquivo;
+    $caminhoFinal = $pasta . "/" . $nomeArquivo;
 
     file_put_contents($caminhoFinal, $binario);
 }

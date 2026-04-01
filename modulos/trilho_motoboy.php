@@ -22,9 +22,15 @@ if (!temAcesso($conn, $cpf, 'trilho_motoboy')) {
     exit;
 }
 
-// ===============================
-// CONTEÚDO DA PÁGINA
-// ===============================
+$mapaTitulos = [
+    'documento'   => '📄 Documento',
+    'medicamento' => '💊 Medicamentos',
+    'malote'      => '📦 Malote',
+    'item'        => '📦 Itens Diversos',
+    'nota'        => '🧾 Notas',
+    'comprovante' => '🧾 Comprovantes'
+];
+
 ob_start();
 ?>
 
@@ -56,13 +62,20 @@ ob_start();
             ct.id,
             ct.protocolo,
             ct.descricao,
+            ct.tipo,
             ct.status,
             lo.nome AS origem_nome,
             ld.nome AS destino_nome
         FROM chamados_trilho ct
         LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
         LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
-        WHERE ct.status IN ('aberto', 'faturado')
+        WHERE 
+            -- Medicamentos: mostrar ABERTO e FATURADO
+            (ct.tipo = 'medicamento' AND ct.status IN ('aberto', 'faturado'))
+            
+            -- Simples: mostrar apenas FATURADO
+            OR (ct.tipo <> 'medicamento' AND ct.status = 'faturado')
+
         ORDER BY ct.id DESC
     ";
 
@@ -75,21 +88,26 @@ ob_start();
 
             <div class="card-trilho">
 
+                <!-- TÍTULO DO TIPO -->
+                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+
+                <!-- DESCRIÇÃO -->
                 <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
                 <div class="card-header">
                     <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
 
-                    <?php if ($c['status'] === 'aberto'): ?>
-                        <span class="tag-status aberto">Aberto</span>
-                    <?php else: ?>
-                        <span class="tag-status faturado">Faturado</span>
+                    <?php if ($c['tipo'] === 'medicamento' && $c['status'] === 'aberto'): ?>
+                        <span class="tag-status aguardando">Aguardando faturar</span>
+
+                    <?php elseif ($c['status'] === 'faturado'): ?>
+                        <span class="tag-status coletar">Liberado</span>
                     <?php endif; ?>
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Loja Solicitada:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
-                    <p><strong>Loja de entrega:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                 </div>
 
                 <div class="card-actions">
@@ -97,10 +115,18 @@ ob_start();
                     <!-- Detalhes via modal -->
                     <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
 
-                    <?php if ($c['status'] === 'faturado'): ?>
+                    <?php if ($c['tipo'] === 'medicamento' && $c['status'] === 'aberto'): ?>
+
+                        <!-- STATUS AO LADO DO BOTÃO DETALHES -->
+                        <span class="status-lateral aguardando">
+                            Aguardando faturar
+                        </span>
+
+                    <?php elseif ($c['status'] === 'faturado'): ?>
+
+                        <!-- Coletar somente quando FATURADO -->
                         <button class="btn-trilho btn-coletar" data-id="<?= $c['id'] ?>">Coletar</button>
-                    <?php else: ?>
-                        <span class="aguardando">Aguardando faturamento</span>
+
                     <?php endif; ?>
 
                 </div>
@@ -111,9 +137,6 @@ ob_start();
     <?php endif; ?>
 </div>
 
-<!-- ============================
-     ABA: EM ROTA
-============================ -->
 <div id="rota" class="conteudo-aba">
     <h3>🛵 Transferências em Rota</h3>
 
@@ -123,6 +146,7 @@ ob_start();
             ct.id,
             ct.protocolo,
             ct.descricao,
+            ct.tipo,
             lo.nome AS origem_nome,
             ld.nome AS destino_nome
         FROM chamados_trilho ct
@@ -141,6 +165,8 @@ ob_start();
 
             <div class="card-trilho">
 
+                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+
                 <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
                 <div class="card-header">
@@ -155,10 +181,8 @@ ob_start();
 
                 <div class="card-actions">
 
-                    <!-- Detalhes via modal -->
                     <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
 
-                    <!-- Entregar -->
                     <a href="trilho_assinar.php?id=<?= $c['id'] ?>" 
                        class="btn-trilho btn-entregar">
                        Entregar
@@ -172,9 +196,7 @@ ob_start();
     <?php endif; ?>
 </div>
 
-<!-- ============================
-     ABA: ENTREGUES
-============================ -->
+
 <div id="entregues" class="conteudo-aba">
     <h3>📄 Entregues (Hoje)</h3>
 
@@ -184,6 +206,7 @@ ob_start();
             ct.id,
             ct.protocolo,
             ct.descricao,
+            ct.tipo,
             lo.nome AS origem_nome,
             ld.nome AS destino_nome,
             ct.assinatura_nome,
@@ -206,6 +229,8 @@ ob_start();
 
             <div class="card-trilho entregue">
 
+                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+
                 <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
                 <div class="card-header">
@@ -214,17 +239,14 @@ ob_start();
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Loja Solicitada:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
-                    <p><strong>Loja de entrega:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                     <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
                     <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
                 </div>
 
                 <div class="card-actions">
-
-                    <!-- Detalhes via modal -->
                     <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
-
                 </div>
 
             </div>

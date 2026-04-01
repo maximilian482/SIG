@@ -3,6 +3,30 @@ session_start();
 require_once '../dados/conexao.php';
 $conn = conectar();
 
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
+
+// ===============================
+// VALIDA LOGIN
+// ===============================
+if (!isset($_SESSION['cpf'])) {
+    echo "Acesso negado.";
+    exit;
+}
+
+$cpf = $_SESSION['cpf'];
+
+// ===============================
+// VALIDA PERMISSÃO TRILHO
+// ===============================
+if (!temAcesso($conn, $cpf, 'trilho_motoboy')) {
+    echo "Acesso negado.";
+    exit;
+}
+
+// ===============================
+// VALIDA ID
+// ===============================
 $id = intval($_GET['id'] ?? 0);
 
 if ($id <= 0) {
@@ -59,14 +83,19 @@ if ($id <= 0) {
 </div>
 
 <script>
+// ===============================
+// CONFIGURAÇÃO DO CANVAS
+// ===============================
 const canvas = document.getElementById("canvasAssinatura");
 const ctx = canvas.getContext("2d");
 
-// Ajusta o canvas para ocupar a largura total
 function ajustarCanvas() {
     const container = document.querySelector(".canvas-container");
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "#000";
 }
 ajustarCanvas();
 window.addEventListener("resize", ajustarCanvas);
@@ -81,6 +110,7 @@ function pos(e) {
     };
 }
 
+// DESENHO MOUSE
 canvas.addEventListener("mousedown", e => {
     desenhando = true;
     const p = pos(e);
@@ -91,9 +121,6 @@ canvas.addEventListener("mousedown", e => {
 canvas.addEventListener("mousemove", e => {
     if (!desenhando) return;
     const p = pos(e);
-    ctx.lineWidth = 3;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
 });
@@ -101,7 +128,7 @@ canvas.addEventListener("mousemove", e => {
 canvas.addEventListener("mouseup", () => desenhando = false);
 canvas.addEventListener("mouseleave", () => desenhando = false);
 
-// TOUCH
+// DESENHO TOUCH
 canvas.addEventListener("touchstart", e => {
     e.preventDefault();
     desenhando = true;
@@ -114,28 +141,31 @@ canvas.addEventListener("touchmove", e => {
     e.preventDefault();
     if (!desenhando) return;
     const p = pos(e);
-    ctx.lineWidth = 3;
-    ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
 });
 
 canvas.addEventListener("touchend", () => desenhando = false);
 
-// Limpar assinatura
+// ===============================
+// LIMPAR ASSINATURA
+// ===============================
 document.getElementById("limpar").addEventListener("click", () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-// Mostrar campo de observação
+// ===============================
+// MOSTRAR CAMPO DE OBSERVAÇÃO
+// ===============================
 document.getElementById("btnAddObs").addEventListener("click", () => {
     document.querySelector(".label-observacoes").style.display = "block";
     document.querySelector(".input-observacoes").style.display = "block";
     document.getElementById("btnAddObs").style.display = "none";
 });
 
-// Verifica se o canvas está vazio
+// ===============================
+// VERIFICA SE O CANVAS ESTÁ VAZIO
+// ===============================
 function canvasVazio() {
     const pixelBuffer = new Uint32Array(
         ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
@@ -143,17 +173,118 @@ function canvasVazio() {
     return !pixelBuffer.some(color => color !== 0);
 }
 
-// Impede enviar sem assinar
+// ===============================
+// ENVIO DO FORMULÁRIO
+// ===============================
 document.getElementById("formAssinatura").addEventListener("submit", (e) => {
+
     if (canvasVazio()) {
         e.preventDefault();
-        alert("Por favor, faça a assinatura antes de confirmar.");
+        mostrarMensagem("Por favor, faça a assinatura antes de confirmar.", "aviso");
+        return;
+    }
+
+    const nome = document.querySelector(".input-nome").value.trim();
+    if (nome.length < 3) {
+        e.preventDefault();
+        mostrarMensagem("Digite o nome de quem recebeu.", "aviso");
         return;
     }
 
     document.getElementById("assinatura_base64").value = canvas.toDataURL("image/png");
+
+    mostrarMensagem("Registrando entrega...", "sucesso");
 });
 </script>
+
+   <!-- SISTEMA GLOBAL DE MENSAGENS -->
+    <div id="overlayMensagem" style="
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.65);
+        z-index:2500;
+    "></div>
+
+    <div id="mensagemTopo" style="
+        display:none;
+        position:fixed;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
+        background:var(--branco);
+        color:var(--texto-principal);
+        padding:25px 35px;
+        border-radius:12px;
+        box-shadow:0 4px 14px rgba(0,0,0,0.35);
+        z-index:3000;
+        font-weight:bold;
+        font-size:1.3em;
+        text-align:center;
+        opacity:0;
+        transition:opacity 0.4s ease;
+        min-width:300px;
+    ">
+        <div id="iconeMensagem" style="font-size:2.2em; margin-bottom:10px;"></div>
+        <span id="textoMensagem"></span>
+    </div>
+
+
+<script>
+function mostrarMensagem(msg, tipo = "sucesso") {
+    const overlay = document.getElementById("overlayMensagem");
+    const box = document.getElementById("mensagemTopo");
+    const texto = document.getElementById("textoMensagem");
+    const icone = document.getElementById("iconeMensagem");
+
+    const icones = {
+        sucesso: "✔️",
+        erro: "❌",
+        aviso: "⚠️",
+        info: "ℹ️"
+    };
+
+    icone.innerText = icones[tipo] || "ℹ️";
+    texto.innerHTML = msg;
+
+    // Cores iguais ao layout.php
+    if (tipo === "sucesso") {
+        box.style.background = "var(--verde-palmeiras-claro)";
+        box.style.color = "white";
+    } 
+    else if (tipo === "erro") {
+        box.style.background = "var(--erro-bg)";
+        box.style.color = "var(--erro-texto)";
+    } 
+    else if (tipo === "aviso") {
+        box.style.background = "var(--warning-bg)";
+        box.style.color = "var(--warning-texto)";
+    }
+    else {
+        box.style.background = "var(--branco)";
+        box.style.color = "var(--texto-principal)";
+    }
+
+    overlay.style.display = "block";
+    box.style.display = "block";
+
+    setTimeout(() => box.style.opacity = "1", 10);
+
+    setTimeout(() => {
+        box.style.opacity = "0";
+        setTimeout(() => {
+            overlay.style.display = "none";
+            box.style.display = "none";
+        }, 400);
+    }, 5000);
+}
+</script>
+
+
+
 
 </body>
 </html>

@@ -45,18 +45,18 @@ $sqlCont = "
     FROM chamados_trilho
     WHERE 
         (status = 'entregue' AND DATE(assinatura_data) = CURDATE())
-        OR status IN ('aberto', 'faturado', 'em rota')
+        OR status IN ('aberto', 'faturado', 'em_rota')
     GROUP BY status
 ";
-
 
 $resCont = $conn->query($sqlCont);
 
 $cont = [
-    'aberto'    => 0,
-    'faturado'  => 0,
-    'em_rota'   => 0,
-    'entregue'  => 0
+    'abertos_total' => 0, // NOVO
+    'aberto'        => 0,
+    'faturado'      => 0,
+    'em_rota'       => 0,
+    'entregue'      => 0
 ];
 
 while ($row = $resCont->fetch_assoc()) {
@@ -65,6 +65,20 @@ while ($row = $resCont->fetch_assoc()) {
         $cont[$status] = intval($row['total']);
     }
 }
+
+// NOVO: soma de aberto + faturado
+$cont['abertos_total'] = $cont['aberto'] + $cont['faturado'];
+
+
+$mapaTitulos = [
+    'documento'   => '📄 Documento',
+    'medicamento' => '💊 Medicamentos',
+    'malote'      => '📦 Malote',
+    'item'        => '📦 Itens Diversos',
+    'nota'        => '🧾 Notas',
+    'comprovante' => '🧾 Comprovantes'
+];
+
 
 ob_start();
 include ROOT_PATH . '/includes/flash.php';
@@ -82,11 +96,7 @@ include ROOT_PATH . '/includes/flash.php';
 
 <div class="abas-trilho">
     <button class="aba ativa" data-aba="abertos">
-        Abertos (<?= $cont['aberto'] ?>)
-    </button>
-
-    <button class="aba" data-aba="faturado">
-        Faturado (<?= $cont['faturado'] ?>)
+        Abertos (<?= $cont['abertos_total'] ?>)
     </button>
 
     <button class="aba" data-aba="rota">
@@ -98,8 +108,10 @@ include ROOT_PATH . '/includes/flash.php';
     </button>
 </div>
 
+
+
 <!-- ===============================
-     ABERTOS — TODOS PODEM VER
+     ABERTOS — MEDICAMENTOS + SIMPLES
 =============================== -->
 <div id="abertos" class="conteudo-aba ativo">
     <h3>📦 Abertos</h3>
@@ -117,132 +129,115 @@ include ROOT_PATH . '/includes/flash.php';
         LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
         LEFT JOIN funcionarios fs ON fs.id = ct.solicitante_id
         LEFT JOIN funcionarios fd ON fd.id = ct.solicitado_id
-        WHERE LOWER(TRIM(ct.status)) = 'aberto'
+        WHERE ct.status IN ('aberto', 'faturado')
         ORDER BY ct.id DESC
     ";
 
     $resAbertos = $conn->query($sqlAbertos);
 
     if ($resAbertos->num_rows == 0): ?>
-        <p>Nenhum protocolo aberto.</p>
+        <p>Nenhum protocolo pendente.</p>
     <?php else: ?>
 
         <?php while ($c = $resAbertos->fetch_assoc()): ?>
 
             <?php
-            $solicitante    = ($c['solicitante_id'] == $funcId);
-            $solicitadoPara = ($c['solicitado_id'] == $funcId);
+            $solicitante = ($c['solicitante_id'] == $funcId);
+            $isTrilho = (!empty($_SESSION['trilho_motoboy']) && $_SESSION['trilho_motoboy'] == 1);
             ?>
 
             <div class="card-trilho">
+
+                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
 
                 <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
                 <div class="card-header">
                     <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
-                    <span class="tag-status aberto">Aberto</span>
+
+                    <?php if ($c['status'] == 'aberto'): ?>
+                        <span class="tag-status aberto">Aberto</span>
+                    <?php else: ?>
+                        <span class="tag-status coletar">Liberado</span>
+                    <?php endif; ?>
                 </div>
 
                 <div class="card-body">
                     <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['nome_solicitante']) ?></p>
                     <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Solicitado para:</strong> <?= htmlspecialchars($c['nome_solicitado']) ?></p>
-                    <p><strong>Loja Solicitada:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
-                </div>
-
-                <div class="card-actions">
-
-                <!-- DETALHES (todos podem ver) -->
-                <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">
-                    Detalhes
-                </button>
-
-                <?php if ($solicitante): ?>
-                    <!-- CRIADOR: pode editar e excluir -->
-                    <a href="chamados_trilho_editar.php?id=<?= $c['id'] ?>" 
-                    class="btn-trilho btn-editar">Editar</a>
-
-                    <form action="chamados_trilho_excluir.php" method="POST"
-                        onsubmit="return confirm('Tem certeza que deseja excluir este protocolo?')"
-                        style="display:inline-block;">
-                        <input type="hidden" name="id" value="<?= $c['id'] ?>">
-                        <button class="btn-trilho btn-excluir">Excluir</button>
-                    </form>
-                <?php endif; ?>
-
-                <?php if (!$solicitante): ?>
-                    <!-- SOLICITADO e OUTROS: podem faturar -->
-                    <a href="chamados_trilho_faturar.php?id=<?= $c['id'] ?>" 
-                    class="btn-trilho btn-faturar"
-                    onclick="return confirm('Confirmar faturamento deste protocolo?')">
-                    Faturar
-                    </a>
-                <?php endif; ?>
-
-            </div>
-
-            </div>
-
-        <?php endwhile; ?>
-
-    <?php endif; ?>
-</div>
-
-
-<!-- ===============================
-     FATURADO
-=============================== -->
-<div id="faturado" class="conteudo-aba">
-    <h3>📄 Faturado</h3>
-
-    <?php
-    $sqlFat = "
-        SELECT 
-            ct.*,
-            lo.nome AS origem_nome,
-            ld.nome AS destino_nome
-        FROM chamados_trilho ct
-        LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
-        LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
-        WHERE ct.status = 'faturado'
-        ORDER BY ct.id DESC
-    ";
-
-    $resFat = $conn->query($sqlFat);
-
-    if ($resFat->num_rows == 0): ?>
-        <p>Nenhuma transferência faturada.</p>
-    <?php else: ?>
-
-        <?php while ($c = $resFat->fetch_assoc()): ?>
-
-            <div class="card-trilho">
-
-                <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
-
-                <div class="card-header">
-                    <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
-                    <span class="tag-status faturado">Faturado</span>
-                </div>
-
-                <div class="card-body">
-                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Aos cuidados de:</strong> <?= htmlspecialchars($c['nome_solicitado']) ?></p>
                     <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                 </div>
 
                 <div class="card-actions">
 
-                    <!-- Detalhes (todos podem ver) -->
-                    <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">
+                    <!-- Detalhes -->
+                    <button type="button" 
+                            class="btn-trilho btn-detalhes" 
+                            data-id="<?= $c['id'] ?>">
                         Detalhes
                     </button>
 
-                    <!-- Coletar (somente motoboy com permissão trilho_motoboy) -->
-                   <?php if ($isMotoboy && !in_array(strtolower($_SESSION['cargo']), ['super', 'ceo'])): ?>
-                        <a href="chamados_trilho_coletar.php?id=<?= $c['id'] ?>" 
-                        class="btn-trilho btn-coletar">
-                        Coletar
-                        </a>
+                    <!-- MEDICAMENTO — ABERTO → FATURAR -->
+                    <?php if ($c['tipo'] == 'medicamento' && $c['status'] == 'aberto' && !$solicitante): ?>
+                        <button type="button"
+                            class="btn-trilho btn-faturar"
+                            data-id="<?= $c['id'] ?>">
+                        Faturar
+                    </button>
+
+                    <?php endif; ?>
+
+                    <!-- MEDICAMENTO — FATURADO → COLETAR -->
+                    <?php if ($c['tipo'] == 'medicamento' && $c['status'] == 'faturado' && $isTrilho): ?>
+                        <button type="button"
+                                class="btn-trilho btn-coletar"
+                                data-id="<?= $c['id'] ?>">
+                            Coletar
+                        </button>
+                    <?php endif; ?>
+
+                    <!-- SIMPLES — EDITAR/EXCLUIR -->
+                    <?php if ($solicitante): ?>
+
+                    <?php if ($c['tipo'] === 'medicamento'): ?>
+
+                        <?php if ($c['status'] === 'aberto'): ?>
+                            <a href="chamados_trilho_editar.php?id=<?= $c['id'] ?>" 
+                            class="btn-trilho btn-editar">Editar</a>
+
+                            <button type="button"
+                                    class="btn-trilho btn-excluir"
+                                    data-id="<?= $c['id'] ?>">
+                                Excluir
+                            </button>
+                        <?php endif; ?>
+
+                    <?php else: ?>
+
+        <!-- SIMPLES: sempre pode editar/excluir -->
+        <a href="chamados_trilho_editar_simples.php?id=<?= $c['id'] ?>" 
+           class="btn-trilho btn-editar">Editar</a>
+
+        <button type="button"
+                class="btn-trilho btn-excluir"
+                data-id="<?= $c['id'] ?>">
+            Excluir
+        </button>
+
+    <?php endif; ?>
+
+<?php endif; ?>
+
+
+
+                    <!-- SIMPLES — COLETAR -->
+                    <?php if ($c['tipo'] !== 'medicamento' && $isTrilho): ?>
+                        <button type="button"
+                                class="btn-trilho btn-coletar"
+                                data-id="<?= $c['id'] ?>">
+                            Coletar
+                        </button>
                     <?php endif; ?>
 
                 </div>
@@ -254,11 +249,6 @@ include ROOT_PATH . '/includes/flash.php';
     <?php endif; ?>
 </div>
 
-
-
-<!-- ===============================
-     EM ROTA
-=============================== -->
 <div id="rota" class="conteudo-aba">
     <h3>🛵 Em Rota</h3>
 
@@ -287,6 +277,8 @@ include ROOT_PATH . '/includes/flash.php';
 
             <div class="card-trilho">
 
+                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+
                 <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
                 <div class="card-header">
@@ -301,11 +293,18 @@ include ROOT_PATH . '/includes/flash.php';
 
                 <div class="card-actions">
 
-                    <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+                    <button type="button" 
+                            class="btn-trilho btn-detalhes" 
+                            data-id="<?= $c['id'] ?>">
+                        Detalhes
+                    </button>
 
                     <?php if ($motoboyDoPedido): ?>
-                        <a href="chamados_trilho_entregar.php?id=<?= $c['id'] ?>" 
-                           class="btn-trilho btn-entregar">Finalizar</a>
+                        <button type="button"
+                                class="btn-trilho btn-entregar"
+                                data-id="<?= $c['id'] ?>">
+                            Finalizar
+                        </button>
                     <?php endif; ?>
 
                 </div>
@@ -317,10 +316,6 @@ include ROOT_PATH . '/includes/flash.php';
     <?php endif; ?>
 </div>
 
-
-<!-- ===============================
-     ENTREGUES — SOMENTE DO DIA
-=============================== -->
 <div id="entregues" class="conteudo-aba">
     <h3>📦 Entregues</h3>
 
@@ -348,6 +343,8 @@ include ROOT_PATH . '/includes/flash.php';
 
             <div class="card-trilho">
 
+                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+
                 <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
                 <div class="card-header">
@@ -361,7 +358,11 @@ include ROOT_PATH . '/includes/flash.php';
                 </div>
 
                 <div class="card-actions">
-                    <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+                    <button type="button" 
+                            class="btn-trilho btn-detalhes" 
+                            data-id="<?= $c['id'] ?>">
+                        Detalhes
+                    </button>
                 </div>
 
             </div>
@@ -370,6 +371,8 @@ include ROOT_PATH . '/includes/flash.php';
 
     <?php endif; ?>
 </div>
+
+
 
 
 <!-- MODAL -->
@@ -382,6 +385,74 @@ include ROOT_PATH . '/includes/flash.php';
 
 
 <script src="/js/chamados_trilho.js"></script>
+
+<!-- MODAL DE ESCOLHA DO TIPO -->
+<div id="modalTipoProtocolo" class="modal-trilho">
+    <div class="modal-conteudo tipo-protocolo">
+        <span class="modal-fechar">&times;</span>
+
+        <h3>Qual tipo de item você quer gerar o protocolo?</h3>
+
+        <div class="opcoes-tipo-protocolo">
+            <button class="btn-tipo" data-tipo="medicamento">💊 Medicamento</button>
+            <button class="btn-tipo" data-tipo="documento">📄 Documento</button>
+            <button class="btn-tipo" data-tipo="malote">📦 Malote</button>
+            <button class="btn-tipo" data-tipo="item">📌 Item Diverso</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Abrir modal ao clicar em "Novo Protocolo"
+document.querySelector('.btn-novo').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('modalTipoProtocolo').style.display = 'block';
+});
+
+// Fechar modal
+document.querySelector('#modalTipoProtocolo .modal-fechar').onclick = function() {
+    document.getElementById('modalTipoProtocolo').style.display = 'none';
+};
+
+// Clique fora fecha modal
+window.onclick = function(e) {
+    const modal = document.getElementById('modalTipoProtocolo');
+    if (e.target === modal) modal.style.display = 'none';
+};
+
+// Redirecionamento por tipo
+document.querySelectorAll('.btn-tipo').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const tipo = this.dataset.tipo;
+
+        if (tipo === 'medicamento') {
+            window.location = "chamados_trilho_abrir.php?tipo=medicamento";
+        } else {
+            window.location = "chamados_trilho_abrir_simples.php?tipo=" + tipo;
+        }
+    });
+});
+
+</script>
+
+<!-- MODAL DE FATURAMENTO -->
+<div id="modalFaturar" class="modal-trilho" style="display:none;">
+    <div class="modal-conteudo">
+        <span class="modal-fechar" id="fecharModalFaturar">&times;</span>
+
+        <h3>Faturar Protocolo</h3>
+
+        <p>Informe o número da nota de transferência:</p>
+
+        <input type="text" id="notaTransferencia" placeholder="Ex: 123456">
+
+        <div class="modal-acoes">
+            <button id="btnCancelarFaturar" class="btn-trilho btn-cancelar">Cancelar</button>
+            <button id="btnConfirmarFaturar" class="btn-trilho btn-confirmar">Confirmar</button>
+        </div>
+    </div>
+</div>
+
 
 <?php
 $conteudo = ob_get_clean();

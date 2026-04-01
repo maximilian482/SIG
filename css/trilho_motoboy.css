@@ -239,3 +239,18 @@ html, body {
 .btn-historico {
     background: #003366;
 }
+
+/* Status aguardando faturar */
+.status-lateral {
+    display: inline-block;
+    margin-left: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status-lateral.aguardando {
+    background: #ff9800;
+    color: #fff;
+}

@@ -182,10 +182,23 @@ ob_start();
 <h2 class="titulo-editar">✏ Editar Protocolo</h2>
 
 <?php if ($flash = getFlash()): ?>
-    <div class="flash flash-<?= $flash['tipo'] ?>">
-        <?= htmlspecialchars($flash['mensagem']) ?>
-    </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const tipo = "<?= $flash['tipo'] ?>";
+    const msg  = "<?= addslashes($flash['mensagem']) ?>";
+
+    // Converte tipo do flash para tipo do sistema premium
+    const mapa = {
+        success: "sucesso",
+        error: "erro",
+        warning: "aviso"
+    };
+
+    mostrarMensagem(msg, mapa[tipo] || "info");
+});
+</script>
 <?php endif; ?>
+
 
 <form method="POST" class="formulario-editar">
 

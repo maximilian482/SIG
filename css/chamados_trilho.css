@@ -264,3 +264,222 @@ body {
 .btn-historico {
     background: #003366;
 }
+
+/* Modal tipo trilho */
+
+/* Modal base (já existe no seu CSS, mas deixo aqui caso precise) */
+.modal-trilho {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-conteudo.tipo-protocolo {
+    background: #fff;
+    width: 380px;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.opcoes-tipo-protocolo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-tipo {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #f0f0f0;
+    transition: 0.2s;
+}
+
+.btn-tipo:hover {
+    background: #e0e0e0;
+}
+
+/* Formulário simples trilho */
+
+/* Formulário simples do Trilho */
+.form-trilho {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-trilho .campo {
+    margin-bottom: 18px;
+}
+
+.form-trilho label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.form-trilho input[type="text"],
+.form-trilho input[type="number"],
+.form-trilho select,
+.form-trilho textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.form-trilho textarea {
+    resize: vertical;
+}
+
+.btn-salvar {
+    background: #2d8fdd;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.btn-salvar:hover {
+    background: #1f6fb3;
+}
+
+/* Modal faturar */
+/* Fundo do modal */
+.modal-trilho {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Animação suave */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Caixa do modal */
+.modal-conteudo {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 380px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    position: relative;
+    animation: slideUp 0.25s ease-out;
+}
+
+/* Animação da caixa */
+@keyframes slideUp {
+    from { transform: translateY(25px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Botão de fechar (X) */
+.modal-fechar {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #666;
+    transition: 0.2s;
+}
+
+.modal-fechar:hover {
+    color: #000;
+}
+
+/* Título */
+.modal-conteudo h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Texto */
+.modal-conteudo p {
+    margin-bottom: 12px;
+    color: #555;
+}
+
+/* Campo de texto */
+#notaTransferencia {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 18px;
+    transition: 0.2s;
+}
+
+#notaTransferencia:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    outline: none;
+}
+
+/* Área dos botões */
+.modal-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Botões */
+.btn-trilho.btn-cancelar {
+    background: #ccc;
+    color: #333;
+}
+
+.btn-trilho.btn-cancelar:hover {
+    background: #b3b3b3;
+}
+
+.btn-trilho.btn-confirmar {
+    background: #007bff;
+    color: #fff;
+}
+
+.btn-trilho.btn-confirmar:hover {
+    background: #0069d9;
+}
+
+.mensagem-flutuante {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000; /* acima do modal */
+}
