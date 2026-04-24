@@ -102,8 +102,8 @@ function nomeCurto($nome) {
     ================================ -->
     <h3>🚚 Logística</h3>
 
-    <p><strong>Loja de Origem:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
-    <p><strong>Loja de Destino:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
+    <p><strong>Loja Solicitante:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
+    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
 
     <?php if (!empty($dados['data_coleta'])): ?>
         <p><strong>Data da coleta:</strong> <?= date('d/m/Y H:i', strtotime($dados['data_coleta'])) ?></p>
@@ -136,8 +136,9 @@ function nomeCurto($nome) {
 
     <?php if (!empty($dados['assinatura_path'])): ?>
         <p><strong>Assinatura:</strong></p>
-        <img src="/uploads/assinaturas/<?= htmlspecialchars($dados['assinatura_path']) ?>" class="assinatura-img">
+        <img src="/<?= htmlspecialchars($dados['assinatura_path']) ?>" class="assinatura-img">
     <?php endif; ?>
+
 
     <?php if (!empty($dados['assinatura_nome'])): ?>
         <p><strong>Recebido por:</strong> <?= htmlspecialchars($dados['assinatura_nome']) ?></p>

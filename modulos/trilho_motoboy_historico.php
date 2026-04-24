@@ -16,8 +16,8 @@ if (!isset($_SESSION['cpf'])) {
 // Filtros
 $protocolo = $_GET['protocolo'] ?? '';
 $descricao = $_GET['descricao'] ?? '';
-$origem = $_GET['origem'] ?? '';
-$destino = $_GET['destino'] ?? '';
+$entrada = $_GET['entrada'] ?? ''; // loja solicitante
+$saida = $_GET['saida'] ?? '';     // loja de liberação
 
 // SQL base
 $sql = "
@@ -25,11 +25,9 @@ $sql = "
         ct.id,
         ct.protocolo,
         ct.descricao,
-        lo.nome AS origem_nome,
-        ld.nome AS destino_nome,
+        lo.nome AS entrada_nome,
+        ld.nome AS saida_nome,
         ct.status,
-        ct.data_criacao,
-        ct.data_coleta,
         ct.assinatura_nome,
         ct.assinatura_data
     FROM chamados_trilho ct
@@ -47,12 +45,12 @@ if ($descricao !== '') {
     $sql .= " AND ct.descricao LIKE '%" . $conn->real_escape_string($descricao) . "%' ";
 }
 
-if ($origem !== '') {
-    $sql .= " AND lo.id = " . intval($origem);
+if ($entrada !== '') {
+    $sql .= " AND lo.id = " . intval($entrada);
 }
 
-if ($destino !== '') {
-    $sql .= " AND ld.id = " . intval($destino);
+if ($saida !== '') {
+    $sql .= " AND ld.id = " . intval($saida);
 }
 
 $sql .= " ORDER BY ct.id DESC ";
@@ -67,59 +65,65 @@ ob_start();
 <h2 class="titulo-historico">📁 Histórico do Trilho</h2>
 
 <div class="trilho-acoes-topo">
-    <a href="trilho_motoboy.php" class="btn-trilho btn-voltar">⬅ Voltar ao Trilho</a>
+    <a href="chamados_trilho.php" class="btn-trilho btn-voltar">⬅ Voltar ao Trilho</a>
     <a href="chamados_trilho_abrir.php" class="btn-trilho btn-novo">➕ Novo Protocolo</a>
 </div>
 
 <!-- FILTROS -->
 <form method="GET" class="filtro-trilho">
 
-    <div class="campo-filtro">
-        <label>Protocolo:</label>
-        <input type="text" name="protocolo" value="<?= htmlspecialchars($protocolo) ?>">
-    </div>
+    <div class="linha-filtros">
 
-    <div class="campo-filtro">
-        <label>Descrição:</label>
-        <input type="text" name="descricao" value="<?= htmlspecialchars($descricao) ?>">
-    </div>
+        <div class="campo-filtro">
+            <label>Protocolo</label>
+            <input type="text" name="protocolo" value="<?= htmlspecialchars($protocolo) ?>">
+        </div>
 
-    <div class="campo-filtro">
-        <label>Loja Origem:</label>
-        <select name="origem">
-            <option value="">Todas</option>
-            <?php
-            $lojas = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
-            while ($l = $lojas->fetch_assoc()):
-            ?>
-                <option value="<?= $l['id'] ?>" <?= ($origem == $l['id'] ? 'selected' : '') ?>>
-                    <?= $l['nome'] ?>
-                </option>
-            <?php endwhile; ?>
-        </select>
-    </div>
+        <div class="campo-filtro">
+            <label>Descrição</label>
+            <input type="text" name="descricao" value="<?= htmlspecialchars($descricao) ?>">
+        </div>
 
-    <div class="campo-filtro">
-        <label>Loja Destino:</label>
-        <select name="destino">
-            <option value="">Todas</option>
-            <?php
-            $lojas2 = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
-            while ($l2 = $lojas2->fetch_assoc()):
-            ?>
-                <option value="<?= $l2['id'] ?>" <?= ($destino == $l2['id'] ? 'selected' : '') ?>>
-                    <?= $l2['nome'] ?>
-                </option>
-            <?php endwhile; ?>
-        </select>
-    </div>
+        <div class="campo-filtro">
+            <label>Entrada</label>
+            <select name="entrada">
+                <option value="">Todas</option>
+                <?php
+                $lojas = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
+                while ($l = $lojas->fetch_assoc()):
+                ?>
+                    <option value="<?= $l['id'] ?>" <?= ($entrada == $l['id'] ? 'selected' : '') ?>>
+                        <?= $l['nome'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
 
-    <div class="botoes-filtro">
-        <button type="submit" class="btn-trilho btn-buscar">🔍 Buscar</button>
-        <a href="trilho_historico.php" class="btn-trilho btn-limpar">🧹 Limpar</a>
+        <div class="campo-filtro">
+            <label>Saída</label>
+            <select name="saida">
+                <option value="">Todas</option>
+                <?php
+                $lojas2 = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
+                while ($l2 = $lojas2->fetch_assoc()):
+                ?>
+                    <option value="<?= $l2['id'] ?>" <?= ($saida == $l2['id'] ? 'selected' : '') ?>>
+                        <?= $l2['nome'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+
+        <!-- BOTÕES ALINHADOS LADO A LADO -->
+        <div class="campo-filtro botoes-filtro">
+            <button type="submit" class="btn-trilho btn-buscar">🔍 Buscar</button>
+            <a href="trilho_historico.php" class="btn-trilho btn-limpar">🧹 Limpar</a>
+        </div>
+
     </div>
 
 </form>
+
 
 <hr>
 
@@ -134,8 +138,8 @@ ob_start();
         <tr>
             <th>Protocolo</th>
             <th>Descrição</th>
-            <th>Origem</th>
-            <th>Destino</th>
+            <th>Entrada</th>
+            <th>Saída</th>
             <th>Status</th>
             <th>Data Entrega</th>
             <th>Ações</th>
@@ -147,8 +151,8 @@ ob_start();
             <tr>
                 <td><?= $c['protocolo'] ?></td>
                 <td><?= $c['descricao'] ?></td>
-                <td><?= $c['origem_nome'] ?></td>
-                <td><?= $c['destino_nome'] ?></td>
+                <td><?= $c['entrada_nome'] ?></td>
+                <td><?= $c['saida_nome'] ?></td>
                 <td><?= ucfirst($c['status']) ?></td>
                 <td>
                     <?= $c['assinatura_data'] 
@@ -182,7 +186,6 @@ const fechar = document.querySelector(".modal-fechar");
 fechar.addEventListener("click", () => modal.style.display = "none");
 window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
 
-// Botão "Ver detalhes"
 document.querySelectorAll(".btn-detalhes").forEach(btn => {
     btn.addEventListener("click", () => {
         const id = btn.dataset.id;

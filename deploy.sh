@@ -9,8 +9,15 @@ REMOTE_DIR="."
 
 lftp -u $FTP_USER,$FTP_PASS $FTP_HOST <<EOF
 set ssl:verify-certificate no
-mirror -R $LOCAL_DIR $REMOTE_DIR --overwrite --delete --verbose --parallel=5
+
+mirror -R $LOCAL_DIR $REMOTE_DIR \
+    --exclude-glob uploads* \
+    --exclude-glob Uploads* \
+    --overwrite \
+    --verbose \
+    --parallel=5
+
 quit
 EOF
-echo "Deploy concluído com sucesso!"
 
+echo "Deploy concluído com segurança!"

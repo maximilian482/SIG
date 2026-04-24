@@ -1,0 +1,201 @@
+/* ============================
+   CONTAINER PRINCIPAL
+============================ */
+.container-setores {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.titulo-pagina {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.subtitulo-pagina {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* ============================
+   CARDS PREMIUM
+============================ */
+.card-premium {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.card-titulo {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.label-premium {
+    font-weight: 600;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.select-premium {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* ============================
+   LISTA DE SETORES
+============================ */
+.lista-setores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 15px;
+}
+
+/* CARD INDIVIDUAL DO SETOR */
+.item-setor {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #fdfdfd;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e2e2;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.item-setor:hover {
+    background: #f5faff;
+    border-color: #bcdcff;
+}
+
+/* Checkbox maior e mais bonito */
+.item-setor input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Texto do setor */
+.item-setor label {
+    font-size: 15px;
+    line-height: 18px;
+    cursor: pointer;
+    color: #333;
+}
+
+/* ============================
+   BOTÃO SALVAR
+============================ */
+.btn-submit-premium {
+    margin-top: 20px;
+    background: #1976d2;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.btn-submit-premium:hover {
+    background: #1565c0;
+}
+
+/* ============================
+   OCULTAR ELEMENTOS
+============================ */
+.oculto {
+    display: none;
+}
+
+/* ============================
+   CRIAÇÃO DE NOVO SETOR
+============================ */
+.novo-setor-box {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.novo-setor-linha {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.input-premium {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.btn-add-premium {
+    background: #43a047;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-add-premium:hover {
+    background: #388e3c;
+}
+
+/* botoes editar excluir */
+
+.item-setor {
+    position: relative;
+    padding-right: 60px;
+}
+
+.btn-editar,
+.btn-excluir {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.4;
+    transition: 0.2s;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn-editar {
+    right: 35px;
+}
+
+.btn-excluir {
+    right: 10px;
+}
+
+.item-setor:hover .btn-editar,
+.item-setor:hover .btn-excluir {
+    opacity: 1;
+}
+
+/* botão voltar */
+.btn-voltar-premium {
+    display: inline-block;
+    margin: 10px 0 20px 0;
+    background: #186337;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s ease;
+}
+
+.btn-voltar-premium:hover {
+    background: #159167;
+    text-decoration: none;
+}

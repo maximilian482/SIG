@@ -65,16 +65,25 @@ if (!empty($assinatura_base64)) {
         die("Erro ao processar assinatura.");
     }
 
+    // Caminho ABSOLUTO correto no servidor
+    $pasta = $_SERVER['DOCUMENT_ROOT'] . "/uploads/assinaturas";
+
     // Criar pasta se não existir
-    $pasta = "../uploads/assinaturas";
     if (!is_dir($pasta)) {
         mkdir($pasta, 0777, true);
     }
 
+    // Nome do arquivo
     $nomeArquivo = "assinatura_trilho_" . $id . "_" . time() . ".png";
+
+    // Caminho final absoluto
     $caminhoFinal = $pasta . "/" . $nomeArquivo;
 
+    // Salvar arquivo
     file_put_contents($caminhoFinal, $binario);
+
+    // Caminho que será salvo no banco (URL relativa)
+    $nomeArquivo = "uploads/assinaturas/" . $nomeArquivo;
 }
 
 // ===============================

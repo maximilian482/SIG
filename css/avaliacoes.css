@@ -1,0 +1,47 @@
+.container-menu-avaliacoes {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.titulo-menu {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+
+.subtitulo-menu {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.cards-menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.card-menu {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: 0.2s;
+}
+
+.card-menu:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+}
+
+.card-icone {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.card-menu.desativado {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}

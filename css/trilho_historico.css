@@ -28,10 +28,11 @@ h2 {
     margin-bottom: 20px;
 }
 
-.filtro-trilho div {
+.filtro-trilho .campo-filtro {
     display: flex;
     flex-direction: column;
 }
+
 
 .filtro-trilho input,
 .filtro-trilho select {
@@ -139,3 +140,22 @@ h2 {
 .modal-conteudo button:hover {
     background: #144722;
 }
+
+.linha-filtros {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.campo-filtro {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.botoes-filtro {
+    display: flex;
+    gap: 10px;
+}
+

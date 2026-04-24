@@ -43,12 +43,50 @@ ob_start();
 
 <h2 class="titulo-trilho">🚚 Trilho — Motoboy</h2>
 
+<!-- FILTROS DO TRILHO -->
+<!-- <div class="filtros-trilho">
+    <select id="filtro-origem">
+        <option value="">Loja Solicitante (todas)</option>
+    </select>
+
+    <select id="filtro-destino">
+        <option value="">Loja de Liberação (todas)</option>
+    </select>
+
+    <button id="btn-limpar-filtros" class="btn-limpar-filtros">Limpar</button>
+</div> -->
+
+
+
 <!-- ABAS -->
 <div class="abas-trilho">
     <button class="aba ativa" data-aba="coletar">Coletar</button>
     <button class="aba" data-aba="rota">Em rota</button>
     <button class="aba" data-aba="entregues">Entregues</button>
 </div>
+
+<!-- FILTROS POR ABA -->
+<div id="filtros-coletar" class="filtros-trilho">
+    <select id="filtro-lib">
+        <option value="">Loja de Liberação (todas)</option>
+    </select>
+    <button id="btn-limpar-coletar" class="btn-limpar-filtros">Limpar</button>
+</div>
+
+<div id="filtros-rota" class="filtros-trilho" style="display:none;">
+    <select id="filtro-solic">
+        <option value="">Loja Solicitante (todas)</option>
+    </select>
+    <button id="btn-limpar-rota" class="btn-limpar-filtros">Limpar</button>
+</div>
+
+<div id="filtros-entregues" class="filtros-trilho" style="display:none;">
+    <select id="filtro-entregue">
+        <option value="">Loja Entregue (todas)</option>
+    </select>
+    <button id="btn-limpar-entregues" class="btn-limpar-filtros">Limpar</button>
+</div>
+
 
 <!-- ============================
      ABA: COLETAR
@@ -106,8 +144,8 @@ ob_start();
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                    <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                 </div>
 
                 <div class="card-actions">
@@ -175,8 +213,8 @@ ob_start();
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                    <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                 </div>
 
                 <div class="card-actions">
@@ -239,8 +277,8 @@ ob_start();
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                    <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                     <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
                     <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
                 </div>

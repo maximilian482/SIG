@@ -483,3 +483,38 @@ body {
     right: 20px;
     z-index: 10000; /* acima do modal */
 }
+
+/* FILTROS */
+/* wrapper que limita a largura ao container dos cards */
+.filtros-centro {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* centraliza o bloco interno */
+    margin-top: 12px;
+}
+
+/* bloco interno que terá a mesma largura do container de cards */
+.filtros-trilho {
+    width: 100%;
+    max-width: 980px; /* ajuste para o mesmo max-width do container de cards */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #e9e9e9;
+}
+
+/* elementos internos */
+.filtros-trilho label { font-size:13px; color:#333; white-space:nowrap; }
+.filtros-trilho select { flex:1; min-width:220px; padding:8px; border-radius:6px; border:1px solid #ccc; background:#fafafa; }
+.btn-limpar-filtros { padding:8px 10px; border-radius:6px; border:1px solid #ddd; background:transparent; cursor:pointer; }
+
+/* responsividade */
+@media (max-width:900px) {
+    .filtros-trilho { flex-direction:column; align-items:stretch; gap:8px; padding:8px; }
+    .filtros-trilho select { width:100%; }
+    .btn-limpar-filtros { align-self:flex-end; }
+}
