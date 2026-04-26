@@ -179,3 +179,26 @@ table tbody tr:hover {
         width: 100%;
     }
 }
+
+
+/* ============================
+   MODAL DETALHES — COMPACTO
+============================ */
+#modalDetalhesChamado .modal-conteudo {
+    width: 480px;          /* mais estreito */
+    max-height: 60vh;      /* mais baixo */
+    overflow-y: auto;      /* rolagem vertical */
+    padding: 15px;         /* padding reduzido */
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* Scrollbar compacta */
+#modalDetalhesChamado .modal-conteudo::-webkit-scrollbar {
+    width: 6px;
+}
+
+#modalDetalhesChamado .modal-conteudo::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 10px;
+}

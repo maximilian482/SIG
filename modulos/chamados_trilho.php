@@ -20,7 +20,12 @@ $lojaUsuario  = $_SESSION['loja'] ?? 0;
 // ===============================
 // PERMISSÕES DO TRILHO
 // ===============================
-$isMotoboy = temAcesso($conn, $cpf, 'trilho_motoboy');
+$isMotoboy = (
+    temAcesso($conn, $cpf, 'trilho_motoboy')
+    && strtolower($_SESSION['cargo']) === 'motoboy'
+);
+
+
 
 // Funções de permissão por chamado
 function isSolicitante(array $c, int $funcId): bool {
@@ -87,7 +92,7 @@ include ROOT_PATH . '/includes/flash.php';
 <link rel="stylesheet" href="/css/chamados_trilho.css">
 
 <div class="trilho-acoes-topo">
-    <a href="/modulos/chamados_publico.php" class="btn-voltar">⬅ Voltar</a>
+    <a href="/modulos/chamados.php" class="btn-voltar">⬅ Voltar</a>
     <a href="chamados_trilho_abrir.php" class="btn-novo">➕ Novo Protocolo</a>
     <a href="trilho_historico.php" class="btn-historico">📁 Histórico</a>
 </div>
@@ -109,56 +114,33 @@ include ROOT_PATH . '/includes/flash.php';
     </button>
 </div>
 
-<!-- WRAPPER QUE ALINHA O FILTRO AO CONTAINER DOS CARDS -->
-<!-- <div class="filtros-centro">
-    <div id="filtros-abertos" class="filtros-trilho">
-        <label for="filtro-abertos">Saída</label>
-        <select id="filtro-abertos" name="filtro_abertos">
-            <option value="">Loja de Liberação (todas)</option>
-            <?php
-            $lojas = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
-            while ($l = $lojas->fetch_assoc()):
-            ?>
-                <option value="<?= intval($l['id']) ?>"><?= htmlspecialchars($l['nome']) ?></option>
-            <?php endwhile; ?>
+    <!-- ===============================
+        FILTROS POR ABA
+    =============================== -->
+
+    <div id="filtros-coletar" class="filtros-trilho" style="display:flex;">
+        <label for="filtro-lib">Loja de Liberação:</label>
+        <select id="filtro-lib">
+            <option value="">Todas</option>
         </select>
-        <button id="btn-limpar-abertos" class="btn-limpar-filtros">Limpar</button>
+        <button id="btn-limpar-coletar" class="btn-limpar-filtros">Limpar</button>
     </div>
 
     <div id="filtros-rota" class="filtros-trilho" style="display:none;">
-        <label for="filtro-rota">Entrega em</label>
-        <select id="filtro-rota" name="filtro_rota">
-            <option value="">Loja Solicitante (todas)</option>
-            <?php
-            $lojas2 = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
-            while ($l2 = $lojas2->fetch_assoc()):
-            ?>
-                <option value="<?= intval($l2['id']) ?>"><?= htmlspecialchars($l2['nome']) ?></option>
-            <?php endwhile; ?>
+        <label for="filtro-solic">Loja Solicitante:</label>
+        <select id="filtro-solic">
+            <option value="">Todas</option>
         </select>
         <button id="btn-limpar-rota" class="btn-limpar-filtros">Limpar</button>
     </div>
 
     <div id="filtros-entregues" class="filtros-trilho" style="display:none;">
-        <label for="filtro-entregues">Entregue em</label>
-        <select id="filtro-entregues" name="filtro_entregues">
-            <option value="">Loja Entregue (todas)</option>
-            <?php
-            $lojas3 = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
-            while ($l3 = $lojas3->fetch_assoc()):
-            ?>
-                <option value="<?= intval($l3['id']) ?>"><?= htmlspecialchars($l3['nome']) ?></option>
-            <?php endwhile; ?>
+        <label for="filtro-entregue">Loja Entregue:</label>
+        <select id="filtro-entregue">
+            <option value="">Todas</option>
         </select>
         <button id="btn-limpar-entregues" class="btn-limpar-filtros">Limpar</button>
     </div>
-</div> -->
-
-<!-- CONTAINERS ONDE O AJAX INSERE OS CARDS -->
-<!-- <div id="container-abertos" class="conteudo-aba ativo"></div>
-<div id="container-rota" class="conteudo-aba"></div>
-<div id="container-entregues" class="conteudo-aba"></div> -->
-
 
 
 <!-- ===============================
@@ -338,8 +320,8 @@ include ROOT_PATH . '/includes/flash.php';
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                    <p><strong>Saída:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Entregue:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                 </div>
 
                 <div class="card-actions">
@@ -404,8 +386,8 @@ include ROOT_PATH . '/includes/flash.php';
                 </div>
 
                 <div class="card-body">
-                    <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                    <p><strong>Saída:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                    <p><strong>Entregue:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
                 </div>
 
                 <div class="card-actions">

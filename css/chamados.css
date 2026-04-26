@@ -1,0 +1,86 @@
+.pagina-chamados-menu {
+    padding: 30px;
+    text-align: center;
+}
+
+.titulo-pagina {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.subtitulo-pagina {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.grid-opcoes-chamados {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.card-opcao {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px 20px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform .15s ease, box-shadow .15s ease;
+    border: 2px solid transparent;
+}
+
+.card-opcao:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    border-color: #2e7d32;
+}
+
+.icone-opcao {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.card-opcao h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.card-opcao p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* Destaque especial para o TRILHO */
+.destaque-trilho {
+    border-color: #1e88e5;
+}
+
+.destaque-trilho:hover {
+    border-color: #1565c0;
+}
+
+/* ============================
+   MODAL DETALHES — AJUSTE DE TAMANHO
+============================ */
+#modalDetalhesChamado .modal-conteudo {
+    width: 600px;              /* largura menor */
+    max-height: 70vh;          /* altura máxima */
+    overflow-y: auto;          /* rolagem vertical */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Scrollbar do modal */
+#modalDetalhesChamado .modal-conteudo::-webkit-scrollbar {
+    width: 8px;
+}
+
+#modalDetalhesChamado .modal-conteudo::-webkit-scrollbar-thumb {
+    background: #c4c4c4;
+    border-radius: 10px;
+}

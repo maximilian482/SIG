@@ -60,8 +60,8 @@ while ($c = $res->fetch_assoc()):
     </div>
 
     <div class="card-body">
-        <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-        <p><strong>Entregue na Loja:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+        <p><strong>Loja de liberação:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+        <p><strong>Entregar na Loja:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
         <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
         <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
     </div>

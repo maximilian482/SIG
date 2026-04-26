@@ -103,7 +103,7 @@ $textoTrilho = $quantTrilho > 0
   <ul>    
     <li><a href="/index.php">🏠 Início</a></li>
 
-    <li><a href="/modulos/chamados_publico.php">🛠️ Chamados</a></li>
+    <li><a href="/modulos/chamados.php">🛠️ Chamados</a></li>
 
    <?php if ($temPendencias): ?>
         <li>

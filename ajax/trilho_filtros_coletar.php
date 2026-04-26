@@ -68,7 +68,7 @@ while ($c = $res->fetch_assoc()):
     </div>
 
     <div class="card-body">
-        <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+        <p><strong>Entregar:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
         <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
     </div>
 
