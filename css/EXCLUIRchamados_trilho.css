@@ -1,0 +1,649 @@
+/* ===============================
+   FUNDO GERAL
+================================= */
+body {
+    background-color: #f4f4f4;
+}
+
+
+
+/* ===============================
+   ABAS DO TRILHO
+================================= */
+.abas-trilho {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.aba {
+    background-color: #fff;
+    border: 1px solid #1A5D2E;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-weight: bold;
+    color: #1A5D2E;
+    transition: 0.2s;
+}
+
+.aba:hover {
+    background-color: #e8f3ec;
+}
+
+.aba.ativa {
+    background-color: #1A5D2E;
+    color: #fff;
+}
+
+/* Conteúdo das abas */
+.conteudo-aba {
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.conteudo-aba.ativo {
+    display: block;
+}
+
+
+
+/* ===============================
+   CARDS DO TRILHO
+================================= */
+.card-trilho {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Produto em destaque */
+.card-produto {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #1A5D2E;
+    margin-bottom: 10px;
+}
+
+/* Cabeçalho */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.protocolo {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Status */
+.tag-status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8em;
+    color: white;
+}
+
+.tag-status.aberto {
+    background-color: #1A5D2E;
+}
+
+.tag-status.faturado {
+    background-color: #0066cc;
+}
+
+.tag-status.rota {
+    background-color: #2E8B57;
+}
+
+.tag-status.entregue {
+    background-color: #28a745;
+}
+
+/* Corpo */
+.card-body p {
+    margin: 3px 0;
+    font-size: 0.95em;
+}
+
+
+
+/* ===============================
+   BOTÕES PADRÃO DO TRILHO
+================================= */
+.card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btn-trilho {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: 0.2s;
+    text-align: center;
+    min-width: 100px;
+    color: white;
+}
+
+/* Detalhes */
+.btn-detalhes {
+    background: #0077cc;
+}
+.btn-detalhes:hover {
+    background: #005fa3;
+}
+
+/* Editar */
+.btn-editar {
+    background: #ffaa00;
+    color: #4a3300;
+}
+.btn-editar:hover {
+    background: #e69900;
+}
+
+/* Excluir */
+.btn-excluir {
+    background: #ff4444;
+}
+.btn-excluir:hover {
+    background: #cc0000;
+}
+
+/* Faturar */
+.btn-faturar {
+    background: #1A5D2E;
+}
+.btn-faturar:hover {
+    background: #144722;
+}
+
+/* Coletar */
+.btn-coletar {
+    background: #0066cc;
+}
+.btn-coletar:hover {
+    background: #004c99;
+}
+
+/* Entregar */
+.btn-entregar {
+    background: #2E8B57;
+}
+.btn-entregar:hover {
+    background: #256f46;
+}
+
+
+
+/* ===============================
+   MODAL DO TRILHO
+================================= */
+.modal-trilho {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.modal-conteudo {
+    background: #fff;
+    width: 90%;
+    max-width: 450px;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    animation: modalFade 0.3s ease;
+    position: relative;
+}
+
+@keyframes modalFade {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-fechar {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #1A5D2E;
+    font-weight: bold;
+}
+
+.modal-fechar:hover {
+    color: #2E8B57;
+}
+
+
+
+/* ===============================
+   BOTÕES DO TOPO
+================================= */
+.trilho-acoes-topo {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.trilho-acoes-topo a {
+    background: #1A5D2E;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-voltar {
+    background: #555;
+}
+
+.btn-historico {
+    background: #003366;
+}
+
+/* Modal tipo trilho */
+
+/* Modal base (já existe no seu CSS, mas deixo aqui caso precise) */
+.modal-trilho {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-conteudo.tipo-protocolo {
+    background: #fff;
+    width: 380px;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.opcoes-tipo-protocolo {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-tipo {
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #f0f0f0;
+    transition: 0.2s;
+}
+
+.btn-tipo:hover {
+    background: #e0e0e0;
+}
+
+/* Formulário simples trilho */
+
+/* Formulário simples do Trilho */
+.form-trilho {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 20px auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-trilho .campo {
+    margin-bottom: 18px;
+}
+
+.form-trilho label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.form-trilho input[type="text"],
+.form-trilho input[type="number"],
+.form-trilho select,
+.form-trilho textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.form-trilho textarea {
+    resize: vertical;
+}
+
+.btn-salvar {
+    background: #2d8fdd;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: 0.2s;
+}
+
+.btn-salvar:hover {
+    background: #1f6fb3;
+}
+
+/* Modal faturar */
+/* Fundo do modal */
+.modal-trilho {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(2px);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Animação suave */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Caixa do modal */
+.modal-conteudo {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    width: 380px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    position: relative;
+    animation: slideUp 0.25s ease-out;
+}
+
+/* Animação da caixa */
+@keyframes slideUp {
+    from { transform: translateY(25px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Botão de fechar (X) */
+.modal-fechar {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #666;
+    transition: 0.2s;
+}
+
+.modal-fechar:hover {
+    color: #000;
+}
+
+/* Título */
+.modal-conteudo h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Texto */
+.modal-conteudo p {
+    margin-bottom: 12px;
+    color: #555;
+}
+
+/* Campo de texto */
+#notaTransferencia {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 18px;
+    transition: 0.2s;
+}
+
+#notaTransferencia:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    outline: none;
+}
+
+/* Área dos botões */
+.modal-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Botões */
+.btn-trilho.btn-cancelar {
+    background: #ccc;
+    color: #333;
+}
+
+.btn-trilho.btn-cancelar:hover {
+    background: #b3b3b3;
+}
+
+.btn-trilho.btn-confirmar {
+    background: #007bff;
+    color: #fff;
+}
+
+.btn-trilho.btn-confirmar:hover {
+    background: #0069d9;
+}
+
+.mensagem-flutuante {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000; /* acima do modal */
+}
+
+/* FILTROS */
+/* wrapper que limita a largura ao container dos cards */
+.filtros-centro {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* centraliza o bloco interno */
+    margin-top: 12px;
+}
+
+/* bloco interno que terá a mesma largura do container de cards */
+.filtros-trilho {
+    width: 100%;
+    max-width: 980px; /* ajuste para o mesmo max-width do container de cards */
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid #e9e9e9;
+}
+
+/* elementos internos */
+.filtros-trilho label { font-size:13px; color:#333; white-space:nowrap; }
+.filtros-trilho select { flex:1; min-width:220px; padding:8px; border-radius:6px; border:1px solid #ccc; background:#fafafa; }
+.btn-limpar-filtros { padding:8px 10px; border-radius:6px; border:1px solid #ddd; background:transparent; cursor:pointer; }
+
+/* responsividade */
+@media (max-width:900px) {
+    .filtros-trilho { flex-direction:column; align-items:stretch; gap:8px; padding:8px; }
+    .filtros-trilho select { width:100%; }
+    .btn-limpar-filtros { align-self:flex-end; }
+}
+
+/* Filtros por aba  */
+
+/* WRAPPER GERAL DOS FILTROS */
+.filtros-trilho {
+    width: 100%;
+    max-width: 900px; /* ajuste conforme o tamanho do seu container */
+    margin: 15px auto 20px auto; /* centraliza */
+    padding: 12px 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* LABEL */
+.filtros-trilho label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+    white-space: nowrap;
+}
+
+/* SELECT */
+.filtros-trilho select {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 14px;
+
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fafafa;
+
+    transition: all .2s ease;
+}
+
+.filtros-trilho select:hover {
+    border-color: #999;
+}
+
+.filtros-trilho select:focus {
+    border-color: #007bff;
+    background: #fff;
+    outline: none;
+}
+
+/* BOTÃO LIMPAR */
+.btn-limpar-filtros {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.btn-limpar-filtros:hover {
+    background: #e9e9e9;
+    border-color: #999;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 700px) {
+    .filtros-trilho {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .btn-limpar-filtros {
+        width: 100%;
+    }
+}
+
+/* Modal */
+/* Fundo escuro */
+.modal-trilho {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Conteúdo do modal (bem menor) */
+.modal-conteudo {
+    background: #fff;
+    width: 90%;
+    max-width: 360px;   /* <<< modal bem menor */
+    max-height: 70vh;   /* <<< reduz altura */
+    overflow-y: auto;   /* ativa rolagem */
+    border-radius: 10px;
+    padding: 18px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    animation: fadeIn .2s ease-out;
+}
+
+/* Botão fechar */
+.modal-fechar {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    font-size: 22px;
+    cursor: pointer;
+    color: #444;
+}
+
+.modal-fechar:hover {
+    color: #000;
+}
+
+/* Animação */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(.92); }
+    to   { opacity: 1; transform: scale(1); }
+}

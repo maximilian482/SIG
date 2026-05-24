@@ -16,22 +16,36 @@ $usuarioId   = intval($_SESSION['funcionario_id'] ?? 0);
 $nomeUsuario = $_SESSION['nome'] ?? '';
 $lojaOrigem  = intval($_SESSION['loja'] ?? 0);
 
-// Buscar nome da loja de origem
+// ===============================
+// CAPTURAR TIPO (GET → POST)
+// ===============================
+
+// 1. Primeiro tenta pegar do GET (quando vem do modal)
+$tipo = $_GET['tipo'] ?? null;
+
+// 2. Se for POST, pega do POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tipo = $_POST['tipo'] ?? $tipo;
+}
+
+// 3. Se ainda estiver vazio, define medicamento
+if (!$tipo) {
+    $tipo = 'medicamento';
+}
+
+// ===============================
+// BUSCAR DADOS
+// ===============================
 $nomeLojaOrigem = $conn->query("SELECT nome FROM lojas WHERE id = $lojaOrigem")->fetch_assoc()['nome'] ?? '—';
 
-// Buscar lista de todas as lojas (para permitir alterar a origem)
-$todasLojas = $conn->query("
-    SELECT id, nome FROM lojas ORDER BY nome
-")->fetch_all(MYSQLI_ASSOC);
+$todasLojas = $conn->query("SELECT id, nome FROM lojas ORDER BY nome")->fetch_all(MYSQLI_ASSOC);
 
-// Buscar lista de lojas solicitadas (todas menos a origem)
 $lojasSolicitadas = $conn->query("
     SELECT id, nome FROM lojas 
     WHERE id <> $lojaOrigem
     ORDER BY nome
 ")->fetch_all(MYSQLI_ASSOC);
 
-// Buscar lista de funcionários ativos (para o campo SOLICITADO PARA)
 $funcionarios = $conn->query("
     SELECT f.id, f.nome
     FROM funcionarios f
@@ -49,6 +63,22 @@ $funcionarios = $conn->query("
 $erro = "";
 
 // ===============================
+// TIPO DO PROTOCOLO (VEM DO MENU)
+// ===============================
+$tiposValidos = [
+    'medicamento' => 'medicamento',
+    'perfumaria'  => 'perfumaria'
+];
+
+$tipo = $_GET['tipo'] ?? '';
+
+if (!in_array($tipo, ['medicamento', 'perfumaria'])) {
+    header("Location: /modulos/chamados_trilho_abrir_simples.php?tipo=$tipo");
+    exit;
+}
+
+
+// ===============================
 // PROCESSAR FORMULÁRIO
 // ===============================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -59,21 +89,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $observacao      = trim($_POST['item_observacao'] ?? '');
 
     // ===============================
-    // NOVA VALIDAÇÃO: origem ≠ destino
+    // VALIDAÇÃO
     // ===============================
     if ($loja_origem === $loja_solicitada) {
         $erro = "❌ A loja de origem e a loja de destino não podem ser iguais.";
     }
 
-    // ITENS NO NOVO FORMATO
     $itens = $_POST['itens'] ?? [];
-
-    // Validação de itens
     $temItemValido = false;
     $itensLimpos   = [];
 
-    foreach ($itens as $key => $item) {
-        $codigo = isset($item['codigo']) ? preg_replace('/[^0-9]/', '', $item['codigo']) : '';
+    foreach ($itens as $item) {
+        $codigo = preg_replace('/[^0-9]/', '', $item['codigo'] ?? '');
         $nome   = trim($item['descricao'] ?? '');
         $qtd    = intval($item['quantidade'] ?? 0);
 
@@ -91,57 +118,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $erro = "❌ Preencha todos os campos obrigatórios corretamente.";
     }
 
+    // ===============================
+    // SALVAR NO BANCO
+    // ===============================
     if (empty($erro)) {
 
-        // ===============================
-        // GERAR PROTOCOLO — CORRIGIDO
-        // Agora funciona mesmo com DOC0001, ITEM0001 etc.
-        // ===============================
+        // GERAR PROTOCOLO
         $res = $conn->query("SELECT protocolo FROM chamados_trilho ORDER BY id DESC LIMIT 1");
-
         if ($res->num_rows > 0) {
             $ultimo = $res->fetch_assoc()['protocolo'];
-
-            // Extrai apenas números, ignorando prefixos
             $numero = intval(preg_replace('/\D/', '', $ultimo)) + 1;
         } else {
             $numero = 1;
         }
-
         $protocolo = 'CT' . str_pad($numero, 4, '0', STR_PAD_LEFT);
 
-        // Gerar título automático com base nos itens limpos
+        // TÍTULO AUTOMÁTICO
         $titulo = gerarTituloTrilho($itensLimpos);
 
-        // ===============================
-        // CRIAR REGISTRO DO TRILHO
-        // ===============================
+        // INSERT PRINCIPAL
         $stmt = $conn->prepare("
             INSERT INTO chamados_trilho (
                 protocolo, tipo, loja_origem_id, loja_destino_id, solicitante_id,
                 solicitado_id, descricao, observacoes, status, data_criacao
-            ) VALUES (?, 'medicamento', ?, ?, ?, ?, ?, ?, 'aberto', NOW())
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'aberto', NOW())
         ");
 
-        $descricao = $titulo;
-
         $stmt->bind_param(
-            "siiiiss",
+            "ssiiisss",
             $protocolo,
+            $tipo,
             $loja_origem,
             $loja_solicitada,
             $usuarioId,
             $solicitado_id,
-            $descricao,
+            $titulo,
             $observacao
         );
 
         $stmt->execute();
         $idTrilho = $stmt->insert_id;
 
-        // ===============================
         // SALVAR ITENS
-        // ===============================
         $stmt2 = $conn->prepare("
             INSERT INTO trilho_itens (trilho_id, codigo, descricao, quantidade)
             VALUES (?, ?, ?, ?)
@@ -158,9 +176,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt2->execute();
         }
 
-        // ===============================
-        // FINALIZAR
-        // ===============================
         setFlash("success", "✔️ Protocolo criado com sucesso!");
         header("Location: chamados_trilho.php");
         exit;
@@ -168,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 ob_start();
-include ROOT_PATH . '/includes/flash.php';   // ← agora funciona
+include ROOT_PATH . '/includes/flash.php';
 ?>
 
 <link rel="stylesheet" href="/css/chamados_trilho_abrir.css">
@@ -179,10 +194,10 @@ include ROOT_PATH . '/includes/flash.php';   // ← agora funciona
 <h2>🚚 Novo Protocolo do Trilho</h2>
 <p>Preencha os dados abaixo para registrar uma entrega.</p>
 
-
-
-
 <form method="POST" class="form-chamado">
+
+    <!-- TIPO DO TRILHO -->
+    <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo) ?>">
 
     <label for="loja_origem">Loja Solicitante:</label>
     <select id="loja_origem" name="loja_origem" required>

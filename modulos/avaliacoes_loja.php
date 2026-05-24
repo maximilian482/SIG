@@ -16,33 +16,32 @@ if (!isset($_SESSION['cpf'])) {
 $funcId = $_SESSION['funcionario_id'];
 $cpf    = $_SESSION['cpf'];
 
+if (!temAcesso($conn, $cpf, 'avaliacoes_loja')) {
+    $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar Avaliações de Loja.</h2>";
+    include ROOT_PATH . '/includes/layout.php';
+    exit;
+}
+
 ob_start();
 include ROOT_PATH . '/includes/flash.php';
 ?>
+<div class="botoes-avaliacoes">
+    <a href="ferramentas.php" class="btn btn-cinza">⬅ Voltar</a>
+
+    <!-- Botão de configuração agora é dinâmico via JS -->
+    <a id="btn-configurar" href="#" class="btn btn-azul">
+        ⚙️ Configurar
+    </a>
+
+    <a href="avaliacoes_historico.php" class="btn btn-amarelo">
+        📜 Histórico
+    </a>
+</div>
 
 <link rel="stylesheet" href="/css/avaliacoes_loja.css">
 
 <!-- Biblioteca para assinatura -->
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
-<style>
-.signature-canvas {
-    width: 100%;
-    height: 200px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    background: white;
-}
-.btn-limpar {
-    margin-top: 8px;
-    padding: 6px 12px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-</style>
 
 <div class="container-avaliacao">
     <div class="avaliacao-wrapper">
@@ -84,65 +83,63 @@ include ROOT_PATH . '/includes/flash.php';
                 <input type="hidden" id="avaliador_id" value="<?= $_SESSION['funcionario_id'] ?>">
 
                 <!-- Carrossel -->
-<div id="carrossel-avaliacao" class="carrossel-container">
-    <!-- Slides dos setores serão carregados via AJAX -->
+                <div id="carrossel-avaliacao" class="carrossel-container">
+                    <!-- Slides dos setores serão carregados via AJAX -->
 
-    <!-- Slide de resumo (NOVO SLIDE, FORA DO SLIDE FINAL) -->
-    <div id="slide-resumo" class="carrossel-slide oculto">
-        <h3 class="titulo-final">Resumo da Avaliação</h3>
+                    <!-- Slide de resumo -->
+                    <div id="slide-resumo" class="carrossel-slide oculto">
+                        <h3 class="titulo-final">Resumo da Avaliação</h3>
 
-        <div class="legenda-avaliacao">
-            <div><span class="legenda-bolinha ruim"></span> Ruim</div>
-            <div><span class="legenda-bolinha parcial"></span> Parcial</div>
-            <div><span class="legenda-bolinha bom"></span> Bom</div>
-        </div>
+                        <div class="legenda-avaliacao">
+                            <div><span class="legenda-bolinha ruim"></span> Ruim</div>
+                            <div><span class="legenda-bolinha parcial"></span> Parcial</div>
+                            <div><span class="legenda-bolinha bom"></span> Bom</div>
+                        </div>
 
+                        <div id="grafico-setores"></div>
 
-        <div id="grafico-setores"></div>
+                        <h4 class="titulo-final" style="margin-top:30px;">Avaliação Geral</h4>
+                        <canvas id="grafico-geral" width="220" height="220"></canvas>
+                    </div>
 
-        <h4 class="titulo-final" style="margin-top:30px;">Avaliação Geral</h4>
-            <canvas id="grafico-geral" width="220" height="220"></canvas>
-    </div>
+                    <!-- Slide final -->
+                    <div id="slide-final" class="carrossel-slide oculto">
 
-    <!-- Slide final -->
-    <div id="slide-final" class="carrossel-slide oculto">
+                        <h3 class="titulo-final">Finalizar Avaliação</h3>
 
-        <h3 class="titulo-final">Finalizar Avaliação</h3>
+                        <div class="grupo-campo">
+                            <label class="label-premium">Responsável pela avaliação:</label>
+                            <input type="text" id="responsavel_nome" class="input-premium" placeholder="Nome completo" required>
+                        </div>
 
-        <div class="grupo-campo">
-            <label class="label-premium">Responsável pela avaliação:</label>
-            <input type="text" id="responsavel_nome" class="input-premium" placeholder="Nome completo" required>
-        </div>
+                        <div class="grupo-campo">
+                            <button type="button" id="btn-add-observacao" class="btn-nav-premium" style="background:#777;">
+                                + Adicionar observações gerais
+                            </button>
 
-        <div class="grupo-campo">
-            <button type="button" id="btn-add-observacao" class="btn-nav-premium" style="background:#777;">
-                + Adicionar observações gerais
-            </button>
+                            <div id="obs-wrapper" class="oculto" style="margin-top:15px;">
+                                <label class="label-premium">Observações gerais:</label>
+                                <textarea id="observacao_final" class="input-premium" rows="3"></textarea>
+                            </div>
+                        </div>
 
-            <div id="obs-wrapper" class="oculto" style="margin-top:15px;">
-                <label class="label-premium">Observações gerais:</label>
-                <textarea id="observacao_final" class="input-premium" rows="3"></textarea>
-            </div>
-        </div>
+                        <div class="grupo-campo">
+                            <label class="label-premium">Data da avaliação:</label>
+                            <input type="date" id="data_avaliacao" class="input-premium">
+                        </div>
 
-        <div class="grupo-campo">
-            <label class="label-premium">Data da avaliação:</label>
-            <input type="date" id="data_avaliacao" class="input-premium">
-        </div>
+                        <div class="grupo-campo assinatura-box">
+                            <label class="label-premium">Assinatura do responsável:</label>
 
-        <div class="grupo-campo assinatura-box">
-            <label class="label-premium">Assinatura do responsável:</label>
+                            <canvas id="signature-pad" class="signature-canvas"></canvas>
 
-            <canvas id="signature-pad" class="signature-canvas"></canvas>
+                            <button type="button" class="btn-limpar" onclick="limparAssinatura()">Limpar</button>
 
-            <button type="button" class="btn-limpar" onclick="limparAssinatura()">Limpar</button>
+                            <input type="hidden" id="assinatura_base64">
+                        </div>
 
-            <input type="hidden" id="assinatura_base64">
-        </div>
-
-    </div>
-</div>
-
+                    </div>
+                </div>
 
                 <!-- Navegação do carrossel -->
                 <div id="carrossel-nav" class="carrossel-nav oculto">
@@ -153,54 +150,36 @@ include ROOT_PATH . '/includes/flash.php';
             </form>
         </div>
 
-
-<div id="ultimas-avaliacoes" class="card-premium lista-avaliacoes-container">
-    <br><br><h3 class="card-titulo">Últimas Avaliações</h3>
-
-    <table class="tabela-premium" id="tabela-avaliacoes">
-        <thead>
-            <tr>
-                <th>Loja</th>
-                <th>Nota Geral</th>
-                <th>Data</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="lista-avaliacoes"></tbody>
-    </table>
-</div>
-
-
+        <!-- Últimas avaliações com dropdown de detalhes -->
+        <div id="ultimas-avaliacoes" class="card-premium lista-avaliacoes-container">
+            <br><br><h3 class="card-titulo" align="center">10 Últimas Avaliações</h3>
+            
+            <table class="tabela-premium" id="tabela-avaliacoes">
+                <thead>
+                    <tr>
+                        <th>Loja</th>
+                        <th>Nota Geral</th>
+                        <th>Data</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="lista-avaliacoes"></tbody>
+            </table>
+        </div>
 
     </div>
-
 </div>
 
-<!-- Modal Detalhes -->
-<div id="modal-detalhes" class="modal-premium oculto">
-    <div class="modal-conteudo">
-        <span class="modal-fechar" id="fechar-modal">&times;</span>
-
-        <h2 id="modal-loja"></h2>
-        <p><strong>Data:</strong> <span id="modal-data"></span></p>
-        <p><strong>Responsável:</strong> <span id="modal-responsavel"></span></p>
-
-        <h3>Avaliação Geral</h3>
-        <canvas id="modal-grafico-geral" width="220" height="220"></canvas>
-
-
-
-        <h3 style="margin-top:25px;">Setores Avaliados</h3>
-        <div id="modal-grafico-setores"></div>
-    </div>
-</div>
-
-
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/js/avaliacoes_loja.js"></script>
+
+<!-- JS principais -->
+<script src="/js/avaliacoes_loja.js?v=<?= time() ?>"></script>
+
 <script src="/js/avaliacoes_loja_graficos.js"></script>
 
-
+<!-- Script extra para dropdown de detalhes na tabela -->
+<script src="/js/avaliacoes_loja_detalhes.js"></script>
 
 <?php
 $conteudo = ob_get_clean();

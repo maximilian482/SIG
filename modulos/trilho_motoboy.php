@@ -7,15 +7,14 @@ $conn = conectar();
 require_once __DIR__ . '/../config/bootstrap.php';
 require_once ROOT_PATH . '/includes/funcoes.php';
 
-// Verifica login
 if (!isset($_SESSION['cpf'])) {
     header("Location: /login.php");
     exit;
 }
 
-$cpf = $_SESSION['cpf'];
+$cpf    = $_SESSION['cpf'];
+$funcId = $_SESSION['funcionario_id'] ?? 0;
 
-// Verifica permissão
 if (!temAcesso($conn, $cpf, 'trilho_motoboy')) {
     $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar o Trilho.</h2>";
     include ROOT_PATH . '/includes/layout.php';
@@ -23,12 +22,14 @@ if (!temAcesso($conn, $cpf, 'trilho_motoboy')) {
 }
 
 $mapaTitulos = [
-    'documento'   => '📄 Documento',
-    'medicamento' => '💊 Medicamentos',
-    'malote'      => '📦 Malote',
-    'item'        => '📦 Itens Diversos',
-    'nota'        => '🧾 Notas',
-    'comprovante' => '🧾 Comprovantes'
+    'medicamento'    => '💊 Medicamento',
+    'perfumaria'     => '🧴 Perfumaria',
+    'remanejamento'  => '📄 Remanejamento',
+    'malote'         => '📦 Malote',
+    'item'           => '📌 Item',
+    'nota'           => '🧾 Notas',
+    'comprovante'    => '🧾 Comprovantes',
+    'documento'      => '📄 Documento'
 ];
 
 ob_start();
@@ -43,29 +44,12 @@ ob_start();
 
 <h2 class="titulo-trilho">🚚 Trilho — Motoboy</h2>
 
-<!-- FILTROS DO TRILHO -->
-<!-- <div class="filtros-trilho">
-    <select id="filtro-origem">
-        <option value="">Loja Solicitante (todas)</option>
-    </select>
-
-    <select id="filtro-destino">
-        <option value="">Loja de Liberação (todas)</option>
-    </select>
-
-    <button id="btn-limpar-filtros" class="btn-limpar-filtros">Limpar</button>
-</div> -->
-
-
-
-<!-- ABAS -->
 <div class="abas-trilho">
     <button class="aba ativa" data-aba="coletar">Coletar</button>
     <button class="aba" data-aba="rota">Em rota</button>
     <button class="aba" data-aba="entregues">Entregues</button>
 </div>
 
-<!-- FILTROS POR ABA -->
 <div id="filtros-coletar" class="filtros-trilho">
     <select id="filtro-lib">
         <option value="">Loja de Liberação (todas)</option>
@@ -87,213 +71,330 @@ ob_start();
     <button id="btn-limpar-entregues" class="btn-limpar-filtros">Limpar</button>
 </div>
 
-
-<!-- ============================
-     ABA: COLETAR
-============================ -->
+<!-- COLETAR -->
 <div id="coletar" class="conteudo-aba ativo">
     <h3>📦 Transferências para Coletar</h3>
 
-    <?php
-    $sql = "
-        SELECT 
-            ct.id,
-            ct.protocolo,
-            ct.descricao,
-            ct.tipo,
-            ct.status,
-            lo.nome AS origem_nome,
-            ld.nome AS destino_nome
-        FROM chamados_trilho ct
-        LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
-        LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
-        WHERE 
-            -- Medicamentos: mostrar ABERTO e FATURADO
-            (ct.tipo = 'medicamento' AND ct.status IN ('aberto', 'faturado'))
-            
-            -- Simples: mostrar apenas FATURADO
-            OR (ct.tipo <> 'medicamento' AND ct.status = 'faturado')
+<?php
+$sql = "
+    SELECT 
+        ct.*,
+        lo.nome AS origem_nome,
+        ld.nome AS destino_nome,
+        fs.nome AS nome_solicitante,
+        fd.nome AS nome_solicitado
+    FROM chamados_trilho ct
+    LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
+    LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
+    LEFT JOIN funcionarios fs ON fs.id = ct.solicitante_id
+    LEFT JOIN funcionarios fd ON fd.id = ct.solicitado_id
+    WHERE ct.status IN ('aberto','faturado')
+    ORDER BY ct.id DESC
+";
 
-        ORDER BY ct.id DESC
-    ";
+$res = $conn->query($sql);
 
-    $res = $conn->query($sql);
+if ($res->num_rows == 0):
+    echo "<p>Nenhuma transferência pendente.</p>";
+else:
+    while ($c = $res->fetch_assoc()):
+        $tipo = normalizarTipo($c['tipo']);
+        $tipoSimples = in_array($tipo, ['remanejamento','malote','item']);
+?>
 
-    if ($res->num_rows == 0): ?>
-        <p>Nenhuma transferência pendente.</p>
-    <?php else: ?>
-        <?php while ($c = $res->fetch_assoc()): ?>
+<?php if ($tipoSimples): ?>
 
-            <div class="card-trilho">
+    <!-- CARD NOVO — TIPOS SIMPLES -->
+    <div class="card-trilho card-simples">
 
-                <!-- TÍTULO DO TIPO -->
-                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+        <h4 class="tipo-titulo tipo-<?= $tipo ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipo)) ?>
+        </h4>
 
-                <!-- DESCRIÇÃO -->
-                <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
+        <p class="tag-acao <?= $c['acao'] ?>">
+            <?= $c['acao'] === 'enviar' ? '📤 Envio' : '📥 Recebimento' ?>
+        </p>
 
-                <div class="card-header">
-                    <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+        <div class="card-produto">
+            <?= htmlspecialchars($c['descricao']) ?>
+        </div>
 
-                    <?php if ($c['tipo'] === 'medicamento' && $c['status'] === 'aberto'): ?>
-                        <span class="tag-status aguardando">Aguardando faturar</span>
+        <div class="card-body">
+            <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+            <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
 
-                    <?php elseif ($c['status'] === 'faturado'): ?>
-                        <span class="tag-status coletar">Liberado</span>
-                    <?php endif; ?>
-                </div>
+            <?php if ($c['acao'] === 'enviar'): ?>
+                <p><strong>Aos cuidados de:</strong> <?= htmlspecialchars($c['nome_solicitado'] ?? '-') ?></p>
+            <?php endif; ?>
+        </div>
 
-                <div class="card-body">
-                    <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
-                </div>
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes-simples" data-id="<?= $c['id'] ?>">Detalhes</button>
+            <!-- Motoboy: sempre pode coletar na aba ABERTOS para tipos simples -->
+            <button class="btn-trilho btn-coletar" data-id="<?= $c['id'] ?>">Coletar</button>
+        </div>
 
-                <div class="card-actions">
+    </div>
 
-                    <!-- Detalhes via modal -->
-                    <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+<?php else: ?>
 
-                    <?php if ($c['tipo'] === 'medicamento' && $c['status'] === 'aberto'): ?>
+    <!-- CARD ANTIGO — TIPOS NÃO SIMPLES -->
+    <div class="card-trilho">
 
-                        <!-- STATUS AO LADO DO BOTÃO DETALHES -->
-                        <span class="status-lateral aguardando">
-                            Aguardando faturar
-                        </span>
+        <h4 class="tipo-titulo tipo-<?= htmlspecialchars($tipo) ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipo)) ?>
+        </h4>
+        <br>
 
-                    <?php elseif ($c['status'] === 'faturado'): ?>
+        <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
-                        <!-- Coletar somente quando FATURADO -->
-                        <button class="btn-trilho btn-coletar" data-id="<?= $c['id'] ?>">Coletar</button>
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
 
-                    <?php endif; ?>
+            <?php if ($c['status'] == 'aberto'): ?>
+                <span class="tag-status aberto">Aberto</span>
+            <?php elseif ($c['status'] == 'faturado'): ?>
+                <span class="tag-status coletar">Liberado</span>
+            <?php else: ?>
+                <span class="tag-status"><?= htmlspecialchars($c['status']) ?></span>
+            <?php endif; ?>
+        </div>
 
-                </div>
+        <div class="card-body">
 
-            </div>
+            <?php if ($c['acao'] === 'enviar'): ?>
 
-        <?php endwhile; ?>
-    <?php endif; ?>
+                <p><strong>Entregar:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                <p><strong>Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                <p><strong>Aos cuidados de:</strong> <?= htmlspecialchars($c['nome_solicitado'] ?? '-') ?></p>
+
+            <?php else: ?>
+
+                <p><strong>Enviado por:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                <p><strong>Responsável:</strong> <?= htmlspecialchars($c['nome_solicitado'] ?? '-') ?></p>
+
+            <?php endif; ?>
+
+        </div>
+
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+
+            <?php if ($c['status'] === 'faturado'): ?>
+                <button class="btn-trilho btn-coletar" data-id="<?= $c['id'] ?>">Coletar</button>
+            <?php endif; ?>
+        </div>
+
+    </div>
+
+<?php endif; ?>
+
+<?php endwhile; endif; ?>
 </div>
 
+<!-- ROTA -->
 <div id="rota" class="conteudo-aba">
     <h3>🛵 Transferências em Rota</h3>
 
-    <?php
-    $sql2 = "
-        SELECT 
-            ct.id,
-            ct.protocolo,
-            ct.descricao,
-            ct.tipo,
-            lo.nome AS origem_nome,
-            ld.nome AS destino_nome
-        FROM chamados_trilho ct
-        LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
-        LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
-        WHERE ct.status = 'em_rota'
-        ORDER BY ct.id DESC
-    ";
+<?php
+$sql2 = "
+    SELECT 
+        ct.*,
+        lo.nome AS origem_nome,
+        ld.nome AS destino_nome,
+        fs.nome AS nome_solicitante,
+        fd.nome AS nome_solicitado
+    FROM chamados_trilho ct
+    LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
+    LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
+    LEFT JOIN funcionarios fs ON fs.id = ct.solicitante_id
+    LEFT JOIN funcionarios fd ON fd.id = ct.solicitado_id
+    WHERE ct.status = 'em_rota'
+    ORDER BY ct.id DESC
+";
 
-    $res2 = $conn->query($sql2);
+$res2 = $conn->query($sql2);
 
-    if ($res2->num_rows == 0): ?>
-        <p>Nenhuma transferência em rota.</p>
-    <?php else: ?>
-        <?php while ($c = $res2->fetch_assoc()): ?>
+if ($res2->num_rows == 0):
+    echo "<p>Nenhuma transferência em rota.</p>";
+else:
+    while ($c = $res2->fetch_assoc()):
+        $tipo = normalizarTipo($c['tipo']);
+        $tipoSimples = in_array($tipo, ['remanejamento','malote','item']);
+?>
 
-            <div class="card-trilho">
+<?php if ($tipoSimples): ?>
 
-                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+    <div class="card-trilho card-simples">
 
-                <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
+        <h4 class="tipo-titulo tipo-<?= $tipo ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipo)) ?>
+        </h4>
 
-                <div class="card-header">
-                    <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
-                    <span class="tag-status rota">Em rota</span>
-                </div>
+        <p class="tag-acao <?= $c['acao'] ?>">
+            <?= $c['acao'] === 'enviar' ? '📤 Envio' : '📥 Recebimento' ?>
+        </p>
 
-                <div class="card-body">
-                    <p><strong>Entregar:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
-                </div>
+        <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
-                <div class="card-actions">
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+            <span class="tag-status rota">Em rota</span>
+        </div>
 
-                    <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+        <div class="card-body">
+            <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+            <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+        </div>
 
-                    <a href="trilho_assinar.php?id=<?= $c['id'] ?>" 
-                       class="btn-trilho btn-entregar">
-                       Entregar
-                    </a>
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes-simples" data-id="<?= $c['id'] ?>">Detalhes</button>
+            <a href="trilho_assinar.php?id=<?= $c['id'] ?>" class="btn-trilho btn-entregar">Entregar</a>
+        </div>
 
-                </div>
+    </div>
 
-            </div>
+<?php else: ?>
 
-        <?php endwhile; ?>
-    <?php endif; ?>
+    <div class="card-trilho">
+
+        <h4 class="tipo-titulo tipo-<?= htmlspecialchars($tipo) ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipo)) ?>
+        </h4>
+        <br>
+
+        <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
+
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+            <span class="tag-status rota">Em rota</span>
+        </div>
+
+        <div class="card-body">
+
+            <?php if ($c['acao'] === 'enviar'): ?>
+
+                <p><strong>Entregar:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                <p><strong>Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                <p><strong>Aos cuidados de:</strong> <?= htmlspecialchars($c['nome_solicitado'] ?? '-') ?></p>
+
+            <?php else: ?>
+
+                <p><strong>Enviado por:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+                <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+                <p><strong>Responsável:</strong> <?= htmlspecialchars($c['nome_solicitado'] ?? '-') ?></p>
+
+            <?php endif; ?>
+
+        </div>
+
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+            <a href="trilho_assinar.php?id=<?= $c['id'] ?>" class="btn-trilho btn-entregar">Entregar</a>
+        </div>
+
+    </div>
+
+<?php endif; ?>
+
+<?php endwhile; endif; ?>
 </div>
 
-
+<!-- ENTREGUES -->
 <div id="entregues" class="conteudo-aba">
     <h3>📄 Entregues (Hoje)</h3>
 
-    <?php
-    $sql3 = "
-        SELECT 
-            ct.id,
-            ct.protocolo,
-            ct.descricao,
-            ct.tipo,
-            lo.nome AS origem_nome,
-            ld.nome AS destino_nome,
-            ct.assinatura_nome,
-            ct.assinatura_data
-        FROM chamados_trilho ct
-        LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
-        LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
-        WHERE ct.status = 'entregue'
-          AND DATE(ct.assinatura_data) = CURDATE()
-        ORDER BY ct.id DESC
-    ";
+<?php
+$sql3 = "
+    SELECT 
+        ct.*,
+        lo.nome AS origem_nome,
+        ld.nome AS destino_nome
+    FROM chamados_trilho ct
+    LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
+    LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
+    WHERE ct.status = 'entregue'
+      AND DATE(ct.assinatura_data) = CURDATE()
+    ORDER BY ct.id DESC
+";
 
-    $res3 = $conn->query($sql3);
+$res3 = $conn->query($sql3);
 
-    if ($res3->num_rows == 0): ?>
-        <p>Nenhuma entrega finalizada hoje.</p>
-        <p><a href="trilho_historico.php" class="btn-historico">📚 Ver histórico completo</a></p>
-    <?php else: ?>
-        <?php while ($c = $res3->fetch_assoc()): ?>
+if ($res3->num_rows == 0):
+    echo "<p>Nenhuma entrega finalizada hoje.</p>";
+    echo '<p><a href="trilho_motoboy_historico.php" class="btn-historico">📚 Ver histórico completo</a></p>';
+else:
+    while ($c = $res3->fetch_assoc()):
+        $tipo = normalizarTipo($c['tipo']);
+        $tipoSimples = in_array($tipo, ['remanejamento','malote','item']);
+?>
 
-            <div class="card-trilho entregue">
+<?php if ($tipoSimples): ?>
 
-                <h4 class="tipo-titulo"><?= $mapaTitulos[$c['tipo']] ?></h4><br>
+    <div class="card-trilho card-simples entregue">
 
-                <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
+        <h4 class="tipo-titulo tipo-<?= $tipo ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipo)) ?>
+        </h4>
 
-                <div class="card-header">
-                    <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
-                    <span class="tag-status entregue">Entregue</span>
-                </div>
+        <p class="tag-acao <?= $c['acao'] ?>">
+            <?= $c['acao'] === 'enviar' ? '📤 Envio' : '📥 Recebimento' ?>
+        </p>
 
-                <div class="card-body">
-                    <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-                    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
-                    <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
-                    <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
-                </div>
+        <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
 
-                <div class="card-actions">
-                    <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
-                </div>
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+            <span class="tag-status entregue">Entregue</span>
+        </div>
 
-            </div>
+        <div class="card-body">
+            <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+            <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+            <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
+            <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
+        </div>
 
-        <?php endwhile; ?>
-    <?php endif; ?>
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes-simples" data-id="<?= $c['id'] ?>">Detalhes</button>
+        </div>
+
+    </div>
+
+<?php else: ?>
+
+    <div class="card-trilho entregue">
+
+        <h4 class="tipo-titulo tipo-<?= htmlspecialchars($tipo) ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipo)) ?>
+        </h4>
+
+        <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
+
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+            <span class="tag-status entregue">Entregue</span>
+        </div>
+
+        <div class="card-body">
+            <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+            <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+            <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
+            <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
+        </div>
+
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+        </div>
+
+    </div>
+
+<?php endif; ?>
+
+<?php endwhile; endif; ?>
 </div>
 
-<!-- MODAL -->
 <div id="modalDetalhes" class="modal-trilho">
     <div class="modal-conteudo">
         <span class="modal-fechar">&times;</span>
@@ -306,4 +407,3 @@ ob_start();
 <?php
 $conteudo = ob_get_clean();
 include ROOT_PATH . '/includes/layout.php';
-?>

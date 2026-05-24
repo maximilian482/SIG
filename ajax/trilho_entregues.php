@@ -19,16 +19,20 @@ $lojaUsuario  = $_SESSION['loja'] ?? 0;
 $loja = $_GET['loja'] ?? '';
 
 // ===============================
-// SQL
+// SQL — COMPLETO, IGUAL AO ABERTOS
 // ===============================
 $sql = "
     SELECT 
         ct.*,
         lo.nome AS origem_nome,
-        ld.nome AS destino_nome
+        ld.nome AS destino_nome,
+        fs.nome AS nome_solicitante,
+        fd.nome AS nome_solicitado
     FROM chamados_trilho ct
     LEFT JOIN lojas lo ON lo.id = ct.loja_origem_id
     LEFT JOIN lojas ld ON ld.id = ct.loja_destino_id
+    LEFT JOIN funcionarios fs ON fs.id = ct.solicitante_id
+    LEFT JOIN funcionarios fd ON fd.id = ct.solicitado_id
     WHERE ct.status = 'entregue'
       AND DATE(ct.assinatura_data) = CURDATE()
 ";
@@ -49,28 +53,96 @@ if ($res->num_rows == 0) {
     exit;
 }
 
+// ===============================
+// MAPA DE TÍTULOS — IGUAL AO ABERTOS
+// ===============================
+$mapaTitulos = [
+    'medicamento'    => '💊 Medicamento',
+    'perfumaria'     => '🧴 Perfumaria',
+    'remanejamento'  => '📄 Remanejamento',
+    'malote'         => '📦 Malote',
+    'item'           => '📌 Item'
+];
+
 while ($c = $res->fetch_assoc()):
+
+    // Normaliza tipo
+    $tipoBruto = trim($c['tipo']);
+    $tipo      = strtolower($tipoBruto);
+
+    // Detecta tipo simples
+    $tipoSimples = in_array($tipo, ['remanejamento','malote','item']);
 ?>
-    <div class='card-trilho'>
 
-        <h4 class='tipo-titulo'><?= htmlspecialchars($c['tipo']) ?></h4><br>
+<?php if ($tipoSimples): ?>
 
-        <div class='card-produto'><?= htmlspecialchars($c['descricao']) ?></div>
+    <!-- ============================
+         CARD NOVO — TIPOS SIMPLES
+         ============================ -->
+    <div class="card-trilho card-simples entregue">
 
-        <div class='card-header'>
-            <span class='protocolo'><?= htmlspecialchars($c['protocolo']) ?></span>
-            <span class='tag-status entregues'>Entregue</span>
+        <h4 class="tipo-titulo tipo-<?= $tipo ?>">
+            <?= $mapaTitulos[$tipo] ?>
+        </h4>
+
+        <p class="tag-acao <?= $c['acao'] ?>">
+            <?= $c['acao'] === 'enviar' ? '📤 Envio' : '📥 Recebimento' ?>
+        </p>
+
+        <div class="card-produto">
+            <?= htmlspecialchars($c['descricao']) ?>
         </div>
 
-        <div class='card-body'>
-            <p><strong>Liberação:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
-            <p><strong>Entregue:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+            <span class="tag-status entregue">Entregue</span>
         </div>
 
-        <div class='card-actions'>
-            <button class='btn-trilho btn-detalhes' data-id='<?= $c['id'] ?>'>Detalhes</button>
+        <div class="card-body">
+            <p><strong>Origem:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+            <p><strong>Destino:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+            <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
+            <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
+        </div>
+
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes-simples" data-id="<?= $c['id'] ?>">Detalhes</button>
         </div>
 
     </div>
+
+<?php else: ?>
+
+    <!-- ============================
+         CARD ANTIGO — MEDICAMENTO / PERFUMARIA
+         ============================ -->
+    <div class="card-trilho entregue">
+
+        <h4 class="tipo-titulo tipo-<?= $tipo ?>">
+            <?= $mapaTitulos[$tipo] ?? htmlspecialchars(ucfirst($tipoBruto)) ?>
+        </h4>
+        <br>
+
+        <div class="card-produto"><?= htmlspecialchars($c['descricao']) ?></div>
+
+        <div class="card-header">
+            <span class="protocolo"><?= htmlspecialchars($c['protocolo']) ?></span>
+            <span class="tag-status entregue">Entregue</span>
+        </div>
+
+        <div class="card-body">
+            <p><strong>Solicitante:</strong> <?= htmlspecialchars($c['origem_nome']) ?></p>
+            <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($c['destino_nome']) ?></p>
+            <p><strong>Recebido por:</strong> <?= htmlspecialchars($c['assinatura_nome']) ?></p>
+            <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($c['assinatura_data'])) ?></p>
+        </div>
+
+        <div class="card-actions">
+            <button class="btn-trilho btn-detalhes" data-id="<?= $c['id'] ?>">Detalhes</button>
+        </div>
+
+    </div>
+
+<?php endif; ?>
 
 <?php endwhile; ?>

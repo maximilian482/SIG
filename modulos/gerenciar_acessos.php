@@ -6,10 +6,7 @@ $conn = conectar();
 require_once __DIR__ . '/../config/bootstrap.php';
 require_once ROOT_PATH . '/includes/funcoes.php';
 
-include ROOT_PATH . '/includes/head.php';
-include ROOT_PATH . '/includes/menu.php';
-include ROOT_PATH . '/perfil/menu_perfil.php';
-
+// CPF do usuário logado
 $cpfFuncionarioAtual = $_SESSION['cpf'] ?? '';
 
 // 🔐 Verifica permissão para acessar o gerenciador de acessos
@@ -18,10 +15,13 @@ if (!temAcesso($conn, $cpfFuncionarioAtual, 'gestao_acessos')) {
     exit;
 }
 
+// ===============================
+// FILTROS E PAGINAÇÃO
+// ===============================
 $buscaNome = strtolower(trim($_GET['busca'] ?? ''));
-$pagina = max(1, intval($_GET['pagina'] ?? 1));
-$limite = max(5, intval($_GET['limite'] ?? 10));
-$offset = ($pagina - 1) * $limite;
+$pagina    = max(1, intval($_GET['pagina'] ?? 1));
+$limite    = max(5, intval($_GET['limite'] ?? 10));
+$offset    = ($pagina - 1) * $limite;
 
 $buscaNomeLike = '%' . $buscaNome . '%';
 
@@ -39,12 +39,12 @@ $stmt = $conn->prepare("
 ");
 $stmt->bind_param("ssii", $buscaNomeLike, $buscaNome, $limite, $offset);
 $stmt->execute();
-$result = $stmt->get_result();
-$funcionarios = $result->fetch_all(MYSQLI_ASSOC);
+$funcionarios = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Total de registros para paginação
+// Total de registros
 $stmtTotal = $conn->prepare("
-  SELECT COUNT(*) FROM funcionarios f
+  SELECT COUNT(*) 
+  FROM funcionarios f
   LEFT JOIN cargos c ON f.cargo_id = c.id
   WHERE f.desligamento IS NULL
     AND (LOWER(f.nome) LIKE ? OR ? = '')
@@ -54,16 +54,14 @@ $stmtTotal->bind_param("ss", $buscaNomeLike, $buscaNome);
 $stmtTotal->execute();
 $total = $stmtTotal->get_result()->fetch_row()[0];
 $totalPaginas = ceil($total / $limite);
+
+// ===============================
+// INÍCIO DO CONTEÚDO
+// ===============================
+ob_start();
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Gerenciar Acessos</title>
-  <link rel="stylesheet" href="../css/acessos.css">
-</head>
-<body>
+<link rel="stylesheet" href="../css/acessos.css">
 
 <?php if (isset($_GET['senha_resetada']) && $_GET['senha_resetada'] == '1'): ?>
   <div class="alerta-sucesso">
@@ -143,5 +141,10 @@ $totalPaginas = ceil($total / $limite);
 <a class="btn" href="../index.php" style="margin-top:20px;">🏠 Voltar ao início</a>
 <a class="btn" href="/modulos/gestao.php" style="margin-top:20px;">🔙 Voltar</a>
 
-</body>
-</html>
+<?php
+// ===============================
+// FINALIZAÇÃO DO CONTEÚDO
+// ===============================
+$conteudo = ob_get_clean();
+include ROOT_PATH . '/includes/layout.php';
+?>

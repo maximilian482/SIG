@@ -22,6 +22,29 @@ $temAcessoGestao = usuarioTemAcessoGestao($conn, $cpf);
 // SUPER/CEO nunca devem ter acesso ao painel da loja
 $temAcessoLoja = (!$isSuperOuCeo && temAcesso($conn, $cpf, 'acesso_painel_loja'));
 
+
+// =====================================================
+// Acesso ao menu FERRAMENTAS
+// =====================================================
+$permissoesFerramentas = [
+    'ferramentas_avaliacoes',
+    'ferramentas_auditoria',
+    'ferramentas_inventario',
+    'ferramentas_controlados',
+    'ferramentas_setores',
+    'ferramentas_dashboard'
+];
+
+$temAcessoFerramentas = false;
+
+foreach ($permissoesFerramentas as $perm) {
+    if (temAcesso($conn, $cpf, $perm)) {
+        $temAcessoFerramentas = true;
+        break;
+    }
+}
+
+
 // =====================================================
 // 2) Buscar setores liberados
 // =====================================================
@@ -122,7 +145,7 @@ $textoTrilho = $quantTrilho > 0
 
 
     <?php if (!$isSuperOuCeo): ?>
-        <li><a href="/modulos/planos_acao/minhas_tarefas.php"><?= htmlspecialchars($textoMinhasTarefas) ?></a></li>
+        <!-- <li><a href="/modulos/planos_acao/minhas_tarefas.php"><?= htmlspecialchars($textoMinhasTarefas) ?></a></li> -->
     <?php endif; ?>
 
     <!-- <?php if ($aguardando > 0 && !$isSuperOuCeo): ?>
@@ -137,11 +160,14 @@ $textoTrilho = $quantTrilho > 0
     <?php endif; ?>
 
     <?php if ($temAcessoPlanosAcao): ?>
-        <li><a href="/modulos/planos_acao/planos_acao_listar.php">📋 Planos de Ação</a></li>
+        <!-- <li><a href="/modulos/planos_acao/planos_acao_listar.php">📋 Planos de Ação</a></li> -->
     <?php endif; ?>
 
     <li><a href="/modulos/mensagem.php">💬 Enviar Mensagem</a></li>
-    <li><a href="/modulos/avaliacoes.php">⭐ Avaliações</a></li>
+    <?php if ($temAcessoFerramentas): ?>
+        <li><a href="/modulos/ferramentas.php">🧰 Ferramentas</a></li>
+    <?php endif; ?>
+
     <li><a href="/modulos/comunidade.php">🌐 Comunidade</a></li>
   </ul>
 </nav>

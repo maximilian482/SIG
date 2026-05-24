@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.classList.add("ativa");
             document.getElementById(btn.dataset.aba).classList.add("ativo");
 
-            // Mostrar filtros corretos
             const aba = btn.dataset.aba;
             document.getElementById("filtros-coletar").style.display = (aba === "coletar") ? "flex" : "none";
             document.getElementById("filtros-rota").style.display = (aba === "rota") ? "flex" : "none";
@@ -34,42 +33,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
     atualizarContadores();
 
-    // ============================
-    // MODAL DE DETALHES
-    // ============================
-    const modal = document.getElementById("modalDetalhes");
-    const modalBody = document.getElementById("modal-body-detalhes");
-    const fechar = document.querySelector(".modal-fechar");
+   // ============================
+// MODAL DE DETALHES
+// ============================
+const modal = document.getElementById("modalDetalhes");
+const modalBody = document.getElementById("modal-body-detalhes");
+const fechar = document.querySelector(".modal-fechar");
 
-    fechar.addEventListener("click", () => {
-        modal.style.display = "none";
-    });
+fechar.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", (e) => {
+    if (e.target === modal) modal.style.display = "none";
+});
 
-    window.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            modal.style.display = "none";
+// Abrir modal
+document.addEventListener("click", async (e) => {
+
+    // TIPOS SIMPLES
+    const btnSimples = e.target.closest(".btn-detalhes-simples");
+    if (btnSimples) {
+
+        const id = btnSimples.dataset.id;
+        modal.style.display = "flex";
+        modalBody.innerHTML = "Carregando...";
+
+        const res = await fetch(`/ajax/trilho_detalhes_simples.php?id=${id}`);
+        const dados = await res.json();
+
+        if (dados.erro) {
+            modalBody.innerHTML = `<p style="color:red;">${dados.erro}</p>`;
+            return;
         }
-    });
 
-    document.addEventListener("click", (e) => {
-        if (e.target.classList.contains("btn-detalhes")) {
+        // Monta o HTML igual ADM
+        modalBody.innerHTML = `
+            <h3>${dados.tipo}</h3>
 
-            const id = e.target.dataset.id;
-            if (!id) return;
+            <p><strong id="lbl-origem"></strong> ${dados.origem}</p>
+            <p><strong id="lbl-destino"></strong> ${dados.destino}</p>
+            <p><strong id="lbl-responsavel"></strong> ${dados.responsavel}</p>
 
-            modal.style.display = "flex";
-            modalBody.innerHTML = "Carregando...";
+            <p><strong>Descrição:</strong><br>${dados.descricao}</p>
+            <p><strong>Observações:</strong><br>${dados.observacoes}</p>
+        `;
 
-            fetch("chamados_trilho_detalhes.php?id=" + id)
-                .then(r => r.text())
-                .then(html => {
-                    modalBody.innerHTML = html;
-                })
-                .catch(() => {
-                    modalBody.innerHTML = "<p style='color:red;'>Erro ao carregar detalhes.</p>";
-                });
+        // Ajusta rótulos conforme ação
+        if (dados.acao === "enviar") {
+            document.getElementById("lbl-origem").innerText = "Origem:";
+            document.getElementById("lbl-destino").innerText = "Destino:";
+            document.getElementById("lbl-responsavel").innerText = "Aos cuidados de:";
+        } else {
+            document.getElementById("lbl-origem").innerText = "Enviado por:";
+            document.getElementById("lbl-destino").innerText = "Recebido por:";
+            document.getElementById("lbl-responsavel").innerText = "Responsável:";
         }
-    });
+
+        return;
+    }
+
+    // TIPOS NÃO SIMPLES
+    const btnNormal = e.target.closest(".btn-detalhes");
+    if (btnNormal) {
+
+        const id = btnNormal.dataset.id;
+        modal.style.display = "flex";
+        modalBody.innerHTML = "Carregando...";
+
+        fetch(`/modulos/chamados_trilho_detalhes.php?id=${id}`)
+            .then(r => r.text())
+            .then(html => modalBody.innerHTML = html)
+            .catch(() => modalBody.innerHTML = "<p style='color:red;'>Erro ao carregar detalhes.</p>");
+
+        return;
+    }
+});
+
+
 
     // ============================
     // COLETAR
@@ -114,12 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ============================================================
-    // NOVO SISTEMA DE FILTROS POR ABA
+    // FILTROS POR ABA
     // ============================================================
 
-    const filtroLib = document.getElementById("filtro-lib");           // Coletar
-    const filtroSolic = document.getElementById("filtro-solic");       // Em rota
-    const filtroEntregue = document.getElementById("filtro-entregue"); // Entregues
+    const filtroLib = document.getElementById("filtro-lib");
+    const filtroSolic = document.getElementById("filtro-solic");
+    const filtroEntregue = document.getElementById("filtro-entregue");
 
     const btnLimparColetar = document.getElementById("btn-limpar-coletar");
     const btnLimparRota = document.getElementById("btn-limpar-rota");
@@ -131,18 +169,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Carregar listas
     fetch("/ajax/trilho_filtros_listas.php")
-        .then(r => r.json())
-        .then(dados => {
+    .then(r => r.json())
+    .then(dados => {
+        console.log(dados); // coloca isso pra ver no console se veio mesmo
 
-            dados.destinos.forEach(d => {
-                filtroLib.innerHTML += `<option value="${d.id}">${d.nome}</option>`;
-                filtroEntregue.innerHTML += `<option value="${d.id}">${d.nome}</option>`;
-            });
-
-            dados.origens.forEach(o => {
-                filtroSolic.innerHTML += `<option value="${o.id}">${o.nome}</option>`;
-            });
+        dados.destinos.forEach(d => {
+            filtroLib.innerHTML      += `<option value="${d.id}">${d.nome}</option>`;
+            filtroEntregue.innerHTML += `<option value="${d.id}">${d.nome}</option>`;
         });
+
+        dados.origens.forEach(o => {
+            filtroSolic.innerHTML += `<option value="${o.id}">${o.nome}</option>`;
+        });
+    })
+    .catch(err => console.error("Erro ao carregar listas do trilho:", err));
+
 
     // AJAX COLETAR
     function atualizarColetar() {
@@ -202,3 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+
+

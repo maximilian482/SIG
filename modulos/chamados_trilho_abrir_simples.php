@@ -14,37 +14,38 @@ if (!isset($_SESSION['usuario'])) {
 
 $usuarioId   = intval($_SESSION['funcionario_id'] ?? 0);
 $nomeUsuario = $_SESSION['nome'] ?? '';
-$lojaOrigem  = intval($_SESSION['loja'] ?? 0);
+$lojaUsuario = intval($_SESSION['loja'] ?? 0);
 
 // ===============================
-// TIPO DO PROTOCOLO (VEM DO BOTÃO)
+// TIPO DO PROTOCOLO (VEM DO MENU)
 // ===============================
 $tipo = trim($_GET['tipo'] ?? '');
 
-$tiposValidos = ['documento', 'malote', 'item', 'nota', 'comprovante'];
+$tiposValidos = [
+    'remanejamento' => 'remanejamento',
+    'malote'        => 'malote',
+    'item'          => 'item'
+];
 
-if (!in_array($tipo, $tiposValidos)) {
+
+
+if (!array_key_exists($tipo, $tiposValidos)) {
     echo "<p>Tipo de protocolo inválido.</p>";
     exit;
 }
 
-// Buscar lista de todas as lojas
+$tipoFinal = $tiposValidos[$tipo];
+
+// ===============================
+// BUSCAR LOJAS E FUNCIONÁRIOS
+// ===============================
 $todasLojas = $conn->query("
     SELECT id, nome FROM lojas ORDER BY nome
 ")->fetch_all(MYSQLI_ASSOC);
 
-// Buscar lista de lojas destino (todas menos a origem)
-$lojasDestino = $conn->query("
-    SELECT id, nome FROM lojas 
-    WHERE id <> $lojaOrigem
-    ORDER BY nome
-")->fetch_all(MYSQLI_ASSOC);
-
-// Buscar funcionários ativos
 $funcionarios = $conn->query("
-    SELECT id, nome
-    FROM funcionarios
-    WHERE desligamento IS NULL 
+    SELECT id, nome FROM funcionarios
+    WHERE desligamento IS NULL
     ORDER BY nome
 ")->fetch_all(MYSQLI_ASSOC);
 
@@ -55,34 +56,56 @@ $erro = "";
 // ===============================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $loja_origem   = intval($_POST['loja_origem'] ?? 0);
-    $loja_destino  = intval($_POST['loja_destino'] ?? 0);
-    $responsavel   = intval($_POST['responsavel_id'] ?? 0);
-    $tipo          = trim($_POST['tipo'] ?? ''); // vem do hidden
+    $acao          = trim($_POST['acao'] ?? '');
+    $tipoFinal     = trim($_POST['tipo'] ?? '');
     $descricao     = trim($_POST['descricao'] ?? '');
     $quantidade    = intval($_POST['quantidade'] ?? 1);
     $observacoes   = trim($_POST['observacoes'] ?? '');
+    $lojaEscolhida = intval($_POST['loja_escolhida'] ?? 0);
+    $responsavelId = intval($_POST['responsavel_id'] ?? 0);
 
     // ===============================
-    // VALIDAÇÃO: origem ≠ destino
+    // VALIDAÇÕES
     // ===============================
-    if ($loja_origem === $loja_destino) {
-        $erro = "❌ A loja de origem e destino não podem ser iguais.";
+    if (!in_array($acao, ['enviar', 'receber'])) {
+        $erro = "❌ Escolha se deseja ENVIAR ou RECEBER.";
     }
 
-    if (!$loja_origem || !$loja_destino || !$responsavel || !$descricao) {
+    if (!$descricao || !$lojaEscolhida) {
         $erro = "❌ Preencha todos os campos obrigatórios.";
     }
 
-    if (!in_array($tipo, $tiposValidos)) {
-        $erro = "❌ Tipo de protocolo inválido.";
+    // “Aos cuidados de” obrigatório SOMENTE quando ENVIAR
+    if ($acao === 'enviar' && !$responsavelId) {
+        $erro = "❌ Selecione o responsável na loja destino.";
     }
 
+    // ===============================
+    // DEFINIR ORIGEM E DESTINO
+    // ===============================
     if (empty($erro)) {
 
-        // ===============================
-        // GERAR PROTOCOLO — ROBUSTO
-        // ===============================
+        if ($acao === 'enviar') {
+            $loja_origem  = $lojaUsuario;
+            $loja_destino = $lojaEscolhida;
+            $tituloAcao   = "Envio de";
+        } else {
+            $loja_origem  = $lojaEscolhida;
+            $loja_destino = $lojaUsuario;
+            $tituloAcao   = "Recebimento de";
+        }
+
+        if ($loja_origem === $loja_destino) {
+            $erro = "❌ A loja de origem e destino não podem ser iguais.";
+        }
+    }
+
+    // ===============================
+    // SALVAR PROTOCOLO
+    // ===============================
+    if (empty($erro)) {
+
+        // GERAR PROTOCOLO
         $res = $conn->query("SELECT protocolo FROM chamados_trilho ORDER BY id DESC LIMIT 1");
 
         if ($res->num_rows > 0) {
@@ -94,35 +117,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $protocolo = 'CT' . str_pad($numero, 4, '0', STR_PAD_LEFT);
 
-        // SALVAR PROTOCOLO
-        // (QUANTIDADE SALVA NA DESCRIÇÃO, SEM DUPLICAR)
+        // DESCRIÇÃO FINAL
+        $descricaoFinal = "$tituloAcao $descricao — $quantidade unidade" . ($quantidade > 1 ? "s" : "");
 
-        // remove qualquer " — X unidade(s)" que já exista no final
-        $descricaoLimpa = preg_replace('/\s—\s\d+\s+unidade[s]?$/', '', $descricao);
-
-        $descricaoFinal = $descricaoLimpa . " — " . $quantidade . " unidade" . ($quantidade > 1 ? "s" : "");
-
-
+        // INSERT
         $stmt = $conn->prepare("
             INSERT INTO chamados_trilho (
-                protocolo, tipo, loja_origem_id, loja_destino_id, solicitante_id,
-                solicitado_id, descricao, observacoes, status, data_criacao
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'faturado', NOW())
+                protocolo, tipo, acao, loja_origem_id, loja_destino_id,
+                solicitante_id, solicitado_id,
+                descricao, observacoes, status, data_criacao
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'faturado', NOW())
         ");
 
+
+        if (!$stmt) {
+            die("Erro no prepare: " . $conn->error);
+        }
+
         $stmt->bind_param(
-            "ssiiiiss",
+            "sssiiiiss",
             $protocolo,
-            $tipo,
+            $tipoFinal,
+            $acao,            // <-- AQUI
             $loja_origem,
             $loja_destino,
             $usuarioId,
-            $responsavel,
+            $responsavelId,
             $descricaoFinal,
             $observacoes
         );
 
-        $stmt->execute();
+
+        if (!$stmt->execute()) {
+            die("Erro ao salvar protocolo: " . $stmt->error);
+        }
 
         setFlash("success", "✔️ Protocolo criado com sucesso!");
         header("Location: chamados_trilho.php");
@@ -133,12 +161,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ob_start();
 ?>
 
-<link rel="stylesheet" href="/css/chamados_trilho_abrir.css">
+<link rel="stylesheet" href="/css/chamados_trilho_abrir_simples.css">
 
 <div class="container-chamado">
     <div class="card-chamado">
 
-<h2>📦 Novo Protocolo: <?= ucfirst($tipo) ?></h2>
+<h2>📦 Novo Protocolo: <?= ucfirst($tipoFinal) ?></h2>
 <p>Preencha os dados abaixo para registrar este protocolo.</p>
 
 <?php if (!empty($erro)): ?>
@@ -151,28 +179,30 @@ ob_start();
 
 <form method="POST" class="form-chamado">
 
-    <!-- tipo oculto -->
-    <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo) ?>">
+    <input type="hidden" name="tipo" value="<?= htmlspecialchars($tipoFinal) ?>">
 
-    <label for="loja_origem">Loja de Origem:</label>
-    <select id="loja_origem" name="loja_origem" required>
+    <label>Você deseja:</label>
+    <div class="radio-group">
+        <label><input type="radio" name="acao" value="enviar" required> 📤 Enviar</label>
+        <label><input type="radio" name="acao" value="receber" required> 📥 Receber</label>
+    </div>
+
+    <label for="loja_escolhida">Selecione a outra loja:</label>
+    <select id="loja_escolhida" name="loja_escolhida" required>
+        <option value="">— Selecione —</option>
         <?php foreach ($todasLojas as $l): ?>
-            <option value="<?= $l['id'] ?>" <?= $l['id'] == $lojaOrigem ? 'selected' : '' ?>>
+            <option value="<?= $l['id'] ?>">
                 <?= htmlspecialchars($l['nome']) ?>
             </option>
         <?php endforeach; ?>
     </select>
 
-    <label for="loja_destino">Loja de Destino:</label>
-    <select id="loja_destino" name="loja_destino" required>
-        <option value="">— Selecione —</option>
-        <?php foreach ($lojasDestino as $l): ?>
-            <option value="<?= $l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
-        <?php endforeach; ?>
-    </select>
+    <div id="avisoLojaIgual" class="aviso-loja-igual">
+        ⚠️ Você está cadastrado nesta loja. Por isso não é possível enviar ou receber para ela.
+    </div>
 
     <label for="responsavel_id">Aos cuidados de:</label>
-    <select id="responsavel_id" name="responsavel_id" required>
+    <select id="responsavel_id" name="responsavel_id">
         <option value="">— Selecione —</option>
         <?php foreach ($funcionarios as $f): ?>
             <option value="<?= $f['id'] ?>"><?= htmlspecialchars($f['nome']) ?></option>
@@ -198,9 +228,24 @@ ob_start();
 </div>
 </div>
 
-<script src="/js/chamados_trilho_abrir_simples.js"></script>
-
 <?php
 echo ob_get_clean();
-exit;
 ?>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const lojaUsuario = <?= $lojaUsuario ?>;
+    const selectLoja = document.getElementById("loja_escolhida");
+    const aviso = document.getElementById("avisoLojaIgual");
+
+    selectLoja.addEventListener("change", () => {
+        if (parseInt(selectLoja.value) === lojaUsuario) {
+            aviso.style.display = "block";
+        } else {
+            aviso.style.display = "none";
+        }
+    });
+
+});
+</script>

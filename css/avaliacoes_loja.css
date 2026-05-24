@@ -237,98 +237,75 @@ textarea.input-premium {
 }
 
 /* ================================
-   ASSINATURA (CANVAS) — PADRÃO TRILHO
+   ASSINATURA (CANVAS)
 ================================ */
 .assinatura-box {
     margin-top: 20px;
 }
 
-/* Container do canvas — ESSENCIAL */
+/* Container da assinatura */
 .signature-canvas-container {
     width: 100%;
-    height: 60vh; /* altura grande e real, igual ao TRILHO */
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
+    height: 300px;
+    border: 2px solid #bbb;
+    border-radius: 10px;
+    background: #f2f2f2; /* cinza mais escuro para destacar o canvas */
     margin-bottom: 15px;
-    touch-action: none; /* evita scroll interferir no desenho */
+    touch-action: none;
     position: relative;
+    padding: 8px; /* cria moldura clara ao redor do canvas */
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.15); /* destaque visual */
 }
 
-/* Canvas ocupa 100% do container */
+/* Canvas da assinatura */
 #signature-pad {
     width: 100%;
     height: 100%;
+    min-height: 250px;
+    background: #ffffff; /* branco puro para contraste */
+    border-radius: 6px;
     display: block;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
 }
 
 /* Botão limpar */
 .btn-limpar {
     margin-top: 8px;
-    padding: 10px 14px;
+    padding: 12px 14px;
     background: #e74c3c;
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: bold;
     width: 100%;
 }
 
 /* ================================
-   MOBILE — Ajustes finos
+   MOBILE
 ================================ */
 @media (max-width: 600px) {
 
     .signature-canvas-container {
-        height: 50vh; /* reduz um pouco no mobile */
+        height: 45vh;
+        min-height: 280px;
+        background: #e0e0e0; /* ainda mais escuro no mobile */
+        padding: 10px;
     }
 
     #signature-pad {
         height: 100%;
+        min-height: 260px;
+        background: #ffffff;
     }
 
     .btn-limpar {
-        padding: 12px;
-        font-size: 16px;
-    }
-
-    .avaliacao-wrapper {
-        padding: 20px;
-    }
-
-    .criterio-item {
-        padding: 15px;
-    }
-
-    .criterio-botoes {
-        flex-direction: column;
-    }
-
-    .btn-nota {
-        width: 100%;
-        font-size: 16px;
         padding: 14px;
-    }
-
-    .btn-nav-premium {
-        font-size: 16px;
-        padding: 14px;
-    }
-
-    .titulo-setor {
-        font-size: 20px;
-    }
-
-    #grafico-geral {
-        max-width: 180px;
-    }
-
-    .barra {
-        height: 18px;
+        font-size: 17px;
     }
 }
+
 
 /* ================================
    GRÁFICO DE BARRAS — RESUMO
@@ -397,15 +374,14 @@ textarea.input-premium {
 }
 
 /* ================================
-   GRÁFICO GERAL (PIZZA)
+   GRÁFICO GERAL (RESUMO)
 ================================ */
 
 #grafico-geral {
     display: block;
     margin: 0 auto;
-    max-width: 220px; /* menor e mais elegante */
+    max-width: 220px;
 }
-
 
 /* ================================
    TABELA PREMIUM DE AVALIAÇÕES
@@ -421,9 +397,9 @@ textarea.input-premium {
 .tabela-premium th {
     text-align: left;
     padding: 12px;
-    background: #f5f5f5;
+    background: #0b7410;
     font-weight: 600;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid #f5eded;
 }
 
 .tabela-premium td {
@@ -432,8 +408,10 @@ textarea.input-premium {
 }
 
 .tabela-premium tr:hover {
-    background: #fafafa;
+    background: #f7f7f7 !important;
 }
+
+
 
 .nota-bom {
     color: #43a047;
@@ -465,16 +443,8 @@ textarea.input-premium {
     background: #125a9c;
 }
 
-
 /* ================================
-   OCULTAR
-================================ */
-.oculto {
-    display: none !important;
-}
-
-/* ================================
-   MODAL — CORRIGIDO E FUNCIONAL
+   MODAL
 ================================ */
 
 #modal-detalhes {
@@ -486,7 +456,7 @@ textarea.input-premium {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999999 !important; /* acima de tudo */
+    z-index: 999999 !important;
 }
 
 #modal-detalhes.oculto {
@@ -502,8 +472,11 @@ textarea.input-premium {
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
-    z-index: 1000000 !important;
     box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #modal-detalhes .modal-fechar {
@@ -515,7 +488,230 @@ textarea.input-premium {
 }
 
 #modal-grafico-geral {
+    width: 220px !important;
+    height: 220px !important;
     display: block;
-    margin: 0 auto;
-    max-width: 220px;
+    margin: 20px auto !important;
+    flex-shrink: 0 !important;
 }
+
+/* ================================
+   DETALHES DA AVALIAÇÃO (DROPDOWN)
+================================ */
+
+/* Linha de detalhes */
+.linha-detalhes td {
+    background: #fafafa;
+    padding: 0;
+}
+
+/* Container interno */
+.detalhes-conteudo {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Colunas internas */
+.detalhes-col {
+    flex: 1 1 280px;
+    min-width: 260px;
+}
+
+/* Assinatura */
+.img-assinatura {
+    width: 260px;          /* largura fixa */
+    height: auto;          /* mantém proporção */
+    max-height: 420px;     /* aumenta a altura */
+    object-fit: contain;   /* evita distorção */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: block;
+    margin: 10px auto;
+}
+
+/* ================================
+   HOVER DA TABELA
+================================ */
+
+#tabela-avaliacoes tbody tr:hover,
+.tabela-premium tbody tr:hover {
+    background: #f2f8ff;
+    color: #000;
+    transition: background 0.2s ease;
+}
+
+.img-assinatura {
+    width: 260px;
+    height: 260px; /* altura fixa */
+    object-fit: contain; /* mantém a assinatura dentro da área */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: block;
+    margin: 10px auto;
+}
+
+/* Botão excluir */
+.btn-excluir {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 6px;
+    transition: 0.2s;
+}
+
+.btn-excluir:hover {
+    background: #c62828;
+}
+
+.btn-na {
+    background: #777 !important;
+    color: #fff !important;
+    border: 1px solid #555;
+}
+
+
+.btn-na.ativo {
+    background: #444 !important;
+    color: #fff !important;
+}
+
+/* barra setor */
+.barra-setor {
+    margin-bottom: 18px;
+    cursor: pointer;
+}
+
+.barra {
+    position: relative;
+    height: 22px;
+    border-radius: 6px;
+}
+
+.barra-nota {
+    position: absolute;
+    right: 8px;
+    top: 2px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.setor-detalhes {
+    margin-top: 8px;
+    padding: 10px;
+    background: #f7f7f7;
+    border-radius: 6px;
+}
+
+.criterio-linha {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.obs-setor-detalhe {
+    margin-top: 8px;
+    padding: 6px;
+    background: #fff3cd;
+    border-left: 4px solid #ffca2c;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.oculto {
+    display: none;
+}
+
+/* ================================
+   MOBILE — AJUSTE DOS BOTÕES
+================================ */
+@media (max-width: 600px) {
+
+    .criterio-botoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2 botões por linha */
+        gap: 10px;
+    }
+
+    .btn-nota {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .criterio-item {
+        padding: 14px 16px;
+    }
+}
+
+/* ================================
+   DETALHES — RESPONSIVO MOBILE
+================================ */
+@media (max-width: 600px) {
+
+    /* Força o container a caber na tela */
+    .detalhes-conteudo {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Cada coluna ocupa 100% da largura */
+    .detalhes-col {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+
+    /* Ajusta textos */
+    .criterio-linha {
+        font-size: 14px;
+    }
+
+    .obs-setor-detalhe {
+        font-size: 14px;
+    }
+
+    /* Ajusta imagem da assinatura */
+    .img-assinatura {
+        width: 100%;
+        max-width: 260px;
+        height: auto;
+    }
+
+    /* Evita que a tabela estoure */
+    .tabela-premium td {
+        white-space: normal !important;
+        word-break: break-word;
+    }
+}
+
+/* Coluna de ações */
+.col-acoes {
+    white-space: nowrap;
+}
+
+/* MOBILE — evita quebra da tabela */
+@media (max-width: 600px) {
+
+    .col-acoes {
+        white-space: normal !important; /* permite quebrar */
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap; /* permite ir para a linha de baixo */
+    }
+
+    .btn-detalhes,
+    .btn-excluir {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+}
+
+

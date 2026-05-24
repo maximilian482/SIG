@@ -2,6 +2,12 @@ console.log("JS carregou!");
 
 let signaturePad = null;
 
+    // FORMATAR DATA
+    
+    function formatarData(data) {
+            const d = new Date(data);
+            return d.toLocaleDateString("pt-BR");
+        }
 // ==========================================================
 // Ajustar tamanho REAL do canvas (corrige deslocamento no desktop)
 // ==========================================================
@@ -20,8 +26,13 @@ function ajustarCanvasAssinatura() {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    const lojaSelect = document.getElementById('loja-id') 
-                    || document.getElementById('loja_id');
+    // CORREÇÃO CRÍTICA: usar apenas o ID correto
+    const lojaSelect = document.getElementById('loja_id');
+
+    if (!lojaSelect) {
+        console.error("ERRO: Select de loja não encontrado!");
+        return;
+    }
 
     const setoresContainer = document.getElementById('setores-container');
     const carrossel        = document.getElementById('carrossel-avaliacao');
@@ -50,8 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
         slide.classList.remove('oculto');
 
         if (slide.id === "slide-resumo") {
-            gerarResumo(); // vem do arquivo de gráficos
+
+            recalcularTodasAsMedias();
+
             btnAvancar.textContent = "Avançar ➜";
+
+            setTimeout(() => {
+                gerarResumo();
+            }, 50);
         }
 
         else if (slide.id === "slide-final") {
@@ -100,11 +117,16 @@ document.addEventListener('DOMContentLoaded', () => {
         let total = 0;
 
         inputs.forEach(i => {
-            soma += parseInt(i.value);
-            total++;
+            const valor = parseInt(i.value);
+
+            if (valor !== -1) {
+                soma += valor;
+                total++;
+            }
         });
 
-        const media = soma / total;
+        const media = total > 0 ? soma / total : 0;
+
         const inputNota = slide.querySelector('.nota-setor-auto');
         if (inputNota) {
             inputNota.value = media.toFixed(2);
@@ -232,18 +254,43 @@ async function finalizarAvaliacao() {
 
     const setores = [];
 
+    // ==========================================================
+    // COLETAR SETORES + CRITÉRIOS INDIVIDUAIS
+    // ==========================================================
     document.querySelectorAll(".carrossel-slide[data-setor-id]").forEach(slide => {
-        const setorId = slide.dataset.setorId;
-        const nota = slide.querySelector(".nota-setor-auto").value;
+
+        const setorId = parseInt(slide.dataset.setorId);
+        const nota = parseFloat(slide.querySelector(".nota-setor-auto").value);
         const obs = slide.querySelector(".obs-setor")?.value || "";
 
+        // --- COLETAR CRITÉRIOS ---
+        const criterios = [];
+
+        slide.querySelectorAll(".criterio-item").forEach(item => {
+
+            const nome = item.querySelector(".criterio-nome")?.textContent.trim();
+            const valor = parseInt(item.querySelector(".input-nota")?.value || -1);
+
+            // Ignorar o bloco "Observação"
+            if (!nome || nome === "Observação") return;
+
+            criterios.push({
+                nome: nome,
+                valor: valor
+            });
+        });
+
         setores.push({
-            setor_id: parseInt(setorId),
-            nota_setor: parseFloat(nota),
-            observacao: obs
+            setor_id: setorId,
+            nota_setor: nota,
+            observacao: obs,
+            criterios: criterios
         });
     });
 
+    // ==========================================================
+    // MONTAR OBJETO FINAL
+    // ==========================================================
     const dadosAvaliacao = {
         loja_id: parseInt(lojaId),
         avaliador_id: parseInt(avaliadorId),
@@ -254,6 +301,9 @@ async function finalizarAvaliacao() {
         setores: setores
     };
 
+    // ==========================================================
+    // ENVIAR PARA O BACKEND
+    // ==========================================================
     try {
         const resposta = await fetch("avaliacoes_loja_salvar.php", {
             method: "POST",
@@ -282,6 +332,7 @@ async function finalizarAvaliacao() {
         alert("Falha ao enviar avaliação.");
     }
 }
+
 
 // ==========================================================
 // Limpar assinatura
@@ -331,14 +382,42 @@ function carregarUltimasAvaliacoes() {
                     <tr>
                         <td>${av.loja}</td>
                         <td class="${classeNota}">${parseFloat(av.nota_geral).toFixed(2)}</td>
-                        <td>${av.data_avaliacao}</td>
-                        <td>
-                            <button class="btn-detalhes" data-id="${av.id}">
-                                Detalhes
-                            </button>
+                        <td>${formatarData(av.data_avaliacao)}</td>
+                        <td class="col-acoes">
+                            <button class="btn-detalhes" data-id="${av.id}">🔍</button>
+                            <button class="btn-excluir" data-id="${av.id}" title="Excluir avaliação">🗑️</button>
                         </td>
+
                     </tr>
                 `;
             });
         });
 }
+
+// RECALCULAR TODAS AS MEDIAS
+
+function recalcularTodasAsMedias() {
+    document.querySelectorAll(".carrossel-slide[data-setor-id]").forEach(slide => {
+        const inputs = slide.querySelectorAll('.input-nota');
+
+        let soma = 0;
+        let total = 0;
+
+        inputs.forEach(i => {
+            const valor = parseInt(i.value);
+            if (valor !== -1) {
+                soma += valor;
+                total++;
+            }
+        });
+
+        const media = total > 0 ? soma / total : 0;
+
+        const inputNota = slide.querySelector('.nota-setor-auto');
+        if (inputNota) {
+            inputNota.value = media.toFixed(2);
+        }
+    });
+}
+
+

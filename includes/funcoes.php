@@ -49,9 +49,14 @@ function caminhoFotoPerfil($conn, $idFuncionario) {
 ============================================================ */
 function temAcesso($conn, $cpf, $modulo) {
 
-    // Acesso total somente para cargos EXATOS
+    // CEO e SUPER sempre têm acesso
     $cargoSessao = strtolower($_SESSION['cargo'] ?? '');
     if ($cargoSessao === 'ceo' || $cargoSessao === 'super') {
+        return true;
+    }
+
+    // Módulo "avaliacoes_loja" é liberado para todos os funcionários
+    if ($modulo === 'avaliacoes_loja') {
         return true;
     }
 
@@ -77,6 +82,7 @@ function temAcesso($conn, $cpf, $modulo) {
 
     return !empty($res);
 }
+
 
 /* ============================================================
    📊 VERIFICA SE O USUÁRIO TEM ALGUM MÓDULO DE GESTÃO
@@ -599,4 +605,29 @@ function gerarTituloTrilho($itens) {
     }
 
     return $primeiro . " + " . ($total - 1) . " itens";
+}
+
+
+// NORMALIZAR TIPOS TRILHO
+
+function normalizarTipo($tipo) {
+    $tipo = strtolower(trim($tipo));
+
+    // Medicamento
+    if (str_starts_with($tipo, 'med')) return 'medicamento';
+
+    // Perfumaria
+    if (str_starts_with($tipo, 'perf')) return 'perfumaria';
+
+    // Remanejamento
+    if (str_starts_with($tipo, 'reman')) return 'remanejamento';
+
+    // Malote
+    if (str_starts_with($tipo, 'malo')) return 'malote';
+
+    // Item / Itens / Item Diversos
+    if (str_starts_with($tipo, 'item')) return 'item';
+    if (str_starts_with($tipo, 'iten')) return 'item';
+
+    return $tipo;
 }

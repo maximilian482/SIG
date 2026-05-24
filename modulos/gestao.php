@@ -21,7 +21,7 @@ $totalLojas           = contarLojas($conn);
 $titulo = "Painel de Gestão";
 
 // CSS extra (se quiser adicionar algo específico)
-$cssExtra = "/css/card.css";
+// $cssExtra = "/css/card.css";
 
 // Conteúdo da página
 $conteudo = '
@@ -49,15 +49,6 @@ $conteudo = '
         </div>' : ''
     ) . '
 
-    ' . (
-        ($acessoTotal || temAcesso($conn, $cpf, "gestao_inventario")) ?
-        '<div class="card">
-            <h2>📦 Inventário</h2>
-            <p>Gestão de equipamentos por loja</p>
-            <p style="font-weight:bold; color:#34495e;">Itens registrados: ' . $totalItensInventario . '</p>
-            <a href="inventario.php">Acessar</a>
-        </div>' : ''
-    ) . '
 
     ' . (
         ($acessoTotal || temAcesso($conn, $cpf, "gestao_lojas")) ?

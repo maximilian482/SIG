@@ -39,7 +39,7 @@ if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $dataAvaliacao)) {
 }
 
 // ===============================
-// SALVAR ASSINATURA (PADRÃO TRILHO)
+// SALVAR ASSINATURA
 // ===============================
 
 $assinatura_base64 = $data["assinatura"];
@@ -47,7 +47,6 @@ $nomeArquivo = null;
 
 if (!empty($assinatura_base64)) {
 
-    // Remove prefixo base64
     $assinatura_base64 = str_replace("data:image/png;base64,", "", $assinatura_base64);
     $assinatura_base64 = str_replace(" ", "+", $assinatura_base64);
 
@@ -58,16 +57,13 @@ if (!empty($assinatura_base64)) {
         exit;
     }
 
-    // Pasta igual ao TRILHO
     $pasta = "../uploads/assinaturas";
 
     if (!is_dir($pasta)) {
         mkdir($pasta, 0777, true);
     }
 
-    // Nome igual ao TRILHO
     $nomeArquivo = "assinatura_loja_" . time() . "_" . rand(1000,9999) . ".png";
-
     $caminhoFinal = $pasta . "/" . $nomeArquivo;
 
     file_put_contents($caminhoFinal, $binario);
@@ -78,7 +74,14 @@ if (!empty($assinatura_base64)) {
 // ===============================
 
 $notas = array_column($data["setores"], "nota_setor");
-$notaGeral = count($notas) > 0 ? array_sum($notas) / count($notas) : 0;
+
+$notasValidas = array_filter($notas, function($n) {
+    return $n !== null && $n >= 0;
+});
+
+$notaGeral = count($notasValidas) > 0 
+    ? array_sum($notasValidas) / count($notasValidas)
+    : 0;
 
 // ===============================
 // INSERIR AVALIAÇÃO PRINCIPAL
@@ -94,8 +97,8 @@ $stmt->bind_param(
     $data["loja_id"],
     $data["avaliador_id"],
     $data["responsavel_nome"],
-    $dataAvaliacao,   // <-- agora salva a data informada pelo avaliador
-    $nomeArquivo,     // <-- salva só o nome do arquivo
+    $dataAvaliacao,
+    $nomeArquivo,
     $notaGeral,
     $data["observacao_final"]
 );
@@ -118,6 +121,7 @@ $sqlSetor = "INSERT INTO avaliacoes_setores
 $stmtSetor = $conn->prepare($sqlSetor);
 
 foreach ($data["setores"] as $setor) {
+
     $stmtSetor->bind_param(
         "iiis",
         $avaliacaoId,
@@ -126,6 +130,31 @@ foreach ($data["setores"] as $setor) {
         $setor["observacao"]
     );
     $stmtSetor->execute();
+
+    // PEGAR ID DO SETOR SALVO
+    $avaliacaoSetorId = $stmtSetor->insert_id;
+
+    // ===============================
+    // SALVAR CRITÉRIOS INDIVIDUAIS
+    // ===============================
+    if (!empty($setor["criterios"])) {
+
+        $sqlCrit = "INSERT INTO avaliacoes_setores_criterios 
+                    (avaliacao_setor_id, criterio, valor)
+                    VALUES (?, ?, ?)";
+
+        $stmtCrit = $conn->prepare($sqlCrit);
+
+        foreach ($setor["criterios"] as $crit) {
+            $stmtCrit->bind_param(
+                "isi",
+                $avaliacaoSetorId,
+                $crit["nome"],
+                $crit["valor"]
+            );
+            $stmtCrit->execute();
+        }
+    }
 }
 
 // ===============================

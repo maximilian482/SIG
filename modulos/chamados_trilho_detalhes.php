@@ -1,8 +1,11 @@
 <?php
 session_start();
-require_once '../includes/funcoes.php';
-require_once __DIR__ . '/../config/bootstrap.php';
+
+require_once '../dados/conexao.php';
 $conn = conectar();
+
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
 
 // ===============================
 // VALIDAR ID
@@ -47,45 +50,52 @@ if (!$dados) {
 
 // Normalizar status
 $status = $dados['status'] === 'em_rota' ? 'Em rota' : ucfirst($dados['status']);
-$tipo = $dados['tipo'] ?? 'medicamento';
+$tipo   = $dados['tipo'] ?? 'medicamento';
 
-// Função para nome curto
+// Nome curto
 function nomeCurto($nome) {
-    $partes = explode(' ', trim($nome));
-    if (count($partes) <= 1) return $nome;
-    return $partes[0] . ' ' . end($partes);
+    $p = explode(' ', trim($nome));
+    return count($p) <= 1 ? $nome : $p[0] . ' ' . end($p);
 }
 
+
+// Normalizar tipo
+$tipoBruto = trim($dados['tipo']);
+$tipo      = strtolower($tipoBruto);
+
+// Mapa de títulos do Trilho
+$mapaTitulos = [
+    'medicamento'    => '💊 Medicamento',
+    'perfumaria'     => '🧴 Perfumaria',
+    'remanejamento'  => '📄 Remanejamento',
+    'malote'         => '📦 Malote',
+    'item'           => '📌 Item'
+];
+
+// Título final
+$tituloTipo = $mapaTitulos[$tipo] ?? ucfirst($tipoBruto);
 ?>
+
 
 <link rel="stylesheet" href="/css/chamados_trilho_detalhes.css">
 
 <div class="detalhes-box">
 
-    <!-- ===============================
-         1. INFORMAÇÕES GERAIS
-    ================================ -->
+    <!-- INFORMAÇÕES GERAIS -->
     <h3>📄 Informações Gerais</h3>
 
     <p><strong>Protocolo:</strong> <?= htmlspecialchars($dados['protocolo']) ?></p>
-    <p><strong>Tipo:</strong> <?= ucfirst(htmlspecialchars($tipo)) ?></p>
+    <p><strong>Tipo:</strong> <?= $tituloTipo ?></p>
     <p><strong>Status:</strong> <?= htmlspecialchars($status) ?></p>
     <p><strong>Data de criação:</strong> <?= date('d/m/Y H:i', strtotime($dados['data_criacao'])) ?></p>
 
     <hr>
 
-    <!-- ===============================
-         2. PARTICIPANTES
-    ================================ -->
+    <!-- PARTICIPANTES -->
     <h3>👥 Participantes</h3>
 
     <p><strong>Solicitante:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitante_nome'])) ?></p>
-
-    <?php if ($tipo === 'medicamento'): ?>
-        <p><strong>Solicitado para:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitado_nome'])) ?></p>
-    <?php else: ?>
-        <p><strong>Responsável pelo item:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitado_nome'])) ?></p>
-    <?php endif; ?>
+    <p><strong>Aos cuidados de:</strong> <?= htmlspecialchars(nomeCurto($dados['solicitado_nome'])) ?></p>
 
     <?php if (!empty($dados['faturado_por_nome'])): ?>
         <p><strong>Faturado por:</strong> <?= htmlspecialchars(nomeCurto($dados['faturado_por_nome'])) ?></p>
@@ -97,13 +107,11 @@ function nomeCurto($nome) {
 
     <hr>
 
-    <!-- ===============================
-         3. LOGÍSTICA
-    ================================ -->
+    <!-- LOGÍSTICA -->
     <h3>🚚 Logística</h3>
 
-    <p><strong>Loja Solicitante:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
-    <p><strong>Loja de Liberação:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
+    <p><strong>Origem:</strong> <?= htmlspecialchars($dados['loja_origem']) ?></p>
+    <p><strong>Liberação:</strong> <?= htmlspecialchars($dados['loja_destino']) ?></p>
 
     <?php if (!empty($dados['data_coleta'])): ?>
         <p><strong>Data da coleta:</strong> <?= date('d/m/Y H:i', strtotime($dados['data_coleta'])) ?></p>
@@ -115,9 +123,7 @@ function nomeCurto($nome) {
 
     <hr>
 
-    <!-- ===============================
-         4. DETALHES DO ITEM
-    ================================ -->
+    <!-- DETALHES DO ITEM -->
     <h3>📦 Detalhes do Item</h3>
 
     <p><strong>Descrição:</strong> <?= htmlspecialchars($dados['descricao']) ?></p>
@@ -129,16 +135,13 @@ function nomeCurto($nome) {
 
     <hr>
 
-    <!-- ===============================
-     5. ASSINATURA 
-    =============================== -->
+    <!-- ASSINATURA -->
     <h3>🖊 Assinatura</h3>
 
     <?php if (!empty($dados['assinatura_path'])): ?>
         <p><strong>Assinatura:</strong></p>
         <img src="/<?= htmlspecialchars($dados['assinatura_path']) ?>" class="assinatura-img">
     <?php endif; ?>
-
 
     <?php if (!empty($dados['assinatura_nome'])): ?>
         <p><strong>Recebido por:</strong> <?= htmlspecialchars($dados['assinatura_nome']) ?></p>
@@ -148,14 +151,13 @@ function nomeCurto($nome) {
         <p><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($dados['assinatura_data'])) ?></p>
     <?php endif; ?>
 
-    <?php if ($tipo === 'medicamento'): ?>
-        <hr>
-        <h3>🧾 Documentos</h3>
+    <hr>
 
-        <p><strong>Nota de transferência:</strong> 
-            <?= $dados['nota_transferencia'] ? htmlspecialchars($dados['nota_transferencia']) : '—' ?>
-        </p>
-    <?php endif; ?>
+    <!-- DOCUMENTOS -->
+    <h3>🧾 Documentos</h3>
 
+    <p><strong>Nota de transferência:</strong> 
+        <?= $dados['nota_transferencia'] ? htmlspecialchars($dados['nota_transferencia']) : '—' ?>
+    </p>
 
 </div>

@@ -76,9 +76,9 @@ if ($status !== 'aberto') {
 // ===============================
 // PROCESSAR FATURAMENTO
 // ===============================
-if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nota = trim($_REQUEST['nota_transferencia'] ?? '');
+    $nota = trim($_REQUEST['nota'] ?? '');
 
     if (empty($nota)) {
         echo json_encode([
@@ -102,11 +102,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
     $stmt->bind_param("sii", $nota, $funcionarioId, $id);
 
     if ($stmt->execute()) {
+
+        // 🔥 AQUI ESTÁ A CORREÇÃO
+        setFlash("success", "✔️ Protocolo faturado com sucesso!");
+
         echo json_encode([
-            "sucesso" => true,
-            "mensagem" => "Protocolo faturado com sucesso!"
+            "sucesso" => true
         ]);
+
     } else {
+
         echo json_encode([
             "sucesso" => false,
             "mensagem" => "Erro ao faturar protocolo."
@@ -115,5 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET
 
     exit;
 }
+
 
 ?>

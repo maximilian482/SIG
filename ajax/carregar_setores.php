@@ -12,10 +12,25 @@ if (!isset($_SESSION['cpf'])) {
     exit('Acesso negado');
 }
 
+// ===============================
+// LISTAR LOJAS (FILTRADAS)
+// ===============================
+
+
+$sqlLojas = "
+    SELECT id, nome 
+    FROM lojas 
+    WHERE nome NOT IN ('CAV', 'ESCRITÓRIO', 'CD')
+    ORDER BY nome ASC
+";
+$lojas = $conn->query($sqlLojas);
+
+// Loja selecionada
 $lojaId = intval($_GET['loja_id'] ?? 0);
 
 if ($lojaId <= 0) {
-    exit('Loja inválida');
+    echo "<h3>Selecione uma loja válida</h3>";
+    exit;
 }
 
 // ===============================
@@ -38,28 +53,42 @@ while ($row = $resLoja->fetch_assoc()) {
     $setoresAtivos[] = intval($row['setor_id']);
 }
 
-// ===============================
-// GERAR HTML
-// ===============================
-while ($s = $resSetores->fetch_assoc()):
-    $checked = in_array($s['id'], $setoresAtivos) ? 'checked' : '';
 ?>
-    <div class="item-setor">
-    <input type="checkbox"
-           class="check-setor"
-           value="<?= $s['id'] ?>"
-           id="setor_<?= $s['id'] ?>"
-           <?= $checked ?>>
 
-    <label for="setor_<?= $s['id'] ?>">
-        <?= htmlspecialchars($s['nome_setor']) ?>
-    </label>
+<link rel="stylesheet" href="/css/form.css">
 
-    <!-- Botão editar (aparece no hover) -->
-    <button class="btn-editar" data-id="<?= $s['id'] ?>">✏️</button>
+<div class="controlados-container">
 
-    <!-- Botão excluir (sempre visível, mas discreto) -->
-    <button class="btn-excluir" data-id="<?= $s['id'] ?>">🗑️</button>
+    <h2>⚙️ Configurar Setores da Loja</h2>
+
+    <a href="avaliacoes_loja.php" class="btn btn-cinza">⬅ Voltar</a>
+
+    <div class="bloco">
+
+        <h3>Setores da Loja</h3>
+
+        <?php while ($s = $resSetores->fetch_assoc()): ?>
+            <?php $checked = in_array($s['id'], $setoresAtivos) ? 'checked' : ''; ?>
+
+            <div class="item-setor">
+
+                <input type="checkbox"
+                    class="check-setor"
+                    value="<?= $s['id'] ?>"
+                    id="setor_<?= $s['id'] ?>"
+                    <?= $checked ?>>
+
+                <label for="setor_<?= $s['id'] ?>">
+                    <?= htmlspecialchars($s['nome_setor']) ?>
+                </label>
+
+                <button class="btn-editar" data-id="<?= $s['id'] ?>">✏️</button>
+                <button class="btn-excluir" data-id="<?= $s['id'] ?>">🗑️</button>
+
+            </div>
+
+        <?php endwhile; ?>
+
+    </div>
+
 </div>
-
-<?php endwhile; ?>

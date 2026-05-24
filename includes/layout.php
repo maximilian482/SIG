@@ -35,6 +35,16 @@ $menuPerfil = ob_get_clean();
 
 <body>
 
+<!-- ===============================
+     SISTEMA GLOBAL DE MENSAGENS (AGORA NO TOPO)
+================================ -->
+<div id="overlayMensagem"></div>
+
+<div id="mensagemTopo">
+    <div id="iconeMensagem"></div>
+    <span id="textoMensagem"></span>
+</div>
+
 <?= $menuLateral ?>
 <?= $menuPerfil ?>
 
@@ -43,6 +53,7 @@ $menuPerfil = ob_get_clean();
 </main>
 
 <?= $modais ?? '' ?>
+
 
 
 <!-- ===============================

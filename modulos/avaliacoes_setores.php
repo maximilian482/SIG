@@ -20,7 +20,7 @@ include ROOT_PATH . '/includes/flash.php';
 <link rel="stylesheet" href="/css/avaliacoes_setores.css">
 
 <div class="container-setores">
-<a href="/modulos/avaliacoes.php" class="btn-voltar-premium">⬅ Voltar</a><br><br>
+<a href="/modulos/avaliacoes_loja.php" class="btn-voltar-premium">⬅ Voltar</a><br><br>
 
     <h2 class="titulo-pagina">🧩 Configurar Setores por Loja</h2>
     <p class="subtitulo-pagina">Ative, desative, edite ou crie novos setores para cada loja.</p>

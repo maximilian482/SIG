@@ -4,9 +4,6 @@ session_start();
 require_once '../dados/conexao.php';
 $conn = conectar();
 
-require_once __DIR__ . '/../config/bootstrap.php';
-require_once ROOT_PATH . '/includes/funcoes.php';
-
 // Verifica login
 if (!isset($_SESSION['cpf'])) {
     exit('Acesso negado');
@@ -34,15 +31,13 @@ $stmt->bind_param("i", $lojaId);
 $stmt->execute();
 $resSetores = $stmt->get_result();
 
-// Critérios fixos
+// Critérios FIXOS (como no sistema antigo)
 $criterios = [
     "Preço",
     "Exposição",
     "Limpeza",
     "Organização"
 ];
-
-$slideIndex = 0;
 
 while ($setor = $resSetores->fetch_assoc()):
     $setorId = $setor['setor_id'];
@@ -64,11 +59,11 @@ while ($setor = $resSetores->fetch_assoc()):
                     <button type="button" class="btn-nota" data-valor="100">SIM</button>
                     <button type="button" class="btn-nota" data-valor="50">PARCIAL</button>
                     <button type="button" class="btn-nota" data-valor="0">NÃO</button>
+                    <button type="button" class="btn-nota btn-na" data-valor="-1">N/A</button>
                 </div>
 
-                <input type="hidden"
-                       class="input-nota"
-                       value="">
+
+                <input type="hidden" class="input-nota" value="">
             </div>
         <?php endforeach; ?>
 
@@ -87,7 +82,4 @@ while ($setor = $resSetores->fetch_assoc()):
 
 </div>
 
-<?php
-$slideIndex++;
-endwhile;
-?>
+<?php endwhile; ?>

@@ -1,21 +1,7 @@
-:root {
-  --verde-principal: #1c8c4c;
-  --branco: #ffffff;
-  --cinza-borda: #dcdcdc;
-  --sombra: rgba(0, 0, 0, 0.1);
-  --texto: #333;
-  --fundo: #f9f9f9;
-}
 
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--fundo);
-  color: var(--texto);
-  margin: 0;
-  padding: 20px;
-}
 
-h2, h3 {
+/* Conteúdo da página */
+h2 {
   color: var(--verde-principal);
   margin-bottom: 10px;
 }
@@ -24,33 +10,47 @@ p {
   margin-bottom: 10px;
 }
 
-table {
+/* ============================
+   TABELA DE FUNCIONÁRIOS
+============================ */
+.tabela-funcionarios {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
   background-color: var(--branco);
   box-shadow: 0 2px 4px var(--sombra);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-table th, table td {
+.tabela-funcionarios th,
+.tabela-funcionarios td {
   padding: 12px;
-  border: 1px solid var(--cinza-borda);
+  border-bottom: 1px solid var(--cinza-borda);
   text-align: left;
 }
 
-table th {
+.tabela-funcionarios th {
   background-color: var(--verde-principal);
   color: var(--branco);
 }
 
-input[type="text"] {
+.tabela-funcionarios tr:hover {
+  background-color: #f0fdf4;
+}
+
+/* ============================
+   FORMULÁRIO DE FILTRO
+============================ */
+.filtro-form input[type="text"] {
   padding: 8px;
   border: 1px solid var(--cinza-borda);
   border-radius: 4px;
   width: 250px;
 }
 
-button, .btn {
+.filtro-form button,
+.btn {
   padding: 10px 16px;
   background-color: var(--verde-principal);
   color: var(--branco);
@@ -64,15 +64,24 @@ button, .btn {
   display: inline-block;
 }
 
-button:hover, .btn:hover {
+.btn:hover,
+.filtro-form button:hover {
   background-color: #006f3c;
   transform: scale(1.03);
 }
 
-form {
-  margin-top: 20px;
+.limpar-btn {
+  background-color: #e0e0e0;
+  color: var(--texto);
 }
 
+.limpar-btn:hover {
+  background-color: #d0d0d0;
+}
+
+/* ============================
+   SWITCH (toggle)
+============================ */
 .switch {
   position: relative;
   display: inline-block;
@@ -114,36 +123,14 @@ form {
   transform: translateX(26px);
 }
 
-.tabela-funcionarios {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background-color: var(--branco);
-  box-shadow: 0 2px 4px var(--sombra);
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.tabela-funcionarios th, .tabela-funcionarios td {
-  padding: 12px;
-  border-bottom: 1px solid var(--cinza-borda);
-  text-align: left;
-}
-
-.tabela-funcionarios th {
-  background-color: var(--verde-principal);
-  color: var(--branco);
-}
-
-.tabela-funcionarios tr:hover {
-  background-color: #f0fdf4;
-}
-
+/* ============================
+   PAGINAÇÃO
+============================ */
 .paginacao-container {
+  margin-top: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 20px;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -168,18 +155,9 @@ form {
   border: 1px solid var(--cinza-borda);
 }
 
-.limpar-btn {
-  background-color: #e0e0e0;
-  color: var(--texto);
-  font-weight: normal;
-}
-
-.limpar-btn:hover {
-  background-color: #d0d0d0;
-  transform: scale(1.02);
-}
-/* aLERTA SUCESSO */
-
+/* ============================
+   ALERTA DE SUCESSO
+============================ */
 .alerta-sucesso {
   background-color: #d4edda;
   color: #155724;
@@ -191,53 +169,21 @@ form {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-.alerta-sucesso ul {
-  margin: 10px 0 0 20px;
-  padding: 0;
-}
-
-.alerta-sucesso {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-  padding: 10px;
-  margin-bottom: 20px;
-  border-radius: 5px;
+/* ============================
+   TÍTULOS DE SEÇÃO
+============================ */
+.secao-titulo {
+  background: #c7c7c7;
+  color: #000;
   font-weight: bold;
+  padding: 10px;
+  text-align: left;
+  font-size: 17px;
+  border-top: 2px solid #999;
 }
 
-.paginacao-container {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .paginacao a {
-      margin: 0 5px;
-      padding: 5px 10px;
-      background: #eee;
-      text-decoration: none;
-      border-radius: 4px;
-    }
-    .paginacao a.ativo {
-      background: #007bff;
-      color: white;
-      font-weight: bold;
-    }
-
+/* Animação */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
-.secao-titulo {
-    background: #c7c7c7;
-    color: #000;
-    font-weight: bold;
-    padding: 10px;
-    text-align: left;
-    font-size: 17px;
-    border-top: 2px solid #999;
-}
-
-

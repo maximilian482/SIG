@@ -1,334 +1,349 @@
-document.addEventListener("DOMContentLoaded", () => {
+// ============================================================
+// TROCA DE ABAS
+// ============================================================
 
-    // ============================
-    // TROCA DE ABAS
-    // ============================
-    document.querySelectorAll(".aba").forEach(btn => {
-        btn.addEventListener("click", () => {
+document.querySelectorAll(".aba").forEach(btn => {
+    btn.addEventListener("click", () => {
 
-            // Remove ativo de todas
-            document.querySelectorAll(".aba").forEach(b => b.classList.remove("ativa"));
-            document.querySelectorAll(".conteudo-aba").forEach(c => c.classList.remove("ativo"));
+        document.querySelectorAll(".aba").forEach(a => a.classList.remove("ativa"));
+        btn.classList.add("ativa");
 
-            // Ativa aba clicada
-            btn.classList.add("ativa");
-            document.getElementById(btn.dataset.aba).classList.add("ativo");
+        const aba = btn.dataset.aba;
 
-            // Mostrar filtros corretos
-            const aba = btn.dataset.aba;
+        document.querySelectorAll(".conteudo-aba").forEach(div => div.classList.remove("ativo"));
+        document.getElementById(aba).classList.add("ativo");
 
-            document.getElementById("filtros-coletar").style.display   = (aba === "abertos")   ? "flex" : "none";
-            document.getElementById("filtros-rota").style.display      = (aba === "rota")      ? "flex" : "none";
-            document.getElementById("filtros-entregues").style.display = (aba === "entregues") ? "flex" : "none";
-        });
+        document.getElementById("filtros-abertos").style.display   = "none";
+        document.getElementById("filtros-rota").style.display      = "none";
+        document.getElementById("filtros-entregues").style.display = "none";
+
+        if (aba === "abertos")   document.getElementById("filtros-abertos").style.display = "flex";
+        if (aba === "rota")      document.getElementById("filtros-rota").style.display = "flex";
+        if (aba === "entregues") document.getElementById("filtros-entregues").style.display = "flex";
+
+        if (aba === "abertos")   atualizarAbertos();
+        if (aba === "rota")      atualizarRota();
+        if (aba === "entregues") atualizarEntregues();
     });
+});
 
-    // ============================
-    // CONTADORES
-    // ============================
-    function atualizarContadores() {
-        const totalAbertos   = document.querySelectorAll("#abertos .card-trilho").length;
-        const totalRota      = document.querySelectorAll("#rota .card-trilho").length;
-        const totalEntregues = document.querySelectorAll("#entregues .card-trilho").length;
 
-        const abaAbertos   = document.querySelector('button[data-aba="abertos"]');
-        const abaRota      = document.querySelector('button[data-aba="rota"]');
-        const abaEntregues = document.querySelector('button[data-aba="entregues"]');
+/* ================================
+   MODAL DE DETALHES
+================================ */
+const modalDetalhes = document.getElementById('modalDetalhes');
+const modalBody = document.getElementById('modal-body-detalhes');
 
-        if (abaAbertos)   abaAbertos.innerText   = `Abertos (${totalAbertos})`;
-        if (abaRota)      abaRota.innerText      = `Em rota (${totalRota})`;
-        if (abaEntregues) abaEntregues.innerText = `Entregues (${totalEntregues})`;
-    }
-
-    atualizarContadores();
-
-    // ============================
-    // MODAL DE DETALHES
-    // ============================
-    const modal = document.getElementById("modalDetalhes");
-    const modalBody = document.getElementById("modal-body-detalhes");
-    const fechar = document.querySelector(".modal-fechar");
-
-    if (fechar) {
-        fechar.addEventListener("click", () => modal.style.display = "none");
-    }
-
-    window.addEventListener("click", (e) => {
-        if (e.target === modal) modal.style.display = "none";
-    });
-
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-detalhes");
-        if (!btn) return;
-
+document.querySelectorAll('.btn-detalhes').forEach(btn => {
+    btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        if (!id) return;
 
-        modal.style.display = "flex";
-        modalBody.innerHTML = "Carregando...";
-
-        fetch("/modulos/chamados_trilho_detalhes.php?id=" + id)
+        fetch(`/modulos/chamados_trilho_detalhes.php?id=${id}`)
             .then(r => r.text())
-            .then(html => modalBody.innerHTML = html)
-            .catch(() => modalBody.innerHTML = "<p style='color:red;'>Erro ao carregar detalhes.</p>");
+            .then(html => {
+                modalBody.innerHTML = html;
+                modalDetalhes.style.display = 'block';
+            });
     });
+});
 
-    // ============================
-    // EXCLUIR PROTOCOLO
-    // ============================
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-excluir");
-        if (!btn) return;
+document.querySelector('#modalDetalhes .modal-fechar').onclick = () => {
+    modalDetalhes.style.display = 'none';
+};
 
+
+/* ================================
+   MODAL DE TIPO (MEDICAMENTO / PERFUMARIA)
+================================ */
+
+const modalTipo = document.getElementById('modalTipoProtocolo');
+
+// Abrir modal ao clicar em Novo Protocolo
+document.querySelector('.btn-novo').addEventListener('click', e => {
+    e.preventDefault();
+    modalTipo.style.display = 'block';
+});
+
+// Fechar no X
+document.querySelector('#modalTipoProtocolo .modal-fechar').onclick = () => {
+    modalTipo.style.display = 'none';
+};
+
+// Fechar ao clicar fora
+window.addEventListener('click', e => {
+    if (e.target === modalTipo) {
+        modalTipo.style.display = 'none';
+    }
+});
+
+// Fechar com ESC
+document.addEventListener('keydown', e => {
+    if (e.key === "Escape") {
+        modalTipo.style.display = 'none';
+    }
+});
+
+// Escolha do tipo (Medicamento / Perfumaria)
+document.querySelectorAll('#modalTipoProtocolo .btn-tipo').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tipo = btn.dataset.tipo;
+        window.location = `chamados_trilho_abrir.php?tipo=${tipo}`;
+    });
+});
+
+
+/* ================================
+   MODAL DE FATURAMENTO
+================================ */
+const modalFaturar = document.getElementById('modalFaturar');
+let idFaturar = null;
+
+document.querySelectorAll('.btn-faturar').forEach(btn => {
+    btn.addEventListener('click', () => {
+        idFaturar = btn.dataset.id;
+        modalFaturar.style.display = 'block';
+    });
+});
+
+document.getElementById('fecharModalFaturar').onclick = () => {
+    modalFaturar.style.display = 'none';
+};
+
+document.getElementById('btnCancelarFaturar').onclick = () => {
+    modalFaturar.style.display = 'none';
+};
+
+document.getElementById('btnConfirmarFaturar').onclick = () => {
+    const nota = document.getElementById('notaTransferencia').value.trim();
+
+    if (nota === "") {
+        alert("Informe a nota de transferência.");
+        return;
+    }
+
+    fetch('/modulos/chamados_trilho_faturar.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+            id: idFaturar,
+            nota: nota
+        })
+    })
+    .then(r => r.text())
+    .then(() => location.reload());
+};
+
+
+/* ================================
+   COLETAR
+================================ */
+document.querySelectorAll('.btn-coletar').forEach(btn => {
+    btn.addEventListener('click', () => {
         const id = btn.dataset.id;
-        if (!id) return;
+
+        if (!confirm("Confirmar coleta deste protocolo?")) return;
+
+        fetch('/modulos/chamados_trilho_coletar.php', {
+            method: 'POST',
+            body: new URLSearchParams({ id })
+        })
+        .then(r => r.text())
+        .then(() => location.reload());
+    });
+});
+
+
+/* ================================
+   FINALIZAR ENTREGA
+================================ */
+document.querySelectorAll('.btn-entregar').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+
+        if (!confirm("Finalizar entrega deste protocolo?")) return;
+
+        fetch('/modulos/chamados_trilho_entregar.php', {
+            method: 'POST',
+            body: new URLSearchParams({ id })
+        })
+        .then(r => r.text())
+        .then(() => location.reload());
+    });
+});
+
+
+/* ================================
+   EXCLUIR
+================================ */
+document.querySelectorAll('.btn-excluir').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
 
         if (!confirm("Tem certeza que deseja excluir este protocolo?")) return;
 
-        fetch("chamados_trilho_excluir.php", {
-            method: "POST",
+        fetch('/modulos/chamados_trilho_excluir.php', {
+            method: 'POST',
             body: new URLSearchParams({ id })
         })
-        .then(r => r.json())
-        .then(res => {
-            if (res.sucesso) {
-                mostrarMensagem(res.mensagem, "sucesso");
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                mostrarMensagem(res.mensagem, "erro");
-            }
-        })
-        .catch(() => mostrarMensagem("Erro ao excluir protocolo.", "erro"));
+        .then(r => r.text())
+        .then(() => location.reload());
     });
-
-    // ============================
-    // FATURAR — MODAL
-    // ============================
-    let idParaFaturar = null;
-
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-faturar");
-        if (!btn) return;
-
-        idParaFaturar = btn.dataset.id;
-
-        document.getElementById("notaTransferencia").value = "";
-        document.getElementById("modalFaturar").style.display = "flex";
-    });
-
-    const fecharModalFaturar   = document.getElementById("fecharModalFaturar");
-    const btnCancelarFaturar   = document.getElementById("btnCancelarFaturar");
-    const btnConfirmarFaturar  = document.getElementById("btnConfirmarFaturar");
-    const modalFaturar         = document.getElementById("modalFaturar");
-
-    if (fecharModalFaturar) {
-        fecharModalFaturar.onclick = () => {
-            modalFaturar.style.display = "none";
-        };
-    }
-
-    if (btnCancelarFaturar) {
-        btnCancelarFaturar.onclick = () => {
-            modalFaturar.style.display = "none";
-        };
-    }
-
-    window.addEventListener("click", (e) => {
-        if (e.target === modalFaturar) modalFaturar.style.display = "none";
-    });
-
-    if (btnConfirmarFaturar) {
-        btnConfirmarFaturar.onclick = () => {
-
-            const nota = document.getElementById("notaTransferencia").value.trim();
-
-            if (!nota) {
-                mostrarMensagem("Informe o número da nota de transferência.", "erro");
-                modalFaturar.style.display = "none";
-                return;
-            }
-
-            fetch("chamados_trilho_faturar.php", {
-                method: "POST",
-                body: new URLSearchParams({
-                    id: idParaFaturar,
-                    nota_transferencia: nota
-                })
-            })
-            .then(r => r.json())
-            .then(res => {
-                if (res.sucesso) {
-                    mostrarMensagem(res.mensagem, "sucesso");
-                    setTimeout(() => location.reload(), 1200);
-                } else {
-                    mostrarMensagem(res.mensagem, "erro");
-                }
-            })
-            .catch(() => mostrarMensagem("Erro ao faturar protocolo.", "erro"));
-
-            modalFaturar.style.display = "none";
-        };
-    }
-
-    // ============================
-    // COLETAR PROTOCOLO (ADM)
-    // ============================
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-coletar");
-        if (!btn) return;
-
-        const id = btn.dataset.id;
-        if (!id) return;
-
-        fetch("chamados_trilho_coletar.php", {
-            method: "POST",
-            body: new URLSearchParams({ id })
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.sucesso) {
-                mostrarMensagem(res.mensagem, "sucesso");
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                mostrarMensagem(res.mensagem, "erro");
-            }
-        })
-        .catch(() => mostrarMensagem("Erro ao coletar protocolo.", "erro"));
-    });
-
-    // ============================
-    // FINALIZAR ENTREGA (ADM)
-    // ============================
-    document.addEventListener("click", (e) => {
-        const btn = e.target.closest(".btn-entregar");
-        if (!btn) return;
-
-        const id = btn.dataset.id;
-        if (!id) return;
-
-        fetch("chamados_trilho_entregar.php", {
-            method: "POST",
-            body: new URLSearchParams({ id })
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.sucesso) {
-                mostrarMensagem(res.mensagem, "sucesso");
-                setTimeout(() => location.reload(), 1200);
-            } else {
-                mostrarMensagem(res.mensagem, "erro");
-            }
-        })
-        .catch(() => mostrarMensagem("Erro ao finalizar entrega.", "erro"));
-    });
-
-    // ============================================================
-    // FILTROS POR ABA (COM AJAX, AGORA PARA O ADM)
-    // ============================================================
-
-    const filtroLib      = document.getElementById("filtro-lib");       // ABERTOS (Liberação / Destino)
-    const filtroSolic    = document.getElementById("filtro-solic");     // ROTA (Origem)
-    const filtroEntregue = document.getElementById("filtro-entregue");  // ENTREGUES (Destino)
-
-    const btnLimparColetar   = document.getElementById("btn-limpar-coletar");
-    const btnLimparRota      = document.getElementById("btn-limpar-rota");
-    const btnLimparEntregues = document.getElementById("btn-limpar-entregues");
-
-    const boxAbertos   = document.querySelector("#abertos");
-    const boxRota      = document.querySelector("#rota");
-    const boxEntregues = document.querySelector("#entregues");
-
-    if (filtroLib && filtroSolic && filtroEntregue) {
-
-        // Carregar listas (origens/destinos)
-        fetch("/ajax/trilho_filtros_listas.php")
-            .then(r => r.json())
-            .then(dados => {
-
-                // Destinos → usados em Abertos (Liberação) e Entregues
-                dados.destinos.forEach(d => {
-                    filtroLib.innerHTML      += `<option value="${d.id}">${d.nome}</option>`;
-                    filtroEntregue.innerHTML += `<option value="${d.id}">${d.nome}</option>`;
-                });
-
-                // Origens → usados em Rota
-                dados.origens.forEach(o => {
-                    filtroSolic.innerHTML += `<option value="${o.id}">${o.nome}</option>`;
-                });
-
-                atualizarAbertos();
-                atualizarRota();
-                atualizarEntregues();
-            });
-
-        // AJAX ABERTOS (usa trilho_abertos.php)
-        function atualizarAbertos() {
-            const lib = filtroLib.value;
-
-            boxAbertos.innerHTML = `<h3>📦 Abertos</h3><p class="loading">Carregando...</p>`;
-
-            fetch(`/ajax/trilho_abertos.php?lib=${encodeURIComponent(lib)}`)
-                .then(r => r.text())
-                .then(html => {
-                    boxAbertos.innerHTML = `<h3>📦 Abertos</h3>` + html;
-                    atualizarContadores();
-                });
-        }
-
-        // AJAX ROTA (usa trilho_rota.php)
-        function atualizarRota() {
-            const solic = filtroSolic.value;
-
-            boxRota.innerHTML = `<h3>🛵 Em Rota</h3><p class="loading">Carregando...</p>`;
-
-            fetch(`/ajax/trilho_rota.php?solic=${encodeURIComponent(solic)}`)
-                .then(r => r.text())
-                .then(html => {
-                    boxRota.innerHTML = `<h3>🛵 Em Rota</h3>` + html;
-                    atualizarContadores();
-                });
-        }
-
-        // AJAX ENTREGUES (usa trilho_entregues.php)
-        function atualizarEntregues() {
-            const loja = filtroEntregue.value;
-
-            boxEntregues.innerHTML = `<h3>📦 Entregues</h3><p class="loading">Carregando...</p>`;
-
-            fetch(`/ajax/trilho_entregues.php?loja=${encodeURIComponent(loja)}`)
-                .then(r => r.text())
-                .then(html => {
-                    boxEntregues.innerHTML = `<h3>📦 Entregues</h3>` + html;
-                    atualizarContadores();
-                });
-        }
-
-        // Eventos dos filtros
-        filtroLib.addEventListener("change", atualizarAbertos);
-        filtroSolic.addEventListener("change", atualizarRota);
-        filtroEntregue.addEventListener("change", atualizarEntregues);
-
-        // Botões limpar
-        if (btnLimparColetar) {
-            btnLimparColetar.addEventListener("click", () => {
-                filtroLib.value = "";
-                atualizarAbertos();
-            });
-        }
-
-        if (btnLimparRota) {
-            btnLimparRota.addEventListener("click", () => {
-                filtroSolic.value = "";
-                atualizarRota();
-            });
-        }
-
-        if (btnLimparEntregues) {
-            btnLimparEntregues.addEventListener("click", () => {
-                filtroEntregue.value = "";
-                atualizarEntregues();
-            });
-        }
-    }
-
 });
+
+
+// ============================================================
+// FILTROS POR ABA (VERSÃO MÍNIMA)
+// ============================================================
+
+const filtroLib      = document.getElementById("filtro-lib");
+const filtroSolic    = document.getElementById("filtro-solic");
+const filtroEntregue = document.getElementById("filtro-entregue");
+
+const btnLimparAbertos   = document.getElementById("btn-limpar-abertos");
+const btnLimparRota      = document.getElementById("btn-limpar-rota");
+const btnLimparEntregues = document.getElementById("btn-limpar-entregues");
+
+const boxAbertos   = document.querySelector("#abertos");
+const boxRota      = document.querySelector("#rota");
+const boxEntregues = document.querySelector("#entregues");
+
+if (filtroLib && filtroSolic && filtroEntregue) {
+
+    fetch("/ajax/trilho_filtros_listas.php")
+        .then(r => r.json())
+        .then(dados => {
+
+            dados.destinos.forEach(d => {
+                filtroLib.innerHTML      += `<option value="${d.id}">${d.nome}</option>`;
+                filtroEntregue.innerHTML += `<option value="${d.id}">${d.nome}</option>`;
+            });
+
+            dados.origens.forEach(o => {
+                filtroSolic.innerHTML += `<option value="${o.id}">${o.nome}</option>`;
+            });
+
+            atualizarAbertos();
+            atualizarRota();
+            atualizarEntregues();
+        });
+
+    function atualizarAbertos() {
+        fetch(`/ajax/trilho_abertos.php?lib=${filtroLib.value}`)
+            .then(r => r.text())
+            .then(html => {
+                boxAbertos.innerHTML = html;
+                reativarEventosTrilho();
+            });
+    }
+
+    function atualizarRota() {
+        fetch(`/ajax/trilho_rota.php?solic=${filtroSolic.value}`)
+            .then(r => r.text())
+            .then(html => {
+                boxRota.innerHTML = html;
+                reativarEventosTrilho();
+            });
+    }
+
+    function atualizarEntregues() {
+        fetch(`/ajax/trilho_entregues.php?loja=${filtroEntregue.value}`)
+            .then(r => r.text())
+            .then(html => {
+                boxEntregues.innerHTML = html;
+                reativarEventosTrilho();
+            });
+    }
+
+    filtroLib.addEventListener("change", atualizarAbertos);
+    filtroSolic.addEventListener("change", atualizarRota);
+    filtroEntregue.addEventListener("change", atualizarEntregues);
+
+    btnLimparAbertos.onclick = () => { filtroLib.value = ""; atualizarAbertos(); };
+    btnLimparRota.onclick    = () => { filtroSolic.value = ""; atualizarRota(); };
+    btnLimparEntregues.onclick = () => { filtroEntregue.value = ""; atualizarEntregues(); };
+}
+
+
+// ============================================================
+// REATIVAR EVENTOS APÓS AJAX
+// ============================================================
+
+function reativarEventosTrilho() {
+
+    // DETALHES
+    document.querySelectorAll('.btn-detalhes').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.dataset.id;
+            fetch(`/modulos/chamados_trilho_detalhes.php?id=${id}`)
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById('modal-body-detalhes').innerHTML = html;
+                    document.getElementById('modalDetalhes').style.display = 'block';
+                });
+        };
+    });
+
+    // EDITAR 
+    document.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.dataset.id;
+            window.location.href = `/modulos/chamados_trilho_editar.php?id=${id}`;
+        };
+    });
+
+    // FATURAR
+    document.querySelectorAll('.btn-faturar').forEach(btn => {
+        btn.onclick = () => {
+            idFaturar = btn.dataset.id;
+            modalFaturar.style.display = 'block';
+        };
+    });
+
+    // COLETAR
+    document.querySelectorAll('.btn-coletar').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.dataset.id;
+            if (!confirm("Confirmar coleta deste protocolo?")) return;
+            fetch('/modulos/chamados_trilho_coletar.php', {
+                method: 'POST',
+                body: new URLSearchParams({ id })
+            }).then(() => location.reload());
+        };
+    });
+
+    // ENTREGAR
+    document.querySelectorAll('.btn-entregar').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.dataset.id;
+            if (!confirm("Finalizar entrega deste protocolo?")) return;
+            fetch('/modulos/chamados_trilho_entregar.php', {
+                method: 'POST',
+                body: new URLSearchParams({ id })
+            }).then(() => location.reload());
+        };
+    });
+
+    // EXCLUIR
+    document.querySelectorAll('.btn-excluir').forEach(btn => {
+        btn.onclick = () => {
+            const id = btn.dataset.id;
+            if (!confirm("Tem certeza que deseja excluir este protocolo?")) return;
+            fetch('/modulos/chamados_trilho_excluir.php', {
+                method: 'POST',
+                body: new URLSearchParams({ id })
+            }).then(() => location.reload());
+        };
+    });
+}
+
+
+window.addEventListener("click", e => {
+    if (e.target === modalDetalhes) {
+        modalDetalhes.style.display = "none";
+    }
+});
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        modalDetalhes.style.display = "none";
+    }
+});
+

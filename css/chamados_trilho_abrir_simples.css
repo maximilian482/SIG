@@ -1,0 +1,142 @@
+/* ============================
+   CONTAINER PRINCIPAL
+============================ */
+.container-chamado {
+    display: flex;
+    justify-content: center;
+    padding: 25px;
+}
+
+.card-chamado {
+    width: 100%;
+    max-width: 550px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* ============================
+   TÍTULOS
+============================ */
+.card-chamado h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.card-chamado p {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+/* ============================
+   FORMULÁRIO
+============================ */
+.form-chamado label {
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+    color: #333;
+}
+
+.form-chamado input[type="text"],
+.form-chamado input[type="number"],
+.form-chamado select,
+.form-chamado textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fafafa;
+}
+
+.form-chamado textarea {
+    resize: vertical;
+}
+
+/* ============================
+   RADIO BUTTONS (ENVIAR/RECEBER)
+============================ */
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin: 10px 0 15px 0;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.radio-group input[type="radio"] {
+    transform: scale(1.2);
+}
+
+/* ============================
+   BOTÕES
+============================ */
+.botoes-acoes {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+.btn-voltar,
+.btn-submit {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-voltar {
+    background: #ddd;
+    color: #333;
+}
+
+.btn-submit {
+    background: #009739;
+    color: white;
+    border: none;
+}
+
+.btn-submit:hover {
+    background: #007f2d;
+}
+
+/* ============================
+   AVISO DE LOJA IGUAL
+============================ */
+.aviso-loja-igual {
+    background: #fff3cd;
+    border-left: 4px solid #ffca2c;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    color: #856404;
+    font-size: 14px;
+    display: none;
+}
+
+/* ============================
+   RESPONSIVIDADE
+============================ */
+@media (max-width: 600px) {
+    .card-chamado {
+        padding: 18px;
+    }
+
+    .radio-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
