@@ -13,10 +13,9 @@ if (!isset($_SESSION['cpf'])) {
     exit;
 }
 
-$cpf = $_SESSION['cpf'];
 $funcId = $_SESSION['funcionario_id'];
+$cpf    = $_SESSION['cpf'];
 
-// Permissão específica da ferramenta
 if (!temAcesso($conn, $cpf, 'avaliacoes_loja')) {
     $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar Avaliações de Loja.</h2>";
     include ROOT_PATH . '/includes/layout.php';
@@ -26,21 +25,23 @@ if (!temAcesso($conn, $cpf, 'avaliacoes_loja')) {
 ob_start();
 include ROOT_PATH . '/includes/flash.php';
 ?>
-
-<link rel="stylesheet" href="/css/avaliacoes_base.css">
-
-
 <div class="botoes-avaliacoes">
     <a href="ferramentas.php" class="btn btn-cinza">⬅ Voltar</a>
 
+    <!-- Botão de configuração agora é dinâmico via JS -->
     <a id="btn-configurar" href="#" class="btn btn-azul">
         ⚙️ Configurar
     </a>
 
-    <a href="avaliacoes_loja_historico.php" class="btn btn-amarelo">
+    <a href="avaliacoes_historico.php" class="btn btn-amarelo">
         📜 Histórico
     </a>
 </div>
+
+<link rel="stylesheet" href="/css/avaliacoes_loja.css">
+
+<!-- Biblioteca para assinatura -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 
 <div class="container-avaliacao">
     <div class="avaliacao-wrapper">
@@ -48,19 +49,20 @@ include ROOT_PATH . '/includes/flash.php';
         <h2 class="titulo-pagina">🏪 Avaliação de Loja</h2>
         <p class="subtitulo-pagina">Selecione a loja e avance pelos setores para concluir a avaliação.</p>
 
-        <!-- Seleção inicial -->
-        <div class="card-premium" id="card-selecao-inicial">
+        <!-- Seleção da loja -->
+        <div class="card-premium">
             <h3 class="card-titulo">Selecionar Loja</h3>
             <div class="card-conteudo">
 
-                <label for="item_id" class="label-premium">Loja:</label>
-                <select id="item_id" class="select-premium">
+                <label for="loja_id" class="label-premium">Loja:</label>
+                <select id="loja_id" class="select-premium">
                     <option value="">— Selecione uma loja —</option>
 
                     <?php
-                    $sql = "SELECT id, nome FROM lojas ORDER BY nome";
-                    $res = $conn->query($sql);
-                    while ($l = $res->fetch_assoc()):
+                    $sqlLojas = "SELECT id, nome FROM lojas ORDER BY nome";
+                    $resLojas = $conn->query($sqlLojas);
+
+                    while ($l = $resLojas->fetch_assoc()):
                     ?>
                         <option value="<?= $l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
                     <?php endwhile; ?>
@@ -70,18 +72,19 @@ include ROOT_PATH . '/includes/flash.php';
             </div>
         </div>
 
-        <!-- Carrossel -->
+        <!-- Container do carrossel -->
         <div id="setores-container" class="card-premium oculto">
             <h3 class="card-titulo">🧩 Avaliação por Setor</h3>
 
             <form id="form-avaliacao" onsubmit="return false;">
 
-                <input type="hidden" id="item_id_hidden">
+                <!-- IDs necessários para o backend -->
+                <input type="hidden" id="loja_id_hidden">
                 <input type="hidden" id="avaliador_id" value="<?= $_SESSION['funcionario_id'] ?>">
 
+                <!-- Carrossel -->
                 <div id="carrossel-avaliacao" class="carrossel-container">
-
-                    <!-- Slides dinâmicos serão carregados pelo JS específico -->
+                    <!-- Slides dos setores serão carregados via AJAX -->
 
                     <!-- Slide de resumo -->
                     <div id="slide-resumo" class="carrossel-slide oculto">
@@ -106,7 +109,7 @@ include ROOT_PATH . '/includes/flash.php';
 
                         <div class="grupo-campo">
                             <label class="label-premium">Responsável pela avaliação:</label>
-                            <input type="text" id="responsavel_nome" class="input-premium" required>
+                            <input type="text" id="responsavel_nome" class="input-premium" placeholder="Nome completo" required>
                         </div>
 
                         <div class="grupo-campo">
@@ -136,9 +139,9 @@ include ROOT_PATH . '/includes/flash.php';
                         </div>
 
                     </div>
-
                 </div>
 
+                <!-- Navegação do carrossel -->
                 <div id="carrossel-nav" class="carrossel-nav oculto">
                     <button type="button" id="btn-voltar" class="btn-nav-premium">⬅ Voltar</button>
                     <button type="button" id="btn-avancar" class="btn-nav-premium">Avançar ➜</button>
@@ -147,7 +150,7 @@ include ROOT_PATH . '/includes/flash.php';
             </form>
         </div>
 
-        <!-- Últimas avaliações -->
+        <!-- Últimas avaliações com dropdown de detalhes -->
         <div id="ultimas-avaliacoes" class="card-premium lista-avaliacoes-container">
             <br><br><h3 class="card-titulo" align="center">10 Últimas Avaliações</h3>
             
@@ -170,17 +173,13 @@ include ROOT_PATH . '/includes/flash.php';
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- SignaturePad -->
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
-<!-- Motores base -->
-<script src="/js/avaliacoes_base.js?v=<?= time() ?>"></script>
-<script src="/js/avaliacoes_base_graficos.js?v=<?= time() ?>"></script>
-<script src="/js/avaliacoes_loja_detalhes.js"></script>
-
-
-<!-- JS específico da ferramenta -->
+<!-- JS principais -->
 <script src="/js/avaliacoes_loja.js?v=<?= time() ?>"></script>
+
+<script src="/js/avaliacoes_loja_graficos.js"></script>
+
+<!-- Script extra para dropdown de detalhes na tabela -->
+<script src="/js/avaliacoes_loja_detalhes.js"></script>
 
 <?php
 $conteudo = ob_get_clean();

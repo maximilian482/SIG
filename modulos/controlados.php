@@ -131,8 +131,11 @@ ob_start();
                 <label>Nome do Produto:</label>
                 <input type="text" name="produto" required>
 
-                <label>Número do Cupom:</label>
-                <input type="text" name="cupom" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                <label>Número do Orçamento:</label>
+                <div class="alerta-orcamento">
+                    ⚠️ <strong>Atenção:</strong> Agora utilize o <strong>número de orçamento</strong> neste campo.
+                </div>
+                <input type="text" name="orcamento" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 
                 <label>Vendedor:</label>
                 <input type="text" name="vendedor" required>
@@ -142,6 +145,10 @@ ob_start();
 
                 <label>Quantidade:</label>
                 <input type="number" name="quantidade" min="1" required>
+
+                <label>Observação (opcional):</label>
+                <textarea name="observacao" rows="3" placeholder="Digite algo se necessário..."></textarea>
+
 
                 <button class="btn btn-novo">💾 Salvar</button>
                 <button type="button" class="btn btn-cinza" onclick="fecharModal()">Cancelar</button>
@@ -195,12 +202,16 @@ ob_start();
 
                     <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
                     <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
-                    <p><strong>Cupom:</strong> <?= htmlspecialchars($r['cupom']) ?></p>
+                    <p><strong>Orçamento (Observar se não é Número de cupom):</strong> <?= htmlspecialchars($r['cupom']) ?></p>
                     <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
                     <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
                     <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
                     <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
                     <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
+                    <?php if (!empty($r['observacao'])): ?>
+                        <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
+                    <?php endif; ?>
+
 
                     <p>
                         <strong>Conferido:</strong>

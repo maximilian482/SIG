@@ -1,0 +1,745 @@
+/* ================================
+   OCULTAR
+================================ */
+.oculto {
+    display: none !important;
+}
+
+/* ================================
+   CONTAINER DO CARROSSEL
+================================ */
+.carrossel-container {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+/* ================================
+   SLIDES DO CARROSSEL
+================================ */
+.carrossel-slide {
+    display: none;
+    animation: fadeIn 0.35s ease;
+    padding: 10px 5px;
+}
+
+.carrossel-slide:not(.oculto) {
+    display: block;
+}
+
+/* Animação */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================
+   NAVEGAÇÃO DO CARROSSEL
+================================ */
+.carrossel-nav {
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.btn-nav-premium {
+    flex: 1;
+    background: linear-gradient(135deg, #1976d2, #125a9c);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    transition: 0.2s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+.btn-nav-premium:hover {
+    background: linear-gradient(135deg, #1565c0, #0f4a82);
+    transform: translateY(-2px);
+}
+
+/* ================================
+   BOTÕES DE NOTA (SIM / PARCIAL / NÃO)
+================================ */
+.btn-nota {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: #e9e9e9;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.btn-nota:hover {
+    background: #dcdcdc;
+    transform: translateY(-1px);
+}
+
+/* Estados selecionados */
+.btn-nota.ativo[data-valor="0"] {
+    background: #ffebee;
+    border: 1px solid #e53935;
+    color: #b71c1c;
+}
+
+.btn-nota.ativo[data-valor="50"] {
+    background: #fff8e1;
+    border: 1px solid #ffb300;
+    color: #ff6f00;
+}
+
+.btn-nota.ativo[data-valor="100"] {
+    background: #e8f5e9;
+    border: 1px solid #43a047;
+    color: #1b5e20;
+}
+
+/* ================================
+   SLIDE FINAL
+================================ */
+#slide-final {
+    animation: fadeIn 0.35s ease;
+    padding: 20px;
+}
+
+/* ================================
+   CONTAINER GERAL DA AVALIAÇÃO
+================================ */
+.avaliacao-wrapper {
+    background: #ffffff;
+    padding: 35px 40px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    margin-top: 30px;
+    margin-bottom: 45px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Títulos */
+.avaliacao-wrapper .titulo-pagina {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+}
+
+.avaliacao-wrapper .subtitulo-pagina {
+    margin-top: 0;
+    margin-bottom: 28px;
+    color: #666;
+    font-size: 15px;
+}
+
+/* ================================
+   CAMPOS DO FORMULÁRIO
+================================ */
+.label-premium {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #444;
+}
+
+.input-premium,
+.select-premium,
+textarea.input-premium {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.input-premium:focus,
+.select-premium:focus,
+textarea.input-premium:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25,118,210,0.15);
+    outline: none;
+}
+
+/* Botão salvar final */
+.btn-submit-premium {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    width: 100%;
+    margin-top: 25px;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: 0.2s;
+}
+
+.btn-submit-premium:hover {
+    background: linear-gradient(135deg, #27692b, #14481a);
+    transform: translateY(-2px);
+}
+
+/* ================================
+   CRITÉRIOS — MELHORADOS
+================================ */
+.criterio-item {
+    background: #ffffff;
+    padding: 18px 20px;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    margin-bottom: 22px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.criterio-nome {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.criterio-botoes {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* Campo de observação dentro do setor */
+textarea.input-premium {
+    min-height: 90px;
+}
+
+/* ================================
+   TÍTULO DO SETOR
+================================ */
+.titulo-setor {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    letter-spacing: 0.5px;
+}
+
+/* ================================
+   ASSINATURA (CANVAS)
+================================ */
+.assinatura-box {
+    margin-top: 20px;
+}
+
+/* Container da assinatura */
+.signature-canvas-container {
+    width: 100%;
+    height: 300px;
+    border: 2px solid #bbb;
+    border-radius: 10px;
+    background: #f2f2f2; /* cinza mais escuro para destacar o canvas */
+    margin-bottom: 15px;
+    touch-action: none;
+    position: relative;
+    padding: 8px; /* cria moldura clara ao redor do canvas */
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.15); /* destaque visual */
+}
+
+/* Canvas da assinatura */
+#signature-pad {
+    width: 100%;
+    height: 100%;
+    min-height: 250px;
+    background: #ffffff; /* branco puro para contraste */
+    border-radius: 6px;
+    display: block;
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+}
+
+/* Botão limpar */
+.btn-limpar {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+}
+
+/* ================================
+   MOBILE
+================================ */
+@media (max-width: 600px) {
+
+    .signature-canvas-container {
+        height: 45vh;
+        min-height: 280px;
+        background: #e0e0e0; /* ainda mais escuro no mobile */
+        padding: 10px;
+    }
+
+    #signature-pad {
+        height: 100%;
+        min-height: 260px;
+        background: #ffffff;
+    }
+
+    .btn-limpar {
+        padding: 14px;
+        font-size: 17px;
+    }
+}
+
+
+/* ================================
+   GRÁFICO DE BARRAS — RESUMO
+================================ */
+
+.barra-setor {
+    margin-bottom: 18px;
+}
+
+.barra-label {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.barra {
+    height: 22px;
+    border-radius: 6px;
+    transition: width 0.4s ease;
+}
+
+.barra-ruim {
+    background: #e53935;
+    width: 33%;
+}
+
+.barra-parcial {
+    background: #ffb300;
+    width: 66%;
+}
+
+.barra-bom {
+    background: #43a047;
+    width: 100%;
+}
+
+/* ================================
+   LEGENDA DO RESUMO
+================================ */
+
+.legenda-avaliacao {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.legenda-bolinha {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.legenda-bolinha.ruim {
+    background: #e53935;
+}
+
+.legenda-bolinha.parcial {
+    background: #ffb300;
+}
+
+.legenda-bolinha.bom {
+    background: #43a047;
+}
+
+/* ================================
+   GRÁFICO GERAL (RESUMO)
+================================ */
+
+#grafico-geral {
+    display: block;
+    margin: 0 auto;
+    max-width: 220px;
+}
+
+/* ================================
+   TABELA PREMIUM DE AVALIAÇÕES
+================================ */
+
+.tabela-premium {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+.tabela-premium th {
+    text-align: left;
+    padding: 12px;
+    background: #0b7410;
+    font-weight: 600;
+    border-bottom: 2px solid #f5eded;
+}
+
+.tabela-premium td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.tabela-premium tr:hover {
+    background: #f7f7f7 !important;
+}
+
+
+
+.nota-bom {
+    color: #43a047;
+    font-weight: bold;
+}
+
+.nota-parcial {
+    color: #ffb300;
+    font-weight: bold;
+}
+
+.nota-ruim {
+    color: #e53935;
+    font-weight: bold;
+}
+
+.btn-detalhes {
+    background: #1976d2;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.btn-detalhes:hover {
+    background: #125a9c;
+}
+
+/* ================================
+   MODAL
+================================ */
+
+#modal-detalhes {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999 !important;
+}
+
+#modal-detalhes.oculto {
+    display: none !important;
+}
+
+#modal-detalhes .modal-conteudo {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 85%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#modal-detalhes .modal-fechar {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+#modal-grafico-geral {
+    width: 220px !important;
+    height: 220px !important;
+    display: block;
+    margin: 20px auto !important;
+    flex-shrink: 0 !important;
+}
+
+/* ================================
+   DETALHES DA AVALIAÇÃO (DROPDOWN)
+================================ */
+
+/* Linha de detalhes */
+.linha-detalhes td {
+    background: #fafafa;
+    padding: 0;
+}
+
+/* Container interno */
+.detalhes-conteudo {
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    width: 100%;
+    box-sizing: border-box;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Colunas internas */
+.detalhes-col {
+    flex: 1 1 280px;
+    min-width: 260px;
+}
+
+/* Assinatura */
+.img-assinatura {
+    width: 260px;          /* largura fixa */
+    height: auto;          /* mantém proporção */
+    max-height: 420px;     /* aumenta a altura */
+    object-fit: contain;   /* evita distorção */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: block;
+    margin: 10px auto;
+}
+
+/* ================================
+   HOVER DA TABELA
+================================ */
+
+#tabela-avaliacoes tbody tr:hover,
+.tabela-premium tbody tr:hover {
+    background: #f2f8ff;
+    color: #000;
+    transition: background 0.2s ease;
+}
+
+.img-assinatura {
+    width: 260px;
+    height: 260px; /* altura fixa */
+    object-fit: contain; /* mantém a assinatura dentro da área */
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: block;
+    margin: 10px auto;
+}
+
+/* Botão excluir */
+.btn-excluir {
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 6px;
+    transition: 0.2s;
+}
+
+.btn-excluir:hover {
+    background: #c62828;
+}
+
+.btn-na {
+    background: #777 !important;
+    color: #fff !important;
+    border: 1px solid #555;
+}
+
+
+.btn-na.ativo {
+    background: #444 !important;
+    color: #fff !important;
+}
+
+/* barra setor */
+.barra-setor {
+    margin-bottom: 18px;
+    cursor: pointer;
+}
+
+.barra {
+    position: relative;
+    height: 22px;
+    border-radius: 6px;
+}
+
+.barra-nota {
+    position: absolute;
+    right: 8px;
+    top: 2px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.setor-detalhes {
+    margin-top: 8px;
+    padding: 10px;
+    background: #f7f7f7;
+    border-radius: 6px;
+}
+
+.criterio-linha {
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.obs-setor-detalhe {
+    margin-top: 8px;
+    padding: 6px;
+    background: #fff3cd;
+    border-left: 4px solid #ffca2c;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.oculto {
+    display: none;
+}
+
+/* ================================
+   MOBILE — AJUSTE DOS BOTÕES
+================================ */
+@media (max-width: 600px) {
+
+    .criterio-botoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2 botões por linha */
+        gap: 10px;
+    }
+
+    .btn-nota {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .criterio-item {
+        padding: 14px 16px;
+    }
+}
+
+/* ================================
+   DETALHES — RESPONSIVO MOBILE
+================================ */
+@media (max-width: 600px) {
+
+    /* Força o container a caber na tela */
+    .detalhes-conteudo {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Cada coluna ocupa 100% da largura */
+    .detalhes-col {
+        flex: 1 1 100%;
+        min-width: 100%;
+    }
+
+    /* Ajusta textos */
+    .criterio-linha {
+        font-size: 14px;
+    }
+
+    .obs-setor-detalhe {
+        font-size: 14px;
+    }
+
+    /* Ajusta imagem da assinatura */
+    .img-assinatura {
+        width: 100%;
+        max-width: 260px;
+        height: auto;
+    }
+
+    /* Evita que a tabela estoure */
+    .tabela-premium td {
+        white-space: normal !important;
+        word-break: break-word;
+    }
+}
+
+/* Coluna de ações */
+.col-acoes {
+    white-space: nowrap;
+}
+
+/* MOBILE — evita quebra da tabela */
+@media (max-width: 600px) {
+
+    .col-acoes {
+        white-space: normal !important; /* permite quebrar */
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap; /* permite ir para a linha de baixo */
+    }
+
+    .btn-detalhes,
+    .btn-excluir {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+}
+
+
+.barra-wrapper {
+    position: relative;
+    width: 100%;
+    height: 22px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.barra-fundo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #a59696; /* fundo clarinho */
+    opacity: 0.6;        /* discreto */
+}
+
+.barra {
+    position: relative;
+    height: 100%;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+    color: #fff;
+    font-weight: bold;
+}

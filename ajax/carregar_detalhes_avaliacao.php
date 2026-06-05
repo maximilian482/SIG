@@ -2,8 +2,18 @@
 require_once '../dados/conexao.php';
 $conn = conectar();
 
+header("Content-Type: application/json");
+
+if (!isset($_GET["id"])) {
+    echo json_encode(["erro" => "ID não informado"]);
+    exit;
+}
+
 $id = intval($_GET["id"]);
 
+// ===============================
+// BUSCAR AVALIAÇÃO PRINCIPAL
+// ===============================
 $sql = "SELECT 
             a.*, 
             l.nome AS loja,
@@ -14,21 +24,33 @@ $sql = "SELECT
         WHERE a.id = $id";
 
 $res = $conn->query($sql);
+
+if (!$res || $res->num_rows === 0) {
+    echo json_encode(["erro" => "Avaliação não encontrada"]);
+    exit;
+}
+
 $avaliacao = $res->fetch_assoc();
 
-/* 🔥 CORREÇÃO DO CAMINHO DA ASSINATURA */
+// ===============================
+// AJUSTAR CAMINHO DA ASSINATURA
+// ===============================
 if (!empty($avaliacao['assinatura'])) {
 
-    if (str_starts_with($avaliacao['assinatura'], '/uploads')) {
-        $avaliacao['assinatura'] = $avaliacao['assinatura'];
-    } else {
+    // Se já é base64, NÃO mexe
+    if (str_starts_with($avaliacao['assinatura'], 'data:image')) {
+        // ok
+    }
+
+    // Se for arquivo salvo no servidor
+    else if (!str_starts_with($avaliacao['assinatura'], '/uploads')) {
         $avaliacao['assinatura'] = '/uploads/assinaturas/' . $avaliacao['assinatura'];
     }
 
 } else {
     $avaliacao['assinatura'] = null;
 }
-/* 🔥 FIM DA CORREÇÃO */
+
 
 // ===============================
 // BUSCAR SETORES AVALIADOS
@@ -68,6 +90,9 @@ while ($row = $res2->fetch_assoc()) {
     $setores[] = $row;
 }
 
+// ===============================
+// RETORNO FINAL
+// ===============================
 echo json_encode([
     "avaliacao" => $avaliacao,
     "setores" => $setores

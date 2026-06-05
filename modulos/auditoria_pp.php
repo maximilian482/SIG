@@ -14,30 +14,28 @@ if (!isset($_SESSION['cpf'])) {
 }
 
 $cpf = $_SESSION['cpf'];
-$funcId = $_SESSION['funcionario_id'];
 
-// Permissão específica da ferramenta
-if (!temAcesso($conn, $cpf, 'avaliacoes_loja')) {
-    $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar Avaliações de Loja.</h2>";
+if (!temAcesso($conn, $cpf, 'ferramentas_auditoria_pp')) {
+    $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar Auditoria PP.</h2>";
     include ROOT_PATH . '/includes/layout.php';
     exit;
 }
+
 
 ob_start();
 include ROOT_PATH . '/includes/flash.php';
 ?>
 
-<link rel="stylesheet" href="/css/avaliacoes_base.css">
-
+<link rel="stylesheet" href="/css/auditoria_pp.css">
 
 <div class="botoes-avaliacoes">
     <a href="ferramentas.php" class="btn btn-cinza">⬅ Voltar</a>
 
-    <a id="btn-configurar" href="#" class="btn btn-azul">
+    <a href="auditoria_pp_configurar.php" class="btn btn-azul">
         ⚙️ Configurar
     </a>
 
-    <a href="avaliacoes_loja_historico.php" class="btn btn-amarelo">
+    <a href="auditoria_pp_historico.php" class="btn btn-amarelo">
         📜 Histórico
     </a>
 </div>
@@ -45,68 +43,77 @@ include ROOT_PATH . '/includes/flash.php';
 <div class="container-avaliacao">
     <div class="avaliacao-wrapper">
 
-        <h2 class="titulo-pagina">🏪 Avaliação de Loja</h2>
-        <p class="subtitulo-pagina">Selecione a loja e avance pelos setores para concluir a avaliação.</p>
+        <h2 class="titulo-pagina">🛡️ Auditoria de Prevenção e Perdas</h2>
+        <p class="subtitulo-pagina">Selecione a loja e avance pelos itens configurados.</p>
 
-        <!-- Seleção inicial -->
-        <div class="card-premium" id="card-selecao-inicial">
+        <!-- Seleção da loja -->
+        <div class="card-premium">
             <h3 class="card-titulo">Selecionar Loja</h3>
             <div class="card-conteudo">
 
-                <label for="item_id" class="label-premium">Loja:</label>
-                <select id="item_id" class="select-premium">
+                <label for="loja_id" class="label-premium">Loja:</label>
+                <select id="loja_id" class="select-premium">
                     <option value="">— Selecione uma loja —</option>
 
                     <?php
-                    $sql = "SELECT id, nome FROM lojas ORDER BY nome";
-                    $res = $conn->query($sql);
-                    while ($l = $res->fetch_assoc()):
+                    $sqlLojas = "SELECT id, nome FROM lojas ORDER BY nome";
+                    $resLojas = $conn->query($sqlLojas);
+
+                    while ($l = $resLojas->fetch_assoc()):
                     ?>
                         <option value="<?= $l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
                     <?php endwhile; ?>
                 </select>
 
-                <p class="hint-premium">Os setores serão carregados automaticamente.</p>
+                <p class="hint-premium">Os itens serão carregados automaticamente.</p>
             </div>
         </div>
 
-        <!-- Carrossel -->
-        <div id="setores-container" class="card-premium oculto">
-            <h3 class="card-titulo">🧩 Avaliação por Setor</h3>
+        <!-- Container do carrossel -->
+        <div id="itens-container" class="card-premium oculto">
+            <h3 class="card-titulo">🧩 Itens da Auditoria</h3>
 
-            <form id="form-avaliacao" onsubmit="return false;">
+            <form id="form-auditoria" onsubmit="return false;">
 
-                <input type="hidden" id="item_id_hidden">
+                <input type="hidden" id="loja_id_hidden">
                 <input type="hidden" id="avaliador_id" value="<?= $_SESSION['funcionario_id'] ?>">
 
-                <div id="carrossel-avaliacao" class="carrossel-container">
-
-                    <!-- Slides dinâmicos serão carregados pelo JS específico -->
+                <!-- Carrossel -->
+                <div id="carrossel-auditoria" class="carrossel-container">
+                    <!-- Slides serão carregados via AJAX -->
 
                     <!-- Slide de resumo -->
                     <div id="slide-resumo" class="carrossel-slide oculto">
-                        <h3 class="titulo-final">Resumo da Avaliação</h3>
+
+                    <div class="card-premium">
+
+                        <h3 class="titulo-final" style="margin-bottom:20px;">Resumo da Auditoria</h3>
 
                         <div class="legenda-avaliacao">
-                            <div><span class="legenda-bolinha ruim"></span> Ruim</div>
+                            <div><span class="legenda-bolinha ruim"></span> Não</div>
                             <div><span class="legenda-bolinha parcial"></span> Parcial</div>
-                            <div><span class="legenda-bolinha bom"></span> Bom</div>
+                            <div><span class="legenda-bolinha bom"></span> Sim</div>
                         </div>
 
-                        <div id="grafico-setores"></div>
+                        <div id="grafico-itens"></div>
 
-                        <h4 class="titulo-final" style="margin-top:30px;">Avaliação Geral</h4>
+                        <h4 class="titulo-final" style="margin-top:30px;">Nota Geral</h4>
                         <canvas id="grafico-geral" width="220" height="220"></canvas>
+
                     </div>
+
+                </div>
+
+
 
                     <!-- Slide final -->
                     <div id="slide-final" class="carrossel-slide oculto">
 
-                        <h3 class="titulo-final">Finalizar Avaliação</h3>
+                        <h3 class="titulo-final">Finalizar Auditoria</h3>
 
                         <div class="grupo-campo">
-                            <label class="label-premium">Responsável pela avaliação:</label>
-                            <input type="text" id="responsavel_nome" class="input-premium" required>
+                            <label class="label-premium">Responsável pela auditoria:</label>
+                            <input type="text" id="responsavel_nome" class="input-premium" placeholder="Nome completo" required>
                         </div>
 
                         <div class="grupo-campo">
@@ -121,8 +128,8 @@ include ROOT_PATH . '/includes/flash.php';
                         </div>
 
                         <div class="grupo-campo">
-                            <label class="label-premium">Data da avaliação:</label>
-                            <input type="date" id="data_avaliacao" class="input-premium">
+                            <label class="label-premium">Data da auditoria:</label>
+                            <input type="date" id="data_auditoria" class="input-premium">
                         </div>
 
                         <div class="grupo-campo assinatura-box">
@@ -136,9 +143,9 @@ include ROOT_PATH . '/includes/flash.php';
                         </div>
 
                     </div>
-
                 </div>
 
+                <!-- Navegação -->
                 <div id="carrossel-nav" class="carrossel-nav oculto">
                     <button type="button" id="btn-voltar" class="btn-nav-premium">⬅ Voltar</button>
                     <button type="button" id="btn-avancar" class="btn-nav-premium">Avançar ➜</button>
@@ -147,11 +154,11 @@ include ROOT_PATH . '/includes/flash.php';
             </form>
         </div>
 
-        <!-- Últimas avaliações -->
-        <div id="ultimas-avaliacoes" class="card-premium lista-avaliacoes-container">
-            <br><br><h3 class="card-titulo" align="center">10 Últimas Avaliações</h3>
+        <!-- Últimas auditorias -->
+        <div id="ultimas-auditorias" class="card-premium lista-avaliacoes-container">
+            <br><br><h3 class="card-titulo" align="center">10 Últimas Auditorias</h3>
             
-            <table class="tabela-premium" id="tabela-avaliacoes">
+            <table class="tabela-premium" id="tabela-auditorias">
                 <thead>
                     <tr>
                         <th>Loja</th>
@@ -160,27 +167,22 @@ include ROOT_PATH . '/includes/flash.php';
                         <th></th>
                     </tr>
                 </thead>
-                <tbody id="lista-avaliacoes"></tbody>
+                <tbody id="lista-auditorias"></tbody>
             </table>
         </div>
 
     </div>
 </div>
 
-<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- SignaturePad -->
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
-<!-- Motores base -->
-<script src="/js/avaliacoes_base.js?v=<?= time() ?>"></script>
-<script src="/js/avaliacoes_base_graficos.js?v=<?= time() ?>"></script>
-<script src="/js/avaliacoes_loja_detalhes.js"></script>
+<script src="/js/auditoria_pp_grafico.js?v=<?= time() ?>"></script>
+<script src="/js/auditoria_pp.js?v=<?= time() ?>"></script>
+<script src="/js/auditoria_pp_detalhes.js?v=<?= time() ?>"></script>
 
 
-<!-- JS específico da ferramenta -->
-<script src="/js/avaliacoes_loja.js?v=<?= time() ?>"></script>
+
 
 <?php
 $conteudo = ob_get_clean();

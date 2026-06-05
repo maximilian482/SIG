@@ -13,6 +13,9 @@ if (!isset($_SESSION['cpf'])) {
     exit;
 }
 
+$cpf = $_SESSION['cpf'];
+$funcId = $_SESSION['funcionario_id'];
+
 ob_start();
 include ROOT_PATH . '/includes/flash.php';
 ?>

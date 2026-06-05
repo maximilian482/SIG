@@ -70,6 +70,7 @@ $modulosPermitidos = [
     // Ferramentas
     'ferramentas_avaliacoes' => '🏪 Avaliação de Loja',
     'ferramentas_auditoria'  => '📝 Auditoria',
+    'ferramentas_auditoria_pp' => '🛡️ Auditoria PP',   // <-- ADICIONAR AQUI
     'ferramentas_inventario' => '📦 Inventário',
     'ferramentas_controlados'=> '💊 Controlados',
     'ferramentas_controlados_farmaceutico' => '💊 Controlados Farmacêutico',

@@ -13,12 +13,14 @@ if (!isset($_SESSION['cpf'])) {
     exit;
 }
 
-$cpf = $_SESSION['cpf'];
 $funcId = $_SESSION['funcionario_id'];
+$cpf    = $_SESSION['cpf'];
 
-// Permissão específica da ferramenta
-if (!temAcesso($conn, $cpf, 'avaliacoes_loja')) {
-    $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar Avaliações de Loja.</h2>";
+// Permissão dinâmica — substitua pelo nome da ferramenta
+$NOME_FERRAMENTA = 'avaliacao_base';
+
+if (!temAcesso($conn, $cpf, $NOME_FERRAMENTA)) {
+    $conteudo = "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar esta ferramenta.</h2>";
     include ROOT_PATH . '/includes/layout.php';
     exit;
 }
@@ -26,10 +28,6 @@ if (!temAcesso($conn, $cpf, 'avaliacoes_loja')) {
 ob_start();
 include ROOT_PATH . '/includes/flash.php';
 ?>
-
-<link rel="stylesheet" href="/css/avaliacoes_base.css">
-
-
 <div class="botoes-avaliacoes">
     <a href="ferramentas.php" class="btn btn-cinza">⬅ Voltar</a>
 
@@ -37,42 +35,40 @@ include ROOT_PATH . '/includes/flash.php';
         ⚙️ Configurar
     </a>
 
-    <a href="avaliacoes_loja_historico.php" class="btn btn-amarelo">
+    <a href="avaliacoes_historico.php" class="btn btn-amarelo">
         📜 Histórico
     </a>
 </div>
 
+<link rel="stylesheet" href="/css/avaliacao_base.css">
+
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
 <div class="container-avaliacao">
     <div class="avaliacao-wrapper">
 
-        <h2 class="titulo-pagina">🏪 Avaliação de Loja</h2>
-        <p class="subtitulo-pagina">Selecione a loja e avance pelos setores para concluir a avaliação.</p>
+        <!-- Título dinâmico -->
+        <h2 class="titulo-pagina" id="titulo-ferramenta">📝 Nova Avaliação</h2>
+        <p class="subtitulo-pagina" id="subtitulo-ferramenta">Descrição da ferramenta aqui.</p>
 
-        <!-- Seleção inicial -->
+        <!-- Seleção inicial (dinâmica) -->
         <div class="card-premium" id="card-selecao-inicial">
-            <h3 class="card-titulo">Selecionar Loja</h3>
+            <h3 class="card-titulo" id="titulo-selecao">Selecionar Item</h3>
             <div class="card-conteudo">
 
-                <label for="item_id" class="label-premium">Loja:</label>
+                <label for="item_id" class="label-premium" id="label-selecao">Item:</label>
                 <select id="item_id" class="select-premium">
-                    <option value="">— Selecione uma loja —</option>
-
-                    <?php
-                    $sql = "SELECT id, nome FROM lojas ORDER BY nome";
-                    $res = $conn->query($sql);
-                    while ($l = $res->fetch_assoc()):
-                    ?>
-                        <option value="<?= $l['id'] ?>"><?= htmlspecialchars($l['nome']) ?></option>
-                    <?php endwhile; ?>
+                    <option value="">— Selecione —</option>
+                    <!-- Opções serão carregadas via JS -->
                 </select>
 
-                <p class="hint-premium">Os setores serão carregados automaticamente.</p>
+                <p class="hint-premium" id="hint-selecao">Os dados serão carregados automaticamente.</p>
             </div>
         </div>
 
-        <!-- Carrossel -->
+        <!-- Container do carrossel -->
         <div id="setores-container" class="card-premium oculto">
-            <h3 class="card-titulo">🧩 Avaliação por Setor</h3>
+            <h3 class="card-titulo">🧩 Avaliação</h3>
 
             <form id="form-avaliacao" onsubmit="return false;">
 
@@ -80,18 +76,11 @@ include ROOT_PATH . '/includes/flash.php';
                 <input type="hidden" id="avaliador_id" value="<?= $_SESSION['funcionario_id'] ?>">
 
                 <div id="carrossel-avaliacao" class="carrossel-container">
-
-                    <!-- Slides dinâmicos serão carregados pelo JS específico -->
+                    <!-- Slides dinâmicos -->
 
                     <!-- Slide de resumo -->
                     <div id="slide-resumo" class="carrossel-slide oculto">
                         <h3 class="titulo-final">Resumo da Avaliação</h3>
-
-                        <div class="legenda-avaliacao">
-                            <div><span class="legenda-bolinha ruim"></span> Ruim</div>
-                            <div><span class="legenda-bolinha parcial"></span> Parcial</div>
-                            <div><span class="legenda-bolinha bom"></span> Bom</div>
-                        </div>
 
                         <div id="grafico-setores"></div>
 
@@ -105,28 +94,28 @@ include ROOT_PATH . '/includes/flash.php';
                         <h3 class="titulo-final">Finalizar Avaliação</h3>
 
                         <div class="grupo-campo">
-                            <label class="label-premium">Responsável pela avaliação:</label>
+                            <label class="label-premium">Responsável:</label>
                             <input type="text" id="responsavel_nome" class="input-premium" required>
                         </div>
 
                         <div class="grupo-campo">
                             <button type="button" id="btn-add-observacao" class="btn-nav-premium" style="background:#777;">
-                                + Adicionar observações gerais
+                                + Adicionar observações
                             </button>
 
                             <div id="obs-wrapper" class="oculto" style="margin-top:15px;">
-                                <label class="label-premium">Observações gerais:</label>
+                                <label class="label-premium">Observações:</label>
                                 <textarea id="observacao_final" class="input-premium" rows="3"></textarea>
                             </div>
                         </div>
 
                         <div class="grupo-campo">
-                            <label class="label-premium">Data da avaliação:</label>
+                            <label class="label-premium">Data:</label>
                             <input type="date" id="data_avaliacao" class="input-premium">
                         </div>
 
                         <div class="grupo-campo assinatura-box">
-                            <label class="label-premium">Assinatura do responsável:</label>
+                            <label class="label-premium">Assinatura:</label>
 
                             <canvas id="signature-pad" class="signature-canvas"></canvas>
 
@@ -136,7 +125,6 @@ include ROOT_PATH . '/includes/flash.php';
                         </div>
 
                     </div>
-
                 </div>
 
                 <div id="carrossel-nav" class="carrossel-nav oculto">
@@ -149,12 +137,12 @@ include ROOT_PATH . '/includes/flash.php';
 
         <!-- Últimas avaliações -->
         <div id="ultimas-avaliacoes" class="card-premium lista-avaliacoes-container">
-            <br><br><h3 class="card-titulo" align="center">10 Últimas Avaliações</h3>
+            <br><br><h3 class="card-titulo" align="center">Últimas Avaliações</h3>
             
             <table class="tabela-premium" id="tabela-avaliacoes">
                 <thead>
                     <tr>
-                        <th>Loja</th>
+                        <th>Item</th>
                         <th>Nota Geral</th>
                         <th>Data</th>
                         <th></th>
@@ -167,20 +155,11 @@ include ROOT_PATH . '/includes/flash.php';
     </div>
 </div>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- SignaturePad -->
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-
-<!-- Motores base -->
-<script src="/js/avaliacoes_base.js?v=<?= time() ?>"></script>
-<script src="/js/avaliacoes_base_graficos.js?v=<?= time() ?>"></script>
-<script src="/js/avaliacoes_loja_detalhes.js"></script>
-
-
-<!-- JS específico da ferramenta -->
-<script src="/js/avaliacoes_loja.js?v=<?= time() ?>"></script>
+<script src="/js/avaliacao_base.js?v=<?= time() ?>"></script>
+<script src="/js/avaliacao_base_graficos.js"></script>
+<script src="/js/avaliacao_base_detalhes.js"></script>
 
 <?php
 $conteudo = ob_get_clean();

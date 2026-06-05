@@ -43,13 +43,14 @@ ob_start();
     </div>
     <?php endif; ?>
 
-    <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_auditoria")): ?>
-    <div class="card">
-        <h2>📝 Auditoria</h2>
-        <p>Auditoria completa de funcionamento, estrutura e segurança.</p>
-        <a href="auditoria.php">Acessar</a>
-    </div>
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_auditoria_pp")): ?>
+        <div class="card">
+            <h2>🛡️ Auditoria Prevenção e Perdas</h2>
+            <p>Auditoria completa de funcionamento, estrutura e segurança.</p>
+            <a href="auditoria_pp.php">Acessar</a>
+        </div>
     <?php endif; ?>
+
 
     <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_inventario")): ?>
     <div class="card">

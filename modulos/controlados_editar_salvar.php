@@ -10,37 +10,57 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $id          = intval($_POST['id']);
 $filial      = intval($_POST['filial']);
+
 $data        = $_POST['data_venda'];
-$vendedor    = $_POST['vendedor']; // agora é nome digitado
-$produto     = $_POST['produto'];
-$lote        = $_POST['lote'];
+$vendedor    = trim($_POST['vendedor']);
+$produto     = trim($_POST['produto']);
+$lote        = trim($_POST['lote']);
 $quantidade  = intval($_POST['quantidade']);
 
-// PEGA APENAS O PRIMEIRO NOME DO USUÁRIO LOGADO
-$registradoPor = explode(" ", trim($_SESSION['usuario']))[0];
+// Agora o campo visual é "orcamento", mas salvamos em "cupom"
+$orcamento   = trim($_POST['orcamento']);
+$cupom       = $orcamento;
+
+// Observação opcional
+$observacao  = trim($_POST['observacao'] ?? '');
+
+// O criador do registro NÃO deve ser alterado
+$registradoPor = preg_replace('/\D/', '', $_SESSION['cpf']);
 
 $stmt = $conn->prepare("
     UPDATE controlados
-    SET data_venda = ?, 
+    SET 
+        data_venda = ?, 
         vendedor   = ?, 
         produto    = ?, 
         lote       = ?, 
         quantidade = ?, 
-        registrado_por = ?
+        cupom      = ?, 
+        observacao = ?
     WHERE id = ?
 ");
 
-$stmt->bind_param("ssssisi", 
-    $data, 
-    $vendedor, 
-    $produto, 
-    $lote, 
-    $quantidade, 
-    $registradoPor, 
+$stmt->bind_param(
+    "ssssissi",
+    $data,
+    $vendedor,
+    $produto,
+    $lote,
+    $quantidade,
+    $cupom,
+    $observacao,
     $id
 );
 
 $stmt->execute();
+
+/* ============================
+   FLASH MESSAGE PREMIUM
+============================ */
+$_SESSION['flash'] = [
+    'mensagem' => 'Registro atualizado com sucesso!',
+    'tipo' => 'success'
+];
 
 header("Location: controlados_registros.php?filial=$filial&ok=editado");
 exit;

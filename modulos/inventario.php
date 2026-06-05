@@ -1,28 +1,29 @@
 <?php
+session_start();
+date_default_timezone_set('America/Sao_Paulo');
+
 require_once '../includes/funcoes.php';
 $conn = conectar();
 
 require_once __DIR__ . '/../config/bootstrap.php';
-include ROOT_PATH . '/includes/head.php';
-include ROOT_PATH . '/includes/menu.php'; 
-include ROOT_PATH . '/perfil/menu_perfil.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
 
 // Inativar item
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'])) {
-  $id = intval($_POST['id']);
-  $motivo = trim($_POST['motivo'] ?? '—');
+    $id = intval($_POST['id']);
+    $motivo = trim($_POST['motivo'] ?? '—');
 
-  $stmt = $conn->prepare("UPDATE inventario SET baixa = CURDATE(), motivo_baixa = ? WHERE id = ?");
-  $stmt->bind_param("si", $motivo, $id);
-  $stmt->execute();
+    $stmt = $conn->prepare("UPDATE inventario SET baixa = CURDATE(), motivo_baixa = ? WHERE id = ?");
+    $stmt->bind_param("si", $motivo, $id);
+    $stmt->execute();
 }
 
 // Filtros
-$lojaSelecionada = $_GET['loja'] ?? '';
-$categoriaSelecionada = $_GET['categoria'] ?? '';
-$nomeSelecionado = $_GET['nome'] ?? '';
+$lojaSelecionada        = $_GET['loja']        ?? '';
+$categoriaSelecionada   = $_GET['categoria']   ?? '';
+$nomeSelecionado        = $_GET['nome']        ?? '';
 $responsavelSelecionado = $_GET['responsavel'] ?? '';
-$controleSelecionado = $_GET['controle'] ?? '';
+$controleSelecionado    = $_GET['controle']    ?? '';
 
 // Paginação
 $itensPorPagina = intval($_GET['por_pagina'] ?? 10);
@@ -37,76 +38,77 @@ $offset = ($paginaAtual - 1) * $itensPorPagina;
 $lojas = [];
 $resLojas = $conn->query("SELECT id, nome FROM lojas ORDER BY nome");
 while ($row = $resLojas->fetch_assoc()) {
-  $lojas[$row['id']] = $row['nome'];
+    $lojas[$row['id']] = $row['nome'];
 }
 
 // Carregar categorias
 $categorias = [];
 $resCat = $conn->query("SELECT id, nome FROM inventario_categorias ORDER BY nome");
 while ($row = $resCat->fetch_assoc()) {
-  $categorias[$row['id']] = $row['nome'];
+    $categorias[$row['id']] = $row['nome'];
 }
 
 // Carregar responsáveis (inclui Gestor manualmente)
 $responsaveisDisponiveis = [22 => 'Gestor'];
 
 $resResp = $conn->query("
-  SELECT DISTINCT f.id, f.nome
-  FROM inventario i
-  LEFT JOIN funcionarios f ON i.responsavel_id = f.id
-  WHERE i.baixa IS NULL
-  ORDER BY f.nome
+    SELECT DISTINCT f.id, f.nome
+    FROM inventario i
+    LEFT JOIN funcionarios f ON i.responsavel_id = f.id
+    WHERE i.baixa IS NULL
+    ORDER BY f.nome
 ");
 
 while ($row = $resResp->fetch_assoc()) {
-  if ($row['id']) {
-    $responsaveisDisponiveis[$row['id']] = $row['nome'];
-  }
+    if ($row['id']) {
+        $responsaveisDisponiveis[$row['id']] = $row['nome'];
+    }
 }
 
 // Consulta principal (com paginação)
 $sql = "
-  SELECT i.id, i.controle, i.nome, i.descricao, i.setor, i.valor,
-         c.nome AS categoria,
-         c.sigla AS sigla_categoria,
-         l.nome AS nome_loja,
-         COALESCE(f.nome, 'Gestor') AS responsavel
-  FROM inventario i
-  JOIN lojas l ON i.loja_id = l.id
-  LEFT JOIN funcionarios f ON i.responsavel_id = f.id
-  JOIN inventario_categorias c ON i.categoria_id = c.id
-  WHERE i.baixa IS NULL
+    SELECT i.id, i.controle, i.nome, i.descricao, i.setor, i.valor,
+           c.nome AS categoria,
+           c.sigla AS sigla_categoria,
+           l.nome AS nome_loja,
+           COALESCE(f.nome, 'Gestor') AS responsavel
+    FROM inventario i
+    JOIN lojas l ON i.loja_id = l.id
+    LEFT JOIN funcionarios f ON i.responsavel_id = f.id
+    JOIN inventario_categorias c ON i.categoria_id = c.id
+    WHERE i.baixa IS NULL
 ";
 
 $params = [];
 $types = '';
 
 if ($lojaSelecionada !== '') {
-  $sql .= " AND i.loja_id = ?";
-  $params[] = $lojaSelecionada;
-  $types .= 'i';
+    $sql .= " AND i.loja_id = ?";
+    $params[] = $lojaSelecionada;
+    $types .= 'i';
 }
 if ($controleSelecionado !== '') {
-  $sql .= " AND i.controle LIKE ?";
-  $params[] = "%$controleSelecionado%";
-  $types .= 's';
+    $sql .= " AND i.controle LIKE ?";
+    $params[] = "%$controleSelecionado%";
+    $types .= 's';
 }
 if ($categoriaSelecionada !== '') {
-  $sql .= " AND i.categoria_id = ?";
-  $params[] = $categoriaSelecionada;
-  $types .= 'i';
+    $sql .= " AND i.categoria_id = ?";
+    $params[] = $categoriaSelecionada;
+    $types .= 'i';
 }
 if ($nomeSelecionado !== '') {
-  $sql .= " AND i.nome = ?";
-  $params[] = $nomeSelecionado;
-  $types .= 's';
+    $sql .= " AND i.nome = ?";
+    $params[] = $nomeSelecionado;
+    $types .= 's';
 }
 if ($responsavelSelecionado !== '') {
-  $sql .= " AND i.responsavel_id = ?";
-  $params[] = $responsavelSelecionado;
-  $types .= 'i';
+    $sql .= " AND i.responsavel_id = ?";
+    $params[] = $responsavelSelecionado;
+    $types .= 'i';
 }
 
+// Total para paginação
 $sqlCount = "SELECT COUNT(*) AS total FROM ($sql) AS sub";
 $stmtCount = $conn->prepare($sqlCount);
 if ($params) $stmtCount->bind_param($types, ...$params);
@@ -115,6 +117,7 @@ $totalItens = $stmtCount->get_result()->fetch_assoc()['total'];
 
 $totalPaginas = ceil($totalItens / $itensPorPagina);
 
+// Dados paginados
 $sql .= " ORDER BY c.nome, i.nome LIMIT ? OFFSET ?";
 $params[] = $itensPorPagina;
 $params[] = $offset;
@@ -129,19 +132,14 @@ $listaFiltrada = [];
 $valorTotal = 0;
 
 while ($item = $result->fetch_assoc()) {
-  $listaFiltrada[] = $item;
-  $valorTotal += $item['valor'] ?? 0;
+    $listaFiltrada[] = $item;
+    $valorTotal += $item['valor'] ?? 0;
 }
-?>
 
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Inventário por Loja</title>
-  <link rel="stylesheet" href="../css/inventario.css">
-</head>
-<body>
+// Início do buffer para layout
+ob_start();
+?>
+<link rel="stylesheet" href="../css/inventario.css">
 
 <div class="container">
   <h2>📦 Inventário Ativo</h2>
@@ -239,103 +237,81 @@ while ($item = $result->fetch_assoc()) {
   <!-- Paginação -->
   <div class="paginacao-container">
 
-  <!-- Seletor de itens por página -->
-  <form method="GET" class="por-pagina-form">
-    <?php 
-      // preserva todos os filtros
-      foreach ($_GET as $k => $v) {
-        if ($k !== 'por_pagina' && $k !== 'pagina') {
-          echo "<input type='hidden' name='$k' value='$v'>";
-        }
-      }
-    ?>
-  </form>
+    <div class="paginacao-wrapper">
 
-  <!-- Paginação inteligente -->
-  <div class="paginacao-wrapper">
+      <div class="paginacao">
+        <?php if ($paginaAtual > 1): ?>
+          <a class="page-btn" href="?<?= http_build_query(array_merge($_GET, ['pagina' => $paginaAtual - 1])) ?>">⟵ Anterior</a>
+        <?php endif; ?>
 
-  <div class="paginacao">
-    <?php if ($paginaAtual > 1): ?>
-      <a class="page-btn" href="?<?= http_build_query(array_merge($_GET, ['pagina' => $paginaAtual - 1])) ?>">⟵ Anterior</a>
-    <?php endif; ?>
+        <div class="page-numbers">
 
-    <div class="page-numbers">
+          <a class="page-number <?= $paginaAtual == 1 ? 'ativo' : '' ?>"
+             href="?<?= http_build_query(array_merge($_GET, ['pagina' => 1])) ?>">
+            1
+          </a>
 
-      <!-- Página 1 -->
-      <a class="page-number <?= $paginaAtual == 1 ? 'ativo' : '' ?>"
-         href="?<?= http_build_query(array_merge($_GET, ['pagina' => 1])) ?>">
-        1
-      </a>
+          <?php if ($paginaAtual > 4): ?>
+            <span class="ellipsis">…</span>
+          <?php endif; ?>
 
-      <!-- Reticências antes -->
-      <?php if ($paginaAtual > 4): ?>
-        <span class="ellipsis">…</span>
-      <?php endif; ?>
+          <?php
+            $inicio = max(2, $paginaAtual - 3);
+            $fim = min($totalPaginas - 1, $paginaAtual + 3);
 
-      <!-- Bloco central -->
-      <?php
-        $inicio = max(2, $paginaAtual - 3);
-        $fim = min($totalPaginas - 1, $paginaAtual + 3);
+            for ($i = $inicio; $i <= $fim; $i++):
+          ?>
+            <a class="page-number <?= $paginaAtual == $i ? 'ativo' : '' ?>"
+               href="?<?= http_build_query(array_merge($_GET, ['pagina' => $i])) ?>">
+              <?= $i ?>
+            </a>
+          <?php endfor; ?>
 
-        for ($i = $inicio; $i <= $fim; $i++):
-      ?>
-        <a class="page-number <?= $paginaAtual == $i ? 'ativo' : '' ?>"
-           href="?<?= http_build_query(array_merge($_GET, ['pagina' => $i])) ?>">
-          <?= $i ?>
-        </a>
-      <?php endfor; ?>
+          <?php if ($paginaAtual < $totalPaginas - 3): ?>
+            <span class="ellipsis">…</span>
+          <?php endif; ?>
 
-      <!-- Reticências depois -->
-      <?php if ($paginaAtual < $totalPaginas - 3): ?>
-        <span class="ellipsis">…</span>
-      <?php endif; ?>
+          <?php if ($totalPaginas > 1): ?>
+            <a class="page-number <?= $paginaAtual == $totalPaginas ? 'ativo' : '' ?>"
+               href="?<?= http_build_query(array_merge($_GET, ['pagina' => $totalPaginas])) ?>">
+              <?= $totalPaginas ?>
+            </a>
+          <?php endif; ?>
 
-      <!-- Última página -->
-      <?php if ($totalPaginas > 1): ?>
-        <a class="page-number <?= $paginaAtual == $totalPaginas ? 'ativo' : '' ?>"
-           href="?<?= http_build_query(array_merge($_GET, ['pagina' => $totalPaginas])) ?>">
-          <?= $totalPaginas ?>
-        </a>
-      <?php endif; ?>
+        </div>
+
+        <?php if ($paginaAtual < $totalPaginas): ?>
+          <a class="page-btn" href="?<?= http_build_query(array_merge($_GET, ['pagina' => $paginaAtual + 1])) ?>">Próxima ⟶</a>
+        <?php endif; ?>
+
+        <form method="GET" class="por-pagina">
+          <?php 
+            foreach ($_GET as $k => $v) {
+              if ($k !== 'por_pagina' && $k !== 'pagina') {
+                echo "<input type='hidden' name='$k' value='$v'>";
+              }
+            }
+          ?>
+          
+          <select name="por_pagina" onchange="this.form.submit()">
+            <?php foreach ([10, 20, 50, 100] as $qtd): ?>
+              <option value="<?= $qtd ?>" <?= $qtd == $itensPorPagina ? 'selected' : '' ?>>
+                <?= $qtd ?>
+              </option>
+            <?php endforeach; ?>
+          </select>
+        </form>
+
+      </div>
 
     </div>
 
-    <?php if ($paginaAtual < $totalPaginas): ?>
-      <a class="page-btn" href="?<?= http_build_query(array_merge($_GET, ['pagina' => $paginaAtual + 1])) ?>">Próxima ⟶</a>
-    <?php endif; ?>
-
-    <!-- Seletor ao lado da paginação -->
-  <form method="GET" class="por-pagina">
-    <?php 
-      foreach ($_GET as $k => $v) {
-        if ($k !== 'por_pagina' && $k !== 'pagina') {
-          echo "<input type='hidden' name='$k' value='$v'>";
-        }
-      }
-    ?>
-    
-    <select name="por_pagina" onchange="this.form.submit()">
-      <?php foreach ([10, 20, 50, 100] as $qtd): ?>
-        <option value="<?= $qtd ?>" <?= $qtd == $itensPorPagina ? 'selected' : '' ?>>
-          <?= $qtd ?>
-        </option>
-      <?php endforeach; ?>
-    </select>
-  </form>
   </div>
-
-  
-
-</div>
-
-
-
-
 
   <div class="acoes-gerais">
     <a class="btn" href="../modulos/gestao.php">🏠 Voltar</a>
-    <a class="btn" href="adicionar_item.php">➕ Adicionar</a>
-    <a class="btn" href="itens_inativos.php">🗂️ Inativos</a>
+    <a class="btn" href="inventario_adicionar.php">➕ Adicionar</a>
+    <a class="btn" href="inventario_inativos.php">🗂️ Inativos</a>
   </div>
 </div>
 
@@ -389,7 +365,6 @@ function abrirDetalhes(id) {
             ? new Date(data.data_registro).toLocaleDateString('pt-BR')
             : '—'
         }</p>
-
       `;
       document.getElementById('conteudoDetalhes').innerHTML = html;
     });
@@ -411,5 +386,9 @@ function fecharModal() {
 }
 </script>
 
-</body>
-</html>
+<script src="/js/inventario.js?v=<?= time() ?>"></script>
+
+<?php
+$conteudo = ob_get_clean();
+include ROOT_PATH . '/includes/layout.php';
+?>

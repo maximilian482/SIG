@@ -1,4 +1,19 @@
-document.addEventListener('DOMContentLoaded', () => {
+// ===============================================
+// GARANTE QUE O SISTEMA DE MENSAGENS DO LAYOUT EXISTE
+// ===============================================
+function esperarMensagemPronta(callback) {
+    const check = setInterval(() => {
+        if (document.getElementById("mensagemTopo")) {
+            clearInterval(check);
+            callback();
+        }
+    }, 50);
+}
+
+// ===============================================
+// INÍCIO DO SCRIPT PRINCIPAL
+// ===============================================
+esperarMensagemPronta(() => {
 
     const lojaSelect = document.getElementById('loja_id');
     const setoresContainer = document.getElementById('setores-container');

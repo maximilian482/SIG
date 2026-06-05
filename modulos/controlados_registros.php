@@ -228,15 +228,17 @@ ob_start();
             <td colspan="4">
                 <div class="detalhes-box">
 
-                    <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
+                     <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
                     <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
-                    <p><strong>Cupom:</strong> <?= htmlspecialchars($r['cupom']) ?></p>
+                    <p><strong>Orçamento (Observar se não é Número de cupom):</strong> <?= htmlspecialchars($r['cupom']) ?></p>
                     <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
                     <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
                     <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
                     <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
                     <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
-
+                    <?php if (!empty($r['observacao'])): ?>
+                        <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
+                    <?php endif; ?>
                     <p>
                         <strong>Conferido:</strong>
                         <?php if ($r['conferido']): ?>

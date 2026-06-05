@@ -1,14 +1,52 @@
-// ==========================================================
-// DETALHES DA AVALIAÇÃO — VERSÃO OTIMIZADA
-// ==========================================================
-
 document.addEventListener("click", async (e) => {
 
-    
 
-    // ======================================================
+    // FORMATAR DATA
+    
+    function formatarData(data) {
+            const d = new Date(data);
+            return d.toLocaleDateString("pt-BR");
+        }
+
+    // ================================
+    // BOTÃO EXCLUIR
+    // ================================
+    const btnExcluir = e.target.closest(".btn-excluir");
+        if (btnExcluir) {
+            const id = btnExcluir.dataset.id;
+
+            if (!confirm("Tem certeza que deseja excluir esta avaliação?")) {
+                return;
+            }
+
+            const resp = await fetch("/ajax/avaliacao_excluir.php?id=" + id, {
+                method: "DELETE"
+            });
+
+            const resultado = await resp.json();
+
+            if (resultado.sucesso) {
+
+                if (typeof mostrarMensagem === "function") {
+                    mostrarMensagem("Avaliação excluída com sucesso!", "sucesso");
+                }
+
+                btnExcluir.closest("tr").remove();
+
+            } else {
+
+                if (typeof mostrarMensagem === "function") {
+                    mostrarMensagem("Erro ao excluir: " + resultado.mensagem, "erro");
+                }
+            }
+
+            return;
+        }
+
+
+    // ================================
     // BOTÃO DETALHES
-    // ======================================================
+    // ================================
     const btn = e.target.closest(".btn-detalhes");
     if (!btn) return;
 
@@ -16,53 +54,41 @@ document.addEventListener("click", async (e) => {
     const linha = btn.closest("tr");
     const tbody = linha.parentNode;
 
-    // Verifica se já existe linha de detalhes
     let detalhes = linha.nextElementSibling;
-
     if (detalhes && detalhes.classList.contains("linha-detalhes")) {
         detalhes.classList.toggle("oculto");
         return;
     }
 
-    // Criar linha de detalhes
     detalhes = document.createElement("tr");
     detalhes.className = "linha-detalhes";
     detalhes.innerHTML = `
         <td colspan="4">
             <div class="detalhes-conteudo">
-                <h4>Carregando detalhes...</h4>
+                <div class="detalhes-col">
+                    <h4>Carregando detalhes...</h4>
+                </div>
             </div>
         </td>
     `;
-
     tbody.insertBefore(detalhes, linha.nextSibling);
 
-    // ======================================================
-    // BUSCAR DETALHES VIA AJAX
-    // ======================================================
     try {
         const resp = await fetch("/ajax/carregar_detalhes_avaliacao.php?id=" + id);
         const dados = await resp.json();
-
-        if (!dados || !dados.avaliacao) {
-            detalhes.querySelector(".detalhes-conteudo").innerHTML =
-                "<p>Erro ao carregar detalhes.</p>";
-            return;
-        }
 
         const av = dados.avaliacao;
         const setores = dados.setores || [];
 
         const wrapper = detalhes.querySelector(".detalhes-conteudo");
-
         wrapper.innerHTML = `
             <div class="detalhes-col">
                 <h4>${av.loja}</h4>
-                <p><strong>Data:</strong> ${new Date(av.data_avaliacao).toLocaleDateString("pt-BR")}</p>
+                <p><strong>Data:</strong> ${formatarData(av.data_avaliacao)}</p>
                 <p><strong>Responsável:</strong> ${av.responsavel_nome}</p>
                 <p><strong>Avaliador:</strong> ${av.avaliador_nome}</p>
                 <p><strong>Nota geral:</strong> ${parseFloat(av.nota_geral).toFixed(2)}%</p>
-                <canvas id="detalhe-grafico-geral-${id}" width="220" height="220"></canvas>
+                <canvas id="detalhe-grafico-geral-${id}" class="detalhe-grafico-geral" width="220" height="220"></canvas>
             </div>
 
             <div class="detalhes-col">
@@ -74,15 +100,12 @@ document.addEventListener("click", async (e) => {
                 <h4>Assinatura do responsável</h4>
                 ${
                     av.assinatura
-                    ? `<img src="${av.assinatura}" class="img-assinatura">`
-                    : "<p>Sem assinatura registrada.</p>"
+                    ? `<img src="${av.assinatura}" alt="Assinatura" class="img-assinatura">`
+                    : '<p>Sem assinatura registrada.</p>'
                 }
             </div>
         `;
 
-        // ======================================================
-        // MONTAR LISTA DE SETORES
-        // ======================================================
         const contSetores = document.getElementById("detalhe-setores-" + id);
 
         setores.forEach(s => {
@@ -91,13 +114,16 @@ document.addEventListener("click", async (e) => {
             if (s.nota_setor >= 75) classe = "barra-bom";
             else if (s.nota_setor >= 40) classe = "barra-parcial";
 
+            // ================================
+            // CRITÉRIOS — CORREÇÃO AQUI
+            // ================================
             let criteriosHTML = "";
             if (s.criterios && s.criterios.length > 0) {
                 criteriosHTML = s.criterios.map(c => {
 
-                    const valor = parseInt(c.valor);
-                    let texto = "N/A";
+                    const valor = parseInt(c.valor); // <-- ESSENCIAL
 
+                    let texto = "N/A";
                     if (valor === 100) texto = "SIM";
                     else if (valor === 50) texto = "PARCIAL";
                     else if (valor === 0) texto = "NÃO";
@@ -112,49 +138,62 @@ document.addEventListener("click", async (e) => {
 
             contSetores.innerHTML += `
                 <div class="barra-setor setor-item">
+
                     <div class="barra-label">
                         <strong>${s.setor}</strong>
                     </div>
 
-                    <div class="barra-wrapper">
-                        <div class="barra-fundo"></div>
-                        <div class="barra ${classe}" style="width:${s.nota_setor}%;">
-                            <span class="barra-nota">${s.nota_setor}%</span>
-                        </div>
+                    <div class="barra ${classe}" style="width:${s.nota_setor}%;">
+                        <span class="barra-nota">${s.nota_setor}%</span>
                     </div>
-
 
                     <div class="setor-detalhes oculto">
                         ${criteriosHTML}
+
                         ${
-                            s.observacao
+                            s.observacao && s.observacao.trim() !== ""
                             ? `<div class="obs-setor-detalhe"><strong>Obs:</strong> ${s.observacao}</div>`
                             : ""
                         }
                     </div>
+
                 </div>
             `;
         });
 
-        // ======================================================
-        // EXPANDIR DETALHES DO SETOR
-        // ======================================================
-        detalhes.querySelectorAll(".setor-item").forEach(item => {
+        // Clique para expandir detalhes
+        document.querySelectorAll(".setor-item").forEach(item => {
             item.addEventListener("click", () => {
-                item.querySelector(".setor-detalhes").classList.toggle("oculto");
+                const detalhes = item.querySelector(".setor-detalhes");
+                detalhes.classList.toggle("oculto");
             });
         });
 
-        // ======================================================
-        // GRÁFICO GERAL
-        // ======================================================
         if (typeof montarGraficoGeral === "function") {
             montarGraficoGeral("detalhe-grafico-geral-" + id, parseFloat(av.nota_geral));
         }
 
     } catch (err) {
         console.error("Erro ao carregar detalhes:", err);
-        detalhes.querySelector(".detalhes-conteudo").innerHTML =
-            "<p>Erro ao carregar detalhes.</p>";
+        const wrapper = detalhes.querySelector(".detalhes-conteudo");
+        wrapper.innerHTML = `<p>Erro ao carregar detalhes da avaliação.</p>`;
     }
+});
+
+// ================================
+// BOTÃO CONFIGURAR (VERSÃO SIMPLES E FUNCIONAL)
+// ================================
+document.addEventListener("DOMContentLoaded", () => {
+    const selectLoja = document.getElementById("loja_id");
+    const btnConfig = document.getElementById("btn-configurar");
+
+    if (!selectLoja || !btnConfig) return;
+
+    btnConfig.addEventListener("click", (e) => {
+        const loja = selectLoja.value;
+
+       
+
+        btnConfig.href = "avaliacoes_setores.php?loja=" + loja;
+    });
 });

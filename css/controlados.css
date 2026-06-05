@@ -320,3 +320,14 @@
     font-weight: 500;
     color: #333;
 }
+
+/* ALERTA */
+.alerta-orcamento {
+    background: #fff3cd;
+    color: #856404;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #ffeeba;
+    margin-bottom: 15px;
+    font-size: 14px;
+}

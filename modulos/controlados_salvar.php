@@ -13,23 +13,29 @@ $data           = $_POST['data_venda'];
 
 $codigoProduto  = trim($_POST['codigo_produto']);
 $produto        = trim($_POST['produto']);
-$cupom          = trim($_POST['cupom']);
+
+// Agora o campo visual é "orcamento", mas salvamos em "cupom"
+$orcamento      = trim($_POST['orcamento']); 
+$cupom          = $orcamento; // compatibilidade total
+
 $vendedor       = trim($_POST['vendedor']);
 $lote           = trim($_POST['lote']);
-
 $quantidade     = intval($_POST['quantidade']);
+
+// Novo campo opcional
+$observacao     = trim($_POST['observacao'] ?? '');
 
 $registradoPor  = preg_replace('/\D/', '', $_SESSION['cpf']);
 $registradoNome = $_SESSION['usuario'];
 
 $stmt = $conn->prepare("
     INSERT INTO controlados 
-    (filial_id, data_venda, codigo_produto, produto, cupom, vendedor, lote, quantidade, registrado_por, registrado_nome)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (filial_id, data_venda, codigo_produto, produto, cupom, vendedor, lote, quantidade, registrado_por, registrado_nome, observacao)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 ");
 
 $stmt->bind_param(
-    "isssssssss",
+    "issssssisss",
     $filial,
     $data,
     $codigoProduto,
@@ -39,7 +45,8 @@ $stmt->bind_param(
     $lote,
     $quantidade,
     $registradoPor,
-    $registradoNome
+    $registradoNome,
+    $observacao
 );
 
 $stmt->execute();

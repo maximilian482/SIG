@@ -22,16 +22,31 @@ if (!temAcesso($conn, $cpf, "ferramentas_controlados_farmaceutico")) {
     exit;
 }
 
-// Buscar filial do funcionário
-$stmt = $conn->prepare("SELECT loja_id FROM funcionarios WHERE cpf = ?");
+// Buscar filial e cargo do funcionário
+$stmt = $conn->prepare("SELECT loja_id, cargo_id FROM funcionarios WHERE cpf = ?");
 $stmt->bind_param("s", $cpf);
 $stmt->execute();
-$filial = $stmt->get_result()->fetch_assoc()['loja_id'] ?? null;
+$dadosUser = $stmt->get_result()->fetch_assoc();
+
+$filialUsuario = $dadosUser['loja_id'] ?? null;
+$cargoUsuario  = $dadosUser['cargo_id'] ?? null;
+
+// CEO = 8, SUPER = 19
+$ehAdmin = in_array($cargoUsuario, [8, 19]);
+
+// Se for admin, pode escolher a filial pela URL
+if ($ehAdmin) {
+    $filial = $_GET['filial'] ?? $filialUsuario;
+} else {
+    // Funcionário comum: sempre sua própria filial
+    $filial = $filialUsuario;
+}
 
 if (!$filial) {
     echo "<h2 style='color:red; text-align:center;'>❌ Filial não encontrada para este usuário.</h2>";
     exit;
 }
+
 
 // Buscar nome da filial
 $stmt = $conn->prepare("SELECT nome FROM lojas WHERE id = ?");
@@ -101,6 +116,37 @@ document.addEventListener("DOMContentLoaded", function() {
     <br><small style="color:#555;">Filial: <?= htmlspecialchars($nomeFilial) ?></small>
 </h2>
 
+<?php if ($ehAdmin): ?>
+
+<div class="bloco" style="margin-bottom:20px;">
+    <form method="GET">
+        <input type="hidden" name="pagina" value="1">
+
+        <label><strong>Selecionar Filial:</strong></label>
+
+        <select name="filial" onchange="this.form.submit()">
+            <option value="">Selecionar...</option>
+
+            <?php
+            $filiais = $conn->query("
+                SELECT id, nome 
+                FROM lojas 
+                WHERE nome NOT IN ('CAV', 'ESCRITÓRIO', 'CD')
+                ORDER BY nome ASC
+            ");
+
+            while ($f = $filiais->fetch_assoc()):
+            ?>
+                <option value="<?= $f['id'] ?>" <?= ($filial == $f['id']) ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($f['nome']) ?>
+                </option>
+            <?php endwhile; ?>
+        </select>
+    </form>
+</div>
+
+<?php endif; ?>
+
 <div class="acoes-topo">
     <a href="/modulos/ferramentas.php" class="btn btn-cinza">⬅️ Voltar</a>
     <a href="controlados_registros_farmaceutico_ver.php?filial=<?= $filial ?>" class="btn btn-azul">📄 Ver Registros</a>
@@ -162,24 +208,27 @@ document.addEventListener("DOMContentLoaded", function() {
             <td colspan="3">
                 <div class="detalhes-box">
 
-                    <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
+                   <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
                     <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
-                    <p><strong>Cupom:</strong> <?= htmlspecialchars($r['cupom']) ?></p>
+                    <p><strong>Orçamento (Confirmar se não é número de cupom):</strong> <?= htmlspecialchars($r['cupom']) ?></p>
                     <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
                     <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
                     <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
                     <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
                     <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
-                    
 
+                    <?php if (!empty($r['observacao'])): ?>
+                        <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
+                    <?php endif; ?>
 
                     <div class="acoes-detalhes">
                         <a href="controlados_registros_farmaceutico_conferir.php?id=<?= $r['id'] ?>&filial=<?= $filial ?>"
-                           class="btn btn-conferir"
-                           onclick="return confirmarConferencia();">
-                           ✔️ Conferir
+                        class="btn btn-conferir"
+                        onclick="return confirmarConferencia();">
+                        ✔️ Conferir
                         </a>
                     </div>
+
 
                 </div>
             </td>

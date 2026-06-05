@@ -10,7 +10,7 @@ if (!isset($_GET['id']) || !isset($_GET['filial'])) {
 
 $id     = intval($_GET['id']);
 $filial = intval($_GET['filial']);
-$cpfLogado = preg_replace('/\D/', '', $_SESSION['cpf']);
+$cpfLogado = preg_replace('/\D/', '', $_SESSION['cpf']); // normaliza CPF logado
 
 /* ============================
    BUSCA O REGISTRO
@@ -32,7 +32,9 @@ if (!$registro) {
 /* ============================
    BLOQUEIO DE EXCLUSÃO
 ============================ */
-if ($registro['registrado_por'] !== $cpfLogado) {
+$registradoPor = preg_replace('/\D/', '', $registro['registrado_por']);
+
+if ($registradoPor !== $cpfLogado) {
     $_SESSION['flash'] = [
         'mensagem' => 'Somente o criador do protocolo pode excluir.',
         'tipo' => 'error'
@@ -56,11 +58,14 @@ $_SESSION['flash'] = [
     'tipo' => 'success'
 ];
 
-// REDIRECIONAMENTO
+/* ============================
+   REDIRECIONAMENTO
+============================ */
+$origem = $_GET['origem'] ?? '';
 
-if (isset($_GET['origem']) && $_GET['origem'] === 'registros') {
+if ($origem === 'registros') {
     header("Location: controlados_registros.php?filial=$filial");
 } else {
     header("Location: controlados.php?filial=$filial");
 }
-
+exit;

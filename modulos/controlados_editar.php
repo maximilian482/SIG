@@ -3,6 +3,10 @@ session_start();
 require_once '../dados/conexao.php';
 $conn = conectar();
 
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
+
+
 if (!isset($_GET['id']) || !isset($_GET['filial'])) {
     header("Location: controlados.php");
     exit;
@@ -32,9 +36,25 @@ if (!$registro) {
 /* ============================
    BLOQUEIO DE EDIÇÃO
 ============================ */
-$registradoPor = preg_replace('/\D/', '', $registro['registrado_por']); // normaliza CPF do registro
+$registradoBruto = trim($registro['registrado_por']);
+$registradoCPF   = preg_replace('/\D/', '', $registradoBruto);
 
-if ($registradoPor !== $cpfLogado) {
+$cpfLogado       = preg_replace('/\D/', '', $_SESSION['cpf']);
+$nomeLogado      = trim($_SESSION['usuario']);
+$primeiroNomeLogado = explode(' ', $nomeLogado)[0];
+
+$autorizado = false;
+
+// Caso novo: registrado_por é CPF
+if ($registradoCPF !== '' && $registradoCPF === $cpfLogado) {
+    $autorizado = true;
+}
+// Caso antigo: registrado_por é primeiro nome
+elseif ($registradoCPF === '' && strcasecmp($registradoBruto, $primeiroNomeLogado) === 0) {
+    $autorizado = true;
+}
+
+if (!$autorizado) {
     $_SESSION['flash'] = [
         'mensagem' => 'Somente o criador do protocolo pode editar.',
         'tipo' => 'error'
@@ -51,19 +71,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data           = $_POST['data_venda'];
     $codigoProduto  = $_POST['codigo_produto'];
     $produto        = $_POST['produto'];
-    $cupom          = $_POST['cupom'];
+
+    // Agora o campo visual é "orcamento", mas salvamos em "cupom"
+    $orcamento      = trim($_POST['orcamento']);
+    $cupom          = $orcamento;
+
     $vendedor       = $_POST['vendedor'];
     $lote           = $_POST['lote'];
     $quantidade     = intval($_POST['quantidade']);
 
+    // Novo campo opcional
+    $observacao     = trim($_POST['observacao'] ?? '');
+
     $stmt = $conn->prepare("
         UPDATE controlados
-        SET data_venda = ?, codigo_produto = ?, produto = ?, cupom = ?, vendedor = ?, lote = ?, quantidade = ?
+        SET data_venda = ?, codigo_produto = ?, produto = ?, cupom = ?, vendedor = ?, lote = ?, quantidade = ?, observacao = ?
         WHERE id = ?
     ");
 
     $stmt->bind_param(
-        "ssssssii",
+        "ssssssisi",
         $data,
         $codigoProduto,
         $produto,
@@ -71,6 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $vendedor,
         $lote,
         $quantidade,
+        $observacao,
         $id
     );
 
@@ -94,14 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     exit;
 }
+
+ob_start();
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Editar Registro</title>
-    <link rel="stylesheet" href="/css/controlados.css">
-</head>
-<body>
 
 <div class="controlados-container">
 
@@ -110,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="bloco">
         <form method="POST" class="form-padrao">
 
-            <!-- Preserva a origem ao enviar o formulário -->
             <input type="hidden" name="origem" value="<?= $_GET['origem'] ?? '' ?>">
 
             <label>Data da Venda:</label>
@@ -122,8 +144,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label>Nome do Produto:</label>
             <input type="text" name="produto" value="<?= $registro['produto'] ?>" required>
 
-            <label>Número do Cupom:</label>
-            <input type="text" name="cupom" value="<?= $registro['cupom'] ?>" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            <label>Número do Orçamento:</label>
+            <input type="text" name="orcamento" value="<?= $registro['cupom'] ?>" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 
             <label>Vendedor:</label>
             <input type="text" name="vendedor" value="<?= $registro['vendedor'] ?>" required>
@@ -134,6 +156,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label>Quantidade:</label>
             <input type="number" name="quantidade" min="1" value="<?= $registro['quantidade'] ?>" required>
 
+            <label>Observação (opcional):</label>
+            <textarea name="observacao" rows="3"><?= htmlspecialchars($registro['observacao']) ?></textarea>
+
             <button class="btn btn-novo">💾 Salvar Alterações</button>
             <a href="controlados.php?filial=<?= $filial ?>" class="btn btn-cinza">Cancelar</a>
 
@@ -142,5 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
-</body>
-</html>
+<?php
+$conteudo = ob_get_clean();
+include ROOT_PATH . '/includes/layout.php';
+?>

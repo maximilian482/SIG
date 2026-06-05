@@ -4,6 +4,8 @@ session_start();
 require_once '../dados/conexao.php';
 $conn = conectar();
 
+header("Content-Type: text/html; charset=utf-8");
+
 // Verifica login
 if (!isset($_SESSION['cpf'])) {
     exit('Acesso negado');
@@ -31,7 +33,9 @@ $stmt->bind_param("i", $lojaId);
 $stmt->execute();
 $resSetores = $stmt->get_result();
 
-// Critérios FIXOS (como no sistema antigo)
+// ===============================
+// CRITÉRIOS FIXOS (como no sistema antigo)
+// ===============================
 $criterios = [
     "Preço",
     "Exposição",
@@ -39,6 +43,9 @@ $criterios = [
     "Organização"
 ];
 
+// ===============================
+// MONTAR SLIDES
+// ===============================
 while ($setor = $resSetores->fetch_assoc()):
     $setorId = $setor['setor_id'];
     $nomeSetor = htmlspecialchars($setor['nome_setor']);
@@ -48,36 +55,31 @@ while ($setor = $resSetores->fetch_assoc()):
 
     <h3 class="titulo-setor"><?= $nomeSetor ?></h3>
 
-    <div class="criterios-lista">
-
-        <?php foreach ($criterios as $critNome): ?>
-            <div class="criterio-item">
-
-                <p class="criterio-nome"><?= $critNome ?></p>
-
-                <div class="criterio-botoes">
-                    <button type="button" class="btn-nota" data-valor="100">SIM</button>
-                    <button type="button" class="btn-nota" data-valor="50">PARCIAL</button>
-                    <button type="button" class="btn-nota" data-valor="0">NÃO</button>
-                    <button type="button" class="btn-nota btn-na" data-valor="-1">N/A</button>
-                </div>
-
-
-                <input type="hidden" class="input-nota" value="">
-            </div>
-        <?php endforeach; ?>
-
-        <!-- Observação -->
+    <?php foreach ($criterios as $critNome): ?>
         <div class="criterio-item">
-            <p class="criterio-nome">Observação</p>
-            <textarea class="obs-setor input-premium"
-                      rows="3"
-                      placeholder="Digite observações sobre este setor"></textarea>
-        </div>
 
+            <p class="criterio-nome"><?= $critNome ?></p>
+
+            <div class="criterio-botoes">
+                <button type="button" class="btn-nota" data-valor="100">SIM</button>
+                <button type="button" class="btn-nota" data-valor="50">PARCIAL</button>
+                <button type="button" class="btn-nota" data-valor="0">NÃO</button>
+                <button type="button" class="btn-nota btn-na" data-valor="-1">N/A</button>
+            </div>
+
+            <input type="hidden" class="input-nota" value="">
+        </div>
+    <?php endforeach; ?>
+
+    <!-- Observação -->
+    <div class="criterio-item">
+        <p class="criterio-nome">Observação</p>
+        <textarea class="obs-setor input-premium"
+                  rows="3"
+                  placeholder="Digite observações sobre este setor"></textarea>
     </div>
 
-    <!-- Nota automática do setor -->
+    <!-- Nota automática -->
     <input type="hidden" class="nota-setor-auto" value="">
 
 </div>
