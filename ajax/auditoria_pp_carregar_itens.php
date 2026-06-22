@@ -1,21 +1,42 @@
 <?php
+session_start();
+
 require_once '../dados/conexao.php';
 $conn = conectar();
 
-$lojaId = $_GET['loja_id'] ?? null;
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
 
-if (!$lojaId) {
-    echo "<p>Selecione uma loja.</p>";
-    exit;
+header("Content-Type: text/html; charset=utf-8");
+
+// Verifica login
+if (!isset($_SESSION['cpf'])) {
+    exit("Acesso negado");
 }
 
-// Carregar itens globais + específicos
+$cpf = $_SESSION['cpf'];
+
+if (!temAcesso($conn, $cpf, 'ferramentas_auditoria_pp')) {
+    exit("Sem permissão");
+}
+
+$lojaId = intval($_GET['loja_id'] ?? 0);
+
+if ($lojaId <= 0) {
+    exit("Loja inválida");
+}
+
+/*
+---------------------------------------------------------
+BUSCAR ITENS ATIVOS DA AUDITORIA PP
+---------------------------------------------------------
+*/
 $sql = "
-    SELECT id, pergunta, loja_id
-    FROM auditoria_pp_config
-    WHERE (loja_id IS NULL OR loja_id = 0 OR loja_id = '')
-       OR loja_id = ?
-    ORDER BY loja_id IS NULL DESC, pergunta
+    SELECT c.id, c.pergunta
+    FROM auditoria_pp_config c
+    JOIN auditoria_pp_config_ativos a ON a.item_id = c.id
+    WHERE a.loja_id = ?
+    ORDER BY c.id
 ";
 
 $stmt = $conn->prepare($sql);
@@ -23,35 +44,33 @@ $stmt->bind_param("i", $lojaId);
 $stmt->execute();
 $res = $stmt->get_result();
 
-// Carregar itens ativos da loja
-$sqlAtivos = "SELECT item_id FROM auditoria_pp_config_ativos WHERE loja_id = ?";
-$stmt2 = $conn->prepare($sqlAtivos);
-$stmt2->bind_param("i", $lojaId);
-$stmt2->execute();
-$resAtivos = $stmt2->get_result();
-
-$ativos = [];
-while ($a = $resAtivos->fetch_assoc()) {
-    $ativos[] = $a['item_id'];
-}
-
-// Montar HTML moderno
-while ($i = $res->fetch_assoc()):
-    $id = $i['id'];
-    $pergunta = htmlspecialchars($i['pergunta']);
-    $checked = in_array($id, $ativos) ? "checked" : "";
+/*
+---------------------------------------------------------
+GERAR SLIDES NO PADRÃO DA AVALIAÇÃO DE LOJA
+---------------------------------------------------------
+*/
+while ($row = $res->fetch_assoc()):
+    $id = $row['id'];
+    $pergunta = htmlspecialchars($row['pergunta']);
 ?>
 
-<div class="setor-item">
+<div class="carrossel-slide" data-setor-id="<?= $id ?>">
 
-    <div class="setor-esquerda">
-        <input type="checkbox" class="check-item" value="<?= $id ?>" id="item_<?= $id ?>" <?= $checked ?>>
-        <label for="item_<?= $id ?>"><?= $pergunta ?></label>
+    <h3 class="titulo-setor"><?= $pergunta ?></h3>
+
+    <!-- BOTÕES GRANDES (PADRÃO AVALIAÇÃO DE LOJA) -->
+    <div class="grupo-botoes">
+        <button type="button" class="btn-nota" data-valor="100">SIM</button>
+        <button type="button" class="btn-nota" data-valor="50">PARCIAL</button>
+        <button type="button" class="btn-nota" data-valor="0">NÃO</button>
     </div>
 
-    <div class="setor-direita">
-        <button class="btn-edit" data-id="<?= $id ?>">✏️</button>
-        <button class="btn-del" data-id="<?= $id ?>">🗑️</button>
+    <input type="hidden" class="input-nota" value="">
+
+    <!-- OBSERVAÇÃO -->
+    <div class="criterio-item">
+        <p class="criterio-nome">Observação</p>
+        <textarea class="obs-setor input-premium" rows="3"></textarea>
     </div>
 
 </div>

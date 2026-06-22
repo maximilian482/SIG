@@ -70,80 +70,84 @@ include ROOT_PATH . '/includes/flash.php';
         </div>
 
         <!-- Container do carrossel -->
-        <div id="itens-container" class="card-premium oculto">
-            <h3 class="card-titulo">🧩 Itens da Auditoria</h3>
+                <div id="itens-container" class="card-premium oculto">
+                    <h3 class="card-titulo">🧩 Itens da Auditoria</h3>
 
-            <form id="form-auditoria" onsubmit="return false;">
+                    <form id="form-auditoria" onsubmit="return false;">
 
-                <input type="hidden" id="loja_id_hidden">
-                <input type="hidden" id="avaliador_id" value="<?= $_SESSION['funcionario_id'] ?>">
+                        <input type="hidden" id="loja_id_hidden">
+                        <input type="hidden" id="avaliador_id" value="<?= $_SESSION['funcionario_id'] ?>">
 
-                <!-- Carrossel -->
-                <div id="carrossel-auditoria" class="carrossel-container">
-                    <!-- Slides serão carregados via AJAX -->
+                        <!-- Carrossel -->
+                        <div id="carrossel-auditoria" class="carrossel-container">
 
-                    <!-- Slide de resumo -->
-                    <div id="slide-resumo" class="carrossel-slide oculto">
+            <!-- Slides serão carregados via JS -->
 
-                    <div class="card-premium">
+            <!-- SLIDE DE RESUMO -->
+                <div id="slide-resumo" class="carrossel-slide oculto">
 
-                        <h3 class="titulo-final" style="margin-bottom:20px;">Resumo da Auditoria</h3>
+                    <h3 class="titulo-final" style="margin-bottom:20px;">Resumo da Auditoria</h3>
 
-                        <div class="legenda-avaliacao">
-                            <div><span class="legenda-bolinha ruim"></span> Não</div>
-                            <div><span class="legenda-bolinha parcial"></span> Parcial</div>
-                            <div><span class="legenda-bolinha bom"></span> Sim</div>
-                        </div>
+                    <div class="legenda-avaliacao">
+                        <div><span class="legenda-bolinha ruim"></span> Não</div>
+                        <div><span class="legenda-bolinha parcial"></span> Parcial</div>
+                        <div><span class="legenda-bolinha bom"></span> Sim</div>
+                    </div>
 
-                        <div id="grafico-itens"></div>
+                    <!-- BARRAS HORIZONTAIS POR ITEM -->
+                    <div id="lista-resumo-itens"></div>
 
-                        <h4 class="titulo-final" style="margin-top:30px;">Nota Geral</h4>
+                    <h4 class="titulo-final" style="margin-top:30px;">Nota Geral</h4>
+
+                    <div class="grafico-geral-wrapper">
                         <canvas id="grafico-geral" width="220" height="220"></canvas>
-
+                        <div id="grafico-geral-texto" class="grafico-geral-texto"></div>
                     </div>
 
                 </div>
 
 
 
-                    <!-- Slide final -->
-                    <div id="slide-final" class="carrossel-slide oculto">
+            <!-- SLIDE FINAL -->
+            <div id="slide-final" class="carrossel-slide oculto">
 
-                        <h3 class="titulo-final">Finalizar Auditoria</h3>
+                <h3 class="titulo-final">Finalizar Auditoria</h3>
 
-                        <div class="grupo-campo">
-                            <label class="label-premium">Responsável pela auditoria:</label>
-                            <input type="text" id="responsavel_nome" class="input-premium" placeholder="Nome completo" required>
-                        </div>
+                <div class="grupo-campo">
+                    <label class="label-premium">Responsável pela auditoria:</label>
+                    <input type="text" id="responsavel_nome" class="input-premium" placeholder="Nome completo" required>
+                </div>
 
-                        <div class="grupo-campo">
-                            <button type="button" id="btn-add-observacao" class="btn-nav-premium" style="background:#777;">
-                                + Adicionar observações gerais
-                            </button>
+                <div class="grupo-campo">
+                    <button type="button" id="btn-add-observacao" class="btn-nav-premium" style="background:#777;">
+                        + Adicionar observações gerais
+                    </button>
 
-                            <div id="obs-wrapper" class="oculto" style="margin-top:15px;">
-                                <label class="label-premium">Observações gerais:</label>
-                                <textarea id="observacao_final" class="input-premium" rows="3"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="grupo-campo">
-                            <label class="label-premium">Data da auditoria:</label>
-                            <input type="date" id="data_auditoria" class="input-premium">
-                        </div>
-
-                        <div class="grupo-campo assinatura-box">
-                            <label class="label-premium">Assinatura do responsável:</label>
-
-                            <canvas id="signature-pad" class="signature-canvas"></canvas>
-
-                            <button type="button" class="btn-limpar" onclick="limparAssinatura()">Limpar</button>
-
-                            <input type="hidden" id="assinatura_base64">
-                        </div>
-
+                    <div id="obs-wrapper" class="oculto" style="margin-top:15px;">
+                        <label class="label-premium">Observações gerais:</label>
+                        <textarea id="observacao_final" class="input-premium" rows="3"></textarea>
                     </div>
                 </div>
+
+                <div class="grupo-campo">
+                    <label class="label-premium">Data da auditoria:</label>
+                    <input type="date" id="data_auditoria" class="input-premium">
+                </div>
+
+                <div class="grupo-campo assinatura-box">
+                    <label class="label-premium">Assinatura do responsável:</label>
+
+                    <canvas id="signature-pad" width="500" height="200" class="signature-canvas"></canvas>
+
+                    <button type="button" class="btn-limpar" onclick="limparAssinatura()">Limpar</button>
+
+                    <input type="hidden" id="assinatura_base64">
+                </div>
+
+            </div>
+
+        </div>
+
 
                 <!-- Navegação -->
                 <div id="carrossel-nav" class="carrossel-nav oculto">

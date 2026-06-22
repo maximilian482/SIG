@@ -31,12 +31,35 @@ esperarMensagemPronta(() => {
             return;
         }
 
-        fetch(`/ajax/auditoria_pp_carregar_itens.php?loja_id=${lojaId}`)
-            .then(res => res.text())
-            .then(html => {
-                listaItens.innerHTML = html;
-                itensContainer.classList.remove('oculto');
+        fetch(`/ajax/auditoria_pp_config_listar.php?loja_id=${lojaId}`)
+            .then(res => res.json())
+            .then(lista => {
+
+                listaItens.innerHTML = "";
+
+                lista.forEach(item => {
+
+                    const div = document.createElement("div");
+                    div.classList.add("setor-item");
+
+                    div.innerHTML = `
+                        <div class="setor-esquerda">
+                            <input type="checkbox" class="check-item" value="${item.id}" id="item_${item.id}" ${item.ativo ? "checked" : ""}>
+                            <label for="item_${item.id}">${item.pergunta}</label>
+                        </div>
+
+                        <div class="setor-direita">
+                            <button class="btn-edit" data-id="${item.id}">✏️</button>
+                            <button class="btn-del" data-id="${item.id}">🗑️</button>
+                        </div>
+                    `;
+
+                    listaItens.appendChild(div);
+                });
+
+                itensContainer.classList.remove("oculto");
             });
+
     });
 
     // ================================
@@ -91,31 +114,68 @@ esperarMensagemPronta(() => {
     // ================================
     // 3. Editar item
     // ================================
-    document.addEventListener('click', e => {
-        if (e.target.classList.contains('btn-edit')) {
-            const id = e.target.dataset.id;
-            const label = e.target.closest('.setor-item').querySelector('label');
-            const nomeAtual = label.textContent;
+        document.addEventListener('click', e => {
+            if (e.target.classList.contains('btn-edit')) {
 
-            const novoNome = prompt("Editar item:", nomeAtual);
+                const id = e.target.dataset.id;
+                const label = e.target.closest('.setor-item').querySelector('label');
+                const nomeAtual = label.textContent;
 
-            if (!novoNome || novoNome.trim() === '') return;
+                // Preenche o modal
+                document.getElementById('edit_id').value = id;
+                document.getElementById('edit_pergunta').value = nomeAtual;
+
+                // Abre o modal
+                document.getElementById('modalEditar').classList.remove('oculto');
+            }
+        });
+
+        // Botão salvar edição
+        document.getElementById('btnSalvarEdicao').addEventListener('click', () => {
+
+            const id = document.getElementById('edit_id').value;
+            const pergunta = document.getElementById('edit_pergunta').value.trim();
+
+            if (!pergunta) {
+                mostrarMensagem("Digite a pergunta.", "erro");
+                return;
+            }
 
             const formData = new FormData();
             formData.append('id', id);
-            formData.append('pergunta', novoNome);
+            formData.append('pergunta', pergunta);
 
             fetch('/ajax/auditoria_pp_editar_item.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.text())
-            .then(msg => {
-                label.textContent = novoNome;
+            .then(res => res.json())
+            .then(ret => {
+
+                if (ret.erro) {
+                    mostrarMensagem(ret.erro, "erro");
+                    return;
+                }
+
+                // Atualiza o texto na lista
+                const label = document.querySelector(`button[data-id="${id}"]`)
+                                .closest('.setor-item')
+                                .querySelector('label');
+
+                label.textContent = pergunta;
+
                 mostrarMensagem("Item atualizado!", "sucesso");
+
+                // Fecha modal
+                document.getElementById('modalEditar').classList.add('oculto');
             });
-        }
-    });
+        });
+
+// Botão fechar modal
+document.getElementById('btnFecharModal').addEventListener('click', () => {
+    document.getElementById('modalEditar').classList.add('oculto');
+});
+
 
     // ================================
     // 4. Excluir item
@@ -146,39 +206,43 @@ esperarMensagemPronta(() => {
     // 5. Salvar itens da loja
     // ================================
     document.getElementById('btn-salvar-itens').addEventListener('click', () => {
-        const lojaId = lojaSelect.value;
+            const lojaId = lojaSelect.value;
 
-        if (!lojaId) {
-            mostrarMensagem("Selecione uma loja.", "erro");
-            return;
-        }
+            if (!lojaId) {
+                mostrarMensagem("Selecione uma loja.", "erro");
+                return;
+            }
 
-        const selecionados = [...document.querySelectorAll('.check-item:checked')].map(c => c.value);
+            const selecionados = [...document.querySelectorAll('.check-item:checked')].map(c => c.value);
 
-        const formData = new FormData();
-        formData.append('loja_id', lojaId);
-        selecionados.forEach(id => formData.append('itens[]', id));
-
-        fetch('/ajax/auditoria_pp_salvar_item.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.text())
-        .then(msg => {
-            mostrarMensagem("Configurações salvas!", "sucesso");
+            fetch('/ajax/auditoria_pp_config_salvar.php', {
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    loja_id: lojaId,
+                    ativos: selecionados
+                })
+            })
+            .then(res => res.json())
+            .then(ret => {
+                if (ret.sucesso) {
+                    mostrarMensagem("Configurações salvas!", "sucesso");
+                } else {
+                    mostrarMensagem("Erro ao salvar: " + ret.erro, "erro");
+                }
+            });
         });
+
+
     });
 
-});
-
-  // ================================
-    // 6. Mostrar mensagem
-    // ================================
-
+// ================================
+// 6. Mostrar mensagem PREMIUM
+// ================================
 function mostrarMensagem(msg, tipo = "sucesso") {
 
-    const overlay = document.querySelectorAll("#overlayMensagem")[1];
-    const box = document.querySelectorAll("#mensagemTopo")[1];
+    const overlay = document.querySelector("#overlayMensagem");
+    const box = document.querySelector("#mensagemTopo");
 
     const texto = box.querySelector("#textoMensagem");
     const icone = box.querySelector("#iconeMensagem");
@@ -192,16 +256,8 @@ function mostrarMensagem(msg, tipo = "sucesso") {
     icone.innerText = icones[tipo] || "ℹ️";
     texto.innerHTML = msg;
 
-    if (tipo === "sucesso") {
-        box.style.background = "var(--verde-palmeiras-claro)";
-        box.style.color = "white";
-    } else if (tipo === "erro") {
-        box.style.background = "var(--erro-bg)";
-        box.style.color = "var(--erro-texto)";
-    } else if (tipo === "aviso") {
-        box.style.background = "var(--warning-bg)";
-        box.style.color = "var(--warning-texto)";
-    }
+    box.classList.remove("erro", "sucesso", "aviso");
+    box.classList.add(tipo);
 
     overlay.style.display = "block";
     box.style.display = "block";
@@ -214,5 +270,23 @@ function mostrarMensagem(msg, tipo = "sucesso") {
             overlay.style.display = "none";
             box.style.display = "none";
         }, 400);
-    }, 5000);
+    }, 4000);
 }
+
+
+// Fechar ao clicar no X
+document.getElementById('modalCloseX').addEventListener('click', () => {
+    document.getElementById('modalEditar').classList.add('oculto');
+});
+
+// Fechar ao clicar no botão cancelar
+document.getElementById('btnFecharModal').addEventListener('click', () => {
+    document.getElementById('modalEditar').classList.add('oculto');
+});
+
+// Fechar ao clicar fora do conteúdo
+document.getElementById('modalEditar').addEventListener('click', e => {
+    if (e.target.id === 'modalEditar') {
+        document.getElementById('modalEditar').classList.add('oculto');
+    }
+});

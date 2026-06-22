@@ -2,17 +2,29 @@
 require_once '../dados/conexao.php';
 $conn = conectar();
 
-$id = $_POST['id'] ?? null;
-$pergunta = $_POST['pergunta'] ?? '';
+header("Content-Type: application/json; charset=utf-8");
 
-if (!$id || !$pergunta) {
-    echo "Erro";
+$id = intval($_POST['id'] ?? 0);
+$pergunta = trim($_POST['pergunta'] ?? '');
+
+if ($id <= 0) {
+    echo json_encode(['erro' => 'ID inválido']);
+    exit;
+}
+
+if ($pergunta === '') {
+    echo json_encode(['erro' => 'Pergunta vazia']);
     exit;
 }
 
 $sql = "UPDATE auditoria_pp_config SET pergunta = ? WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("si", $pergunta, $id);
-$stmt->execute();
 
-echo "OK";
+if ($stmt->execute()) {
+    echo json_encode(['sucesso' => true]);
+} else {
+    echo json_encode(['erro' => 'Erro ao atualizar']);
+}
+
+exit;

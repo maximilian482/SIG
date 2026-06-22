@@ -1,25 +1,57 @@
 <?php
+session_start();
+
 require_once '../dados/conexao.php';
 $conn = conectar();
 
-$pergunta = $_POST['pergunta'] ?? '';
-$global = intval($_POST['global'] ?? 0);
-$lojaId = $_POST['loja_id'] ?? null;
+require_once __DIR__ . '/../config/bootstrap.php';
+require_once ROOT_PATH . '/includes/funcoes.php';
 
-if (!$pergunta) {
-    echo json_encode(["erro" => "Pergunta inválida"]);
+header("Content-Type: application/json; charset=utf-8");
+
+// Verifica login
+if (!isset($_SESSION['cpf'])) {
+    echo json_encode(['erro' => 'Acesso negado']);
     exit;
 }
 
-$lojaFinal = $global ? null : $lojaId;
+$cpf = $_SESSION['cpf'];
 
-$sql = "INSERT INTO auditoria_pp_config (pergunta, loja_id) VALUES (?, ?)";
+if (!temAcesso($conn, $cpf, 'ferramentas_auditoria_pp')) {
+    echo json_encode(['erro' => 'Sem permissão']);
+    exit;
+}
+
+$pergunta = trim($_POST['pergunta'] ?? '');
+
+if ($pergunta === '') {
+    echo json_encode(['erro' => 'Pergunta inválida']);
+    exit;
+}
+
+/*
+---------------------------------------------------------
+INSERIR NOVO ITEM NA TABELA BASE
+---------------------------------------------------------
+*/
+$sql = "INSERT INTO auditoria_pp_config (pergunta) VALUES (?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("si", $pergunta, $lojaFinal);
-$stmt->execute();
+$stmt->bind_param("s", $pergunta);
 
+if (!$stmt->execute()) {
+    echo json_encode(['erro' => 'Erro ao inserir item']);
+    exit;
+}
+
+$id = $stmt->insert_id;
+
+/*
+---------------------------------------------------------
+RETORNAR JSON PARA O JS
+---------------------------------------------------------
+*/
 echo json_encode([
-    "id" => $stmt->insert_id,
-    "pergunta" => $pergunta,
-    "global" => $global
+    'id'       => $id,
+    'pergunta' => $pergunta
 ]);
+exit;

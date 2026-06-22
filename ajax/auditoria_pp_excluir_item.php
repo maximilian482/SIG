@@ -2,23 +2,36 @@
 require_once '../dados/conexao.php';
 $conn = conectar();
 
-$id = $_POST['id'] ?? null;
+header("Content-Type: text/plain; charset=utf-8");
 
-if (!$id) {
-    echo "Erro";
+// Verifica se recebeu o ID
+$id = intval($_POST['id'] ?? 0);
+
+if ($id <= 0) {
+    echo "ID inválido";
     exit;
 }
 
-// Excluir item
-$sql = "DELETE FROM auditoria_pp_config WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
+/*
+-----------------------------------------
+1) EXCLUIR DA TABELA BASE
+-----------------------------------------
+*/
+$sqlDelItem = "DELETE FROM auditoria_pp_config WHERE id = $id";
+$conn->query($sqlDelItem);
 
-// Excluir ativações
-$sql2 = "DELETE FROM auditoria_pp_config_ativos WHERE item_id = ?";
-$stmt2 = $conn->prepare($sql2);
-$stmt2->bind_param("i", $id);
-$stmt2->execute();
+/*
+-----------------------------------------
+2) EXCLUIR DOS ATIVOS (todas as lojas)
+-----------------------------------------
+*/
+$sqlDelAtivos = "DELETE FROM auditoria_pp_config_ativos WHERE item_id = $id";
+$conn->query($sqlDelAtivos);
 
+/*
+-----------------------------------------
+3) RETORNO
+-----------------------------------------
+*/
 echo "OK";
+exit;

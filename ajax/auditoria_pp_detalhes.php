@@ -2,91 +2,103 @@
 require_once '../dados/conexao.php';
 $conn = conectar();
 
-$id = intval($_GET['id'] ?? 0);
+header("Content-Type: application/json");
 
-if ($id <= 0) {
-    echo json_encode(["erro" => "ID inválido"]);
+if (!isset($_GET['id'])) {
+    echo json_encode(["erro" => "ID não informado"]);
     exit;
 }
 
+$id = intval($_GET['id']);
+
 /*
-    1) Carregar dados gerais da auditoria
+---------------------------------------------------------
+1) BUSCAR CABEÇALHO DA AUDITORIA
+---------------------------------------------------------
 */
 $sql = "
     SELECT 
-        a.id,
+        a.*, 
         l.nome AS loja,
-        a.data_auditoria AS data,
-        a.responsavel_nome AS responsavel,
-        f.nome AS avaliador,
-        a.assinatura,
-        a.observacao_final,
-        a.nota_geral
+        f.nome AS avaliador_nome
     FROM auditoria_pp a
-    INNER JOIN lojas l ON l.id = a.loja_id
+    JOIN lojas l ON l.id = a.loja_id
     LEFT JOIN funcionarios f ON f.id = a.avaliador_id
-    WHERE a.id = ?
+    WHERE a.id = $id
 ";
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$res = $stmt->get_result();
+$res = $conn->query($sql);
 
-if ($res->num_rows === 0) {
+if (!$res || $res->num_rows === 0) {
     echo json_encode(["erro" => "Auditoria não encontrada"]);
     exit;
 }
 
-$auditoria = $res->fetch_assoc();
+$aud = $res->fetch_assoc();
 
 /*
-    2) Carregar itens avaliados
+---------------------------------------------------------
+2) AJUSTAR ASSINATURA
+---------------------------------------------------------
+*/
+$assinatura = null;
+
+if (!empty($aud['assinatura'])) {
+
+    if (strpos($aud['assinatura'], 'data:image') === 0) {
+        $assinatura = $aud['assinatura'];
+    } else {
+        $assinatura = '/uploads/assinaturas/' . $aud['assinatura'];
+    }
+}
+
+/*
+---------------------------------------------------------
+3) BUSCAR ITENS RESPONDIDOS
+---------------------------------------------------------
 */
 $sqlItens = "
-    SELECT 
-        i.pergunta,
-        i.resposta AS nota,
-        i.observacao
-    FROM auditoria_pp_itens i
-    WHERE i.auditoria_id = ?
-    ORDER BY i.id
+    SELECT pergunta, resposta, observacao
+    FROM auditoria_pp_itens
+    WHERE auditoria_id = $id
+    ORDER BY id
 ";
 
-$stmt2 = $conn->prepare($sqlItens);
-$stmt2->bind_param("i", $id);
-$stmt2->execute();
-$res2 = $stmt2->get_result();
+$resItens = $conn->query($sqlItens);
 
-$itens = [];
-while ($row = $res2->fetch_assoc()) {
+$setores = [];
 
-    // Converter nota para porcentagem
-    $nota = intval($row["nota"]);
-    if ($nota === 10) $nota = 100;
-    elseif ($nota === 5) $nota = 50;
-    elseif ($nota === 0) $nota = 0;
+while ($i = $resItens->fetch_assoc()) {
 
-    $itens[] = [
-        "pergunta"   => $row["pergunta"],
-        "nota"       => $nota,
-        "observacao" => $row["observacao"]
+    // Converter valor para texto
+    $valor = intval($i['resposta']);
+
+    $setores[] = [
+        "setor" => $i['pergunta'], // aqui cada pergunta vira um "setor"
+        "nota_setor" => $valor,
+        "observacao" => $i['observacao'] ?? "",
+        "criterios" => [
+            [
+                "criterio" => $i['pergunta'],
+                "valor" => $valor
+            ]
+        ]
     ];
 }
 
 /*
-    3) Montar resposta JSON
+---------------------------------------------------------
+4) RETORNO FINAL — FORMATO COMPATÍVEL
+---------------------------------------------------------
 */
 echo json_encode([
-    "auditoria" => [
-        "id"          => $auditoria["id"],
-        "loja"        => $auditoria["loja"],
-        "data"        => date("d/m/Y", strtotime($auditoria["data"])),
-        "responsavel" => $auditoria["responsavel"],
-        "avaliador"   => $auditoria["avaliador"],
-        "assinatura"  => $auditoria["assinatura"],
-        "observacao"  => $auditoria["observacao_final"],
-        "nota_geral"  => floatval($auditoria["nota_geral"])
+    "avaliacao" => [
+        "loja" => $aud['loja'],
+        "data_avaliacao" => $aud['data_auditoria'],
+        "responsavel_nome" => $aud['responsavel_nome'],
+        "avaliador_nome" => $aud['avaliador_nome'] ?? "—",
+        "nota_geral" => floatval($aud['nota_geral']),
+        "assinatura" => $assinatura
     ],
-    "itens" => $itens
+    "setores" => $setores
 ]);
