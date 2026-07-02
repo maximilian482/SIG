@@ -157,17 +157,17 @@ ob_start();
 ?>
 
 
-<h2>👥 Funcionários</h2>
+<h2 class="mb-4">👥 Funcionários</h2>
 
 <!-- ===============================
      FILTROS
 =============================== -->
-<div class="filtro-container">
-  <form method="GET" class="filtro-form">
+<div class="card p-3 mb-4">
+  <form method="GET" class="row g-3">
 
-    <div class="filtro-grupo">
-      <label>Loja</label>
-      <select name="loja" onchange="this.form.submit()">
+    <div class="col-md-4">
+      <label class="form-label">Loja</label>
+      <select name="loja" class="form-select" onchange="this.form.submit()">
         <option value="">Todas</option>
         <?php foreach ($lojas as $id => $loja): ?>
           <option value="<?= $id ?>" <?= (string)$id === (string)$lojaSelecionada ? 'selected' : '' ?>>
@@ -177,9 +177,9 @@ ob_start();
       </select>
     </div>
 
-    <div class="filtro-grupo">
-      <label>Cargo</label>
-      <select name="cargo" onchange="this.form.submit()">
+    <div class="col-md-4">
+      <label class="form-label">Cargo</label>
+      <select name="cargo" class="form-select" onchange="this.form.submit()">
         <option value="">Todos</option>
         <?php foreach (array_keys($cargosDisponiveis) as $cargo): ?>
           <option value="<?= $cargo ?>" <?= $cargo === $cargoSelecionado ? 'selected' : '' ?>>
@@ -189,158 +189,152 @@ ob_start();
       </select>
     </div>
 
-    <div class="filtro-grupo">
-      <label>Pesquisar</label>
-      <div class="filtro-pesquisa">
-        <input type="text" name="busca" value="<?= htmlspecialchars($busca) ?>" placeholder="Nome ou código">
-        <button type="submit" class="btn-small">🔍</button>
+    <div class="col-md-4">
+      <label class="form-label">Pesquisar</label>
+      <div class="input-group">
+        <input type="text" name="busca" class="form-control" value="<?= htmlspecialchars($busca) ?>" placeholder="Nome ou código">
+        <button class="btn btn-outline-secondary" type="submit">🔍</button>
       </div>
     </div>
 
-    <a href="funcionarios.php" class="btn-secondary btn-limpar">Limpar</a>
+    <div class="col-12 text-end">
+      <a href="funcionarios.php" class="btn btn-secondary">Limpar</a>
+    </div>
 
   </form>
 
-  <div class="contador">
+  <div class="mt-3 text-muted">
     <?= $totalFiltrados ?> funcionário(s) encontrado(s)
   </div>
 </div>
 
-
 <!-- ===============================
      TABELA
 =============================== -->
-<div class="card">
-<table class="tabela-funcionarios">
-  <tr>
-    <th>Cód Vetor</th>
-    <th>Nome</th>
-    <th>Cargo</th>
-    <th>Loja</th>
-    <th>Detalhes</th>
-  </tr>
+<div class="card p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Cód Vetor</th>
+          <th>Nome</th>
+          <th>Cargo</th>
+          <th>Loja</th>
+          <th>Detalhes</th>
+        </tr>
+      </thead>
 
-  <?php foreach ($listaPaginada as $item):
-    $f    = $item['dados'];
-    $id   = $item['id'];
-  ?>
-    <tr>
-      <td><?= htmlspecialchars($f['codigo'] ?? '—') ?></td>
-      <td><?= htmlspecialchars($f['nome_reduzido']) ?></td>
-      <td><?= htmlspecialchars($f['nome_cargo'] ?? '—') ?></td>
-      <td><?= htmlspecialchars($f['nome_loja'] ?? '—') ?></td>
-      <td><button class="btn-small" onclick="abrirDetalhesFuncionario(<?= $id ?>)">🔍</button></td>
-    </tr>
-  <?php endforeach; ?>
-</table>
+      <tbody>
+      <?php foreach ($listaPaginada as $item):
+        $f    = $item['dados'];
+        $id   = $item['id'];
+      ?>
+        <tr>
+          <td><?= htmlspecialchars($f['codigo'] ?? '—') ?></td>
+          <td><?= htmlspecialchars($f['nome_reduzido']) ?></td>
+          <td><?= htmlspecialchars($f['nome_cargo'] ?? '—') ?></td>
+          <td><?= htmlspecialchars($f['nome_loja'] ?? '—') ?></td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="abrirDetalhesFuncionario(<?= $id ?>)">🔍</button>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- ===============================
      PAGINAÇÃO
 =============================== -->
 <?php if ($totalPaginas > 1): ?>
-<div class="paginacao-container card">
+<div class="card p-3 mt-4">
 
-    <div class="paginacao">
-        <span>Página <?= $paginaAtual ?> de <?= $totalPaginas ?></span>
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
 
-        <?php if ($paginaAtual > 1): ?>
-            <a href="<?= montarLinkPagina($paginaAtual - 1) ?>">Anterior</a>
-        <?php else: ?>
-            <span class="desabilitado">Anterior</span>
-        <?php endif; ?>
+    <div>Página <?= $paginaAtual ?> de <?= $totalPaginas ?></div>
 
-        <?php
-        $range = 2;
+    <div class="pagination">
 
-        if ($paginaAtual > 1 + $range) {
-            echo '<a href="'.montarLinkPagina(1).'">1</a>';
-            if ($paginaAtual > 2 + $range) echo '<span class="reticencias">...</span>';
-        }
+      <?php if ($paginaAtual > 1): ?>
+        <a class="page-link d-inline-block" href="<?= montarLinkPagina($paginaAtual - 1) ?>">Anterior</a>
+      <?php else: ?>
+        <span class="page-link disabled">Anterior</span>
+      <?php endif; ?>
 
-        for ($i = max(1, $paginaAtual - $range); $i <= min($totalPaginas, $paginaAtual + $range); $i++) {
-            if ($i == $paginaAtual) echo '<span class="pagina-atual">'.$i.'</span>';
-            else echo '<a href="'.montarLinkPagina($i).'">'.$i.'</a>';
-        }
+      <?php
+      $range = 2;
 
-        if ($paginaAtual < $totalPaginas - $range) {
-            if ($paginaAtual < $totalPaginas - ($range + 1)) echo '<span class="reticencias">...</span>';
-            echo '<a href="'.montarLinkPagina($totalPaginas).'">'.$totalPaginas.'</a>';
-        }
-        ?>
+      if ($paginaAtual > 1 + $range) {
+        echo '<a class="page-link" href="'.montarLinkPagina(1).'">1</a>';
+        if ($paginaAtual > 2 + $range) echo '<span class="mx-1">...</span>';
+      }
 
-        <?php if ($paginaAtual < $totalPaginas): ?>
-            <a href="<?= montarLinkPagina($paginaAtual + 1) ?>">Próxima</a>
-        <?php else: ?>
-            <span class="desabilitado">Próxima</span>
-        <?php endif; ?>
-    
+      for ($i = max(1, $paginaAtual - $range); $i <= min($totalPaginas, $paginaAtual + $range); $i++) {
+        if ($i == $paginaAtual) echo '<span class="page-link active">'.$i.'</span>';
+        else echo '<a class="page-link" href="'.montarLinkPagina($i).'">'.$i.'</a>';
+      }
 
-    <form method="GET" class="itens-por-pagina-form">
-        <?php foreach ($_GET as $k => $v):
-            if ($k !== 'limite' && $k !== 'pagina'): ?>
-                <input type="hidden" name="<?= htmlspecialchars($k) ?>" value="<?= htmlspecialchars($v) ?>">
-        <?php endif; endforeach; ?>
+      if ($paginaAtual < $totalPaginas - $range) {
+        if ($paginaAtual < $totalPaginas - ($range + 1)) echo '<span class="mx-1">...</span>';
+        echo '<a class="page-link" href="'.montarLinkPagina($totalPaginas).'">'.$totalPaginas.'</a>';
+      }
+      ?>
 
-        <label>Itens por página:</label>
-        <select name="limite" onchange="this.form.submit()">
-            <option value="10"  <?= $limite == 10  ? 'selected' : '' ?>>10</option>
-            <option value="20"  <?= $limite == 20  ? 'selected' : '' ?>>20</option>
-            <option value="50"  <?= $limite == 50  ? 'selected' : '' ?>>50</option>
-            <option value="100" <?= $limite == 100 ? 'selected' : '' ?>>100</option>
-        </select>
+      <?php if ($paginaAtual < $totalPaginas): ?>
+        <a class="page-link" href="<?= montarLinkPagina($paginaAtual + 1) ?>">Próxima</a>
+      <?php else: ?>
+        <span class="page-link disabled">Próxima</span>
+      <?php endif; ?>
+
+    </div>
+
+    <form method="GET" class="d-flex align-items-center gap-2">
+      <?php foreach ($_GET as $k => $v):
+        if ($k !== 'limite' && $k !== 'pagina'): ?>
+          <input type="hidden" name="<?= htmlspecialchars($k) ?>" value="<?= htmlspecialchars($v) ?>">
+      <?php endif; endforeach; ?>
+
+      <label>Itens por página:</label>
+      <select name="limite" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="10"  <?= $limite == 10  ? 'selected' : '' ?>>10</option>
+        <option value="20"  <?= $limite == 20  ? 'selected' : '' ?>>20</option>
+        <option value="50"  <?= $limite == 50  ? 'selected' : '' ?>>50</option>
+        <option value="100" <?= $limite == 100 ? 'selected' : '' ?>>100</option>
+      </select>
     </form>
-</div>
+
+  </div>
 </div>
 <?php endif; ?>
 
-<br>
-<div class="acoes-final">
-  <a class="btn" href="/modulos/funcionarios_menu.php">🏠 Voltar</a>
-  <a class="btn" href="funcionarios_adicionar.php">➕</a>
-  <a class="btn" href="funcionarios_inativos.php">🗂️ Inativos</a>
-  <a href="funcionarios_gerar_hc.php" class="btn btn-success">📊 GERAR HC</a>
-
-</div>
-
 <!-- ===============================
-     MODAL INATIVAÇÃO
+     AÇÕES FINAIS
 =============================== -->
-<div id="modalInativar" class="modal">
-  <div class="modal-conteudo">
-    <h3>🗑️ Confirmar inativação</h3>
-    <p id="modalTextoInativar"></p>
-
-    <form method="POST" action="funcionarios_salvar_inativacao.php" onsubmit="return confirmarInativacao()">
-      <input type="hidden" name="loja" id="modalLojaInativar">
-      <input type="hidden" name="id" id="modalIdInativar">
-      <input type="hidden" name="nome" id="modalNomeInativar">
-
-      <label>Data de desligamento:</label>
-      <input type="date" name="desligamento" id="modalDataDesligamento" required>
-
-      <div class="modal-botoes">
-        <button type="submit" class="btn">Confirmar</button>
-        <button type="button" class="btn-secondary" onclick="fecharModalInativar()">Cancelar</button>
-      </div>
-    </form>
-  </div>
+<div class="d-flex gap-2 mt-4">
+  <a class="btn btn-secondary" href="/modulos/funcionarios_menu.php">🏠 Voltar</a>
+  <a class="btn btn-primary" href="funcionarios_adicionar.php">➕</a>
+  <a class="btn btn-warning" href="funcionarios_inativos.php">🗂️ Inativos</a>
+  <a class="btn btn-success" href="funcionarios_gerar_hc.php">📊 GERAR HC</a>
 </div>
 
 <!-- ===============================
      MODAL DETALHES
 =============================== -->
-<div id="modalDetalhes" class="modal">
-  <div class="modal-conteudo">
+<div id="modalDetalhes" class="modal-custom">
+  <div class="modal-custom-content">
     <h3>🔍 Detalhes do Funcionário</h3>
     <div id="conteudoDetalhes">Carregando...</div>
 
-    <div class="modal-botoes">
-      <button class="btn-secondary" onclick="fecharModalDetalhes()">Fechar</button>
+    <div class="d-flex justify-content-end mt-3">
+      <button class="btn btn-secondary" onclick="fecharModalDetalhes()">Fechar</button>
     </div>
   </div>
 </div>
 
+<!-- ===============================
+     JS DOS MODAIS
+=============================== -->
 <script>
 function abrirDetalhesFuncionario(id) {
   const modal = document.getElementById('modalDetalhes');
@@ -352,7 +346,7 @@ function abrirDetalhesFuncionario(id) {
     .then(r => r.text())
     .then(html => {
       conteudo.innerHTML = html;
-      modal.style.display = "flex";
+      abrirModal('modalDetalhes');
     })
     .catch(() => {
       conteudo.innerHTML = "Erro ao carregar detalhes.";
@@ -362,37 +356,8 @@ function abrirDetalhesFuncionario(id) {
 function fecharModalDetalhes() {
   document.getElementById('modalDetalhes').style.display = "none";
 }
-
-function abrirModalInativar(nome, loja, id) {
-  fecharModalDetalhes();
-  document.getElementById('modalLojaInativar').value = loja;
-  document.getElementById('modalIdInativar').value = id;
-  document.getElementById('modalNomeInativar').value = nome;
-  document.getElementById('modalTextoInativar').innerHTML =
-    `Tem certeza que deseja inativar o funcionário <strong>${nome}</strong>?`;
-  document.getElementById('modalInativar').style.display = 'flex';
-}
-
-function fecharModalInativar() {
-  document.getElementById('modalInativar').style.display = 'none';
-}
-
-function confirmarInativacao() {
-  const nome = document.getElementById('modalNomeInativar').value;
-  const data = document.getElementById('modalDataDesligamento').value;
-
-  if (!data) {
-    alert("Por favor, selecione a data de desligamento.");
-    return false;
-  }
-
-    // Converte aaaa-mm-dd → dd/mm/aaaa
-    const partes = data.split("-");
-    const dataBR = `${partes[2]}/${partes[1]}/${partes[0]}`;
-
-    return confirm(`Funcionário "${nome}" será inativado com data de desligamento ${dataBR}. Deseja continuar?`);
-    }
 </script>
+
 
 <?php
 $conteudo = ob_get_clean();

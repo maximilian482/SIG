@@ -249,12 +249,12 @@ textarea.input-premium {
     height: 300px;
     border: 2px solid #bbb;
     border-radius: 10px;
-    background: #f2f2f2; /* cinza mais escuro para destacar o canvas */
+    background: #f2f2f2;
     margin-bottom: 15px;
     touch-action: none;
     position: relative;
-    padding: 8px; /* cria moldura clara ao redor do canvas */
-    box-shadow: inset 0 0 8px rgba(0,0,0,0.15); /* destaque visual */
+    padding: 8px;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.15);
 }
 
 /* Canvas da assinatura */
@@ -262,7 +262,7 @@ textarea.input-premium {
     width: 100%;
     height: 100%;
     min-height: 250px;
-    background: #ffffff; /* branco puro para contraste */
+    background: #ffffff;
     border-radius: 6px;
     display: block;
     box-shadow: 0 0 4px rgba(0,0,0,0.1);
@@ -287,30 +287,61 @@ textarea.input-premium {
 ================================ */
 @media (max-width: 600px) {
 
+    .avaliacao-wrapper {
+        padding: 20px 16px;
+        margin-top: 20px;
+        margin-bottom: 30px;
+    }
+
+    .carrossel-container {
+        padding: 15px;
+        min-height: auto;
+    }
+
+    .titulo-pagina {
+        font-size: 22px;
+    }
+
+    .subtitulo-pagina {
+        font-size: 14px;
+    }
+
     .signature-canvas-container {
         height: 45vh;
-        min-height: 280px;
-        background: #e0e0e0; /* ainda mais escuro no mobile */
+        min-height: 260px;
+        background: #e0e0e0;
         padding: 10px;
     }
 
     #signature-pad {
         height: 100%;
-        min-height: 260px;
-        background: #ffffff;
+        min-height: 240px;
     }
 
     .btn-limpar {
         padding: 14px;
         font-size: 17px;
     }
-}
 
+    .criterio-botoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .btn-nota {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .criterio-item {
+        padding: 14px 16px;
+    }
+}
 
 /* ================================
    GRÁFICO DE BARRAS — RESUMO
 ================================ */
-
 .barra-setor {
     margin-bottom: 18px;
 }
@@ -344,7 +375,6 @@ textarea.input-premium {
 /* ================================
    LEGENDA DO RESUMO
 ================================ */
-
 .legenda-avaliacao {
     display: flex;
     gap: 20px;
@@ -376,7 +406,6 @@ textarea.input-premium {
 /* ================================
    GRÁFICO GERAL (RESUMO)
 ================================ */
-
 #grafico-geral {
     display: block;
     margin: 0 auto;
@@ -386,7 +415,6 @@ textarea.input-premium {
 /* ================================
    TABELA PREMIUM DE AVALIAÇÕES
 ================================ */
-
 .tabela-premium {
     width: 100%;
     border-collapse: collapse;
@@ -410,8 +438,6 @@ textarea.input-premium {
 .tabela-premium tr:hover {
     background: #f7f7f7 !important;
 }
-
-
 
 .nota-bom {
     color: #43a047;
@@ -446,7 +472,6 @@ textarea.input-premium {
 /* ================================
    MODAL
 ================================ */
-
 #modal-detalhes {
     position: fixed;
     inset: 0;
@@ -473,7 +498,6 @@ textarea.input-premium {
     overflow-y: auto;
     position: relative;
     box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -498,14 +522,11 @@ textarea.input-premium {
 /* ================================
    DETALHES DA AVALIAÇÃO (DROPDOWN)
 ================================ */
-
-/* Linha de detalhes */
 .linha-detalhes td {
     background: #fafafa;
     padding: 0;
 }
 
-/* Container interno */
 .detalhes-conteudo {
     padding: 20px;
     display: flex;
@@ -516,7 +537,6 @@ textarea.input-premium {
     border-top: 1px solid #e0e0e0;
 }
 
-/* Colunas internas */
 .detalhes-col {
     flex: 1 1 280px;
     min-width: 260px;
@@ -524,10 +544,10 @@ textarea.input-premium {
 
 /* Assinatura */
 .img-assinatura {
-    width: 260px;          /* largura fixa */
-    height: auto;          /* mantém proporção */
-    max-height: 420px;     /* aumenta a altura */
-    object-fit: contain;   /* evita distorção */
+    width: 260px;
+    height: 260px;
+    object-fit: contain;
+    background: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
     display: block;
@@ -537,23 +557,11 @@ textarea.input-premium {
 /* ================================
    HOVER DA TABELA
 ================================ */
-
 #tabela-avaliacoes tbody tr:hover,
 .tabela-premium tbody tr:hover {
     background: #f2f8ff;
     color: #000;
     transition: background 0.2s ease;
-}
-
-.img-assinatura {
-    width: 260px;
-    height: 260px; /* altura fixa */
-    object-fit: contain; /* mantém a assinatura dentro da área */
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    display: block;
-    margin: 10px auto;
 }
 
 /* Botão excluir */
@@ -578,7 +586,6 @@ textarea.input-premium {
     color: #fff !important;
     border: 1px solid #555;
 }
-
 
 .btn-na.ativo {
     background: #444 !important;
@@ -627,84 +634,42 @@ textarea.input-premium {
     font-size: 13px;
 }
 
-.oculto {
-    display: none;
-}
-
 /* ================================
-   MOBILE — AJUSTE DOS BOTÕES
+   MOBILE — DETALHES / AÇÕES
 ================================ */
 @media (max-width: 600px) {
 
-    .criterio-botoes {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* 2 botões por linha */
-        gap: 10px;
-    }
-
-    .btn-nota {
-        padding: 10px;
-        font-size: 13px;
-    }
-
-    .criterio-item {
-        padding: 14px 16px;
-    }
-}
-
-/* ================================
-   DETALHES — RESPONSIVO MOBILE
-================================ */
-@media (max-width: 600px) {
-
-    /* Força o container a caber na tela */
     .detalhes-conteudo {
         flex-direction: column;
         gap: 15px;
     }
 
-    /* Cada coluna ocupa 100% da largura */
     .detalhes-col {
         flex: 1 1 100%;
         min-width: 100%;
     }
 
-    /* Ajusta textos */
-    .criterio-linha {
-        font-size: 14px;
-    }
-
+    .criterio-linha,
     .obs-setor-detalhe {
         font-size: 14px;
     }
 
-    /* Ajusta imagem da assinatura */
     .img-assinatura {
         width: 100%;
         max-width: 260px;
         height: auto;
     }
 
-    /* Evita que a tabela estoure */
     .tabela-premium td {
         white-space: normal !important;
         word-break: break-word;
     }
-}
-
-/* Coluna de ações */
-.col-acoes {
-    white-space: nowrap;
-}
-
-/* MOBILE — evita quebra da tabela */
-@media (max-width: 600px) {
 
     .col-acoes {
-        white-space: normal !important; /* permite quebrar */
+        white-space: normal !important;
         display: flex;
         gap: 6px;
-        flex-wrap: wrap; /* permite ir para a linha de baixo */
+        flex-wrap: wrap;
     }
 
     .btn-detalhes,
@@ -714,7 +679,14 @@ textarea.input-premium {
     }
 }
 
+/* Coluna de ações */
+.col-acoes {
+    white-space: nowrap;
+}
 
+/* ================================
+   BARRA WRAPPER
+================================ */
 .barra-wrapper {
     position: relative;
     width: 100%;
@@ -729,8 +701,8 @@ textarea.input-premium {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #a59696; /* fundo clarinho */
-    opacity: 0.6;        /* discreto */
+    background: #a59696;
+    opacity: 0.6;
 }
 
 .barra {

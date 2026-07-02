@@ -20,66 +20,74 @@ $totalLojas           = contarLojas($conn);
 // Título da página
 $titulo = "Painel de Gestão";
 
-// CSS extra (se quiser adicionar algo específico)
-// $cssExtra = "/css/card.css";
+// ===============================
+// CONTEÚDO PRINCIPAL
+// ===============================
+ob_start();
+?>
 
-// Conteúdo da página
-$conteudo = '
-<h1>📂 Painel de Gestão</h1>
-<p>Olá, <strong>' . htmlspecialchars($usuario) . '</strong>. Aqui estão os módulos administrativos disponíveis:</p>
+<h1 class="mb-3">📂 Painel de Gestão</h1>
+<p>Olá, <strong><?= htmlspecialchars($usuario) ?></strong>. Aqui estão os módulos administrativos disponíveis:</p>
 
-<div class="cards-container">
+<div class="cards-grid">
 
-    ' . (
-        ($acessoTotal || temAcesso($conn, $cpf, "gestao_relatorios")) ?
-        '<div class="card">
-            <h2>📄 Relatórios</h2>
-            <p>Visualização de dados e exportações</p>
-            <a href="exportacao/index.php">Acessar</a>
-        </div>' : ''
-    ) . '
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "gestao_relatorios")): ?>
+        <a href="exportacao/index.php" class="card-global">
+            <div class="card-global-icon">📄</div>
+            <h3 class="card-global-title">Relatórios</h3>
+            <p class="card-global-text">Visualização de dados e exportações.</p>
+        </a>
+    <?php endif; ?>
 
-    ' . (
-        ($acessoTotal || temAcesso($conn, $cpf, "gestao_funcionarios")) ?
-        '<div class="card">
-            <h2>👥 Funcionários</h2>
-            <p>Cadastro, edição e controle de acesso</p>
-            <p style="font-weight:bold; color:#34495e;">Total cadastrados: ' . $totalFuncionarios . '</p>
-            <a href="funcionarios_menu.php">Acessar</a>
-        </div>' : ''
-    ) . '
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "gestao_funcionarios")): ?>
+        <a href="funcionarios_menu.php" class="card-global">
+            <div class="card-global-icon">👥</div>
+            <h3 class="card-global-title">Funcionários</h3>
+            <p class="card-global-text">Cadastro, edição e controle de acesso.</p>
+            <p class="card-global-text" style="font-weight:bold; color:#34495e;">
+                Total cadastrados: <?= $totalFuncionarios ?>
+            </p>
+        </a>
+    <?php endif; ?>
 
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "gestao_lojas")): ?>
+        <a href="lojas.php" class="card-global">
+            <div class="card-global-icon">🏬</div>
+            <h3 class="card-global-title">Lojas</h3>
+            <p class="card-global-text">Visualize dados completos por unidade.</p>
+            <p class="card-global-text" style="font-weight:bold; color:#34495e;">
+                Total de lojas: <?= $totalLojas ?>
+            </p>
+        </a>
+    <?php endif; ?>
 
-    ' . (
-        ($acessoTotal || temAcesso($conn, $cpf, "gestao_lojas")) ?
-        '<div class="card">
-            <h2>🏬 Lojas</h2>
-            <p>Visualize dados completos por unidade</p>
-            <p style="font-weight:bold; color:#34495e;">Total de lojas: ' . $totalLojas . '</p>
-            <a href="lojas.php">Acessar</a>
-        </div>' : ''
-    ) . '
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "gestao_acessos")): ?>
+        <a href="gerenciar_acessos.php" class="card-global">
+            <div class="card-global-icon">🔐</div>
+            <h3 class="card-global-title">Gerenciar Acessos</h3>
+            <p class="card-global-text">Controle os módulos disponíveis para cada funcionário.</p>
+        </a>
+    <?php endif; ?>
 
-    ' . (
-        ($acessoTotal || temAcesso($conn, $cpf, "gestao_acessos")) ?
-        '<div class="card">
-            <h2>🔐 Gerenciar Acessos</h2>
-            <p>Controle os módulos disponíveis para cada funcionário</p>
-            <a href="gerenciar_acessos.php">Acessar</a>
-        </div>' : ''
-    ) . '
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "gestao_painel_chamados")): ?>
+        <a href="chamados_admin.php" class="card-global">
+            <div class="card-global-icon">🛠️</div>
+            <h3 class="card-global-title">Painel de Chamados</h3>
+            <p class="card-global-text">Gerenciamento geral dos chamados.</p>
+        </a>
+    <?php endif; ?>
 
-    ' . (
-        ($acessoTotal || temAcesso($conn, $cpf, "gestao_painel_chamados")) ?
-        '<div class="card">
-            <h2>🛠️ Painel de Chamados</h2>
-            <p>Gerenciamento geral dos chamados</p>
-            <a href="chamados_admin.php">Acessar</a>
-        </div>' : ''
-    ) . '
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "gestao_compras_externas")): ?>
+        <a href="compras_externas_gestao.php" class="card-global">
+            <div class="card-global-icon">🛒</div>
+            <h3 class="card-global-title">Compras Externas</h3>
+            <p class="card-global-text">Gestão completa das solicitações de compras.</p>
+        </a>
+    <?php endif; ?>
 
 </div>
-';
 
-// Inclui o layout final
+<?php
+$conteudo = ob_get_clean();
 include '../includes/layout.php';
+?>

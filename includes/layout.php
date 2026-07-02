@@ -1,19 +1,13 @@
 <?php
-// Sessão e conexão
+// Sessão
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// layout.php — Estrutura base do sistema
-
 require_once __DIR__ . '/../config/bootstrap.php';
 require_once ROOT_PATH . '/includes/funcoes.php';
 
-
-// require_once ROOT_PATH . '/dados/conexao.php';
-// $conn = conectar();
-
-// Detectar se é AJAX
+// Detectar AJAX
 $isAjax = (
     isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
     strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
@@ -35,10 +29,6 @@ $menuPerfil = ob_get_clean();
 
 <body>
 
-<!-- ===============================
-     SISTEMA GLOBAL DE MENSAGENS (AGORA NO TOPO)
-================================ -->
-
 <?= $menuLateral ?>
 <?= $menuPerfil ?>
 
@@ -47,8 +37,6 @@ $menuPerfil = ob_get_clean();
 </main>
 
 <?= $modais ?? '' ?>
-
-
 
 <!-- ===============================
      SISTEMA GLOBAL DE MENSAGENS
@@ -108,15 +96,16 @@ function mostrarMensagem(msg, tipo = "sucesso") {
     icone.innerText = icones[tipo] || "ℹ️";
     texto.innerHTML = msg;
 
+    // Cores corrigidas
     if (tipo === "sucesso") {
         box.style.background = "var(--verde-palmeiras-claro)";
         box.style.color = "white";
     } else if (tipo === "erro") {
-        box.style.background = "var(--erro-bg)";
-        box.style.color = "var(--erro-texto)";
+        box.style.background = "#ffdddd";
+        box.style.color = "#a30000";
     } else if (tipo === "aviso") {
-        box.style.background = "var(--warning-bg)";
-        box.style.color = "var(--warning-texto)";
+        box.style.background = "#fff4cc";
+        box.style.color = "#8a6d00";
     }
 
     overlay.style.display = "block";
@@ -160,25 +149,21 @@ document.addEventListener("DOMContentLoaded", () => {
 <!-- ===============================
      DISPARO AUTOMÁTICO DE MENSAGENS
 ================================ -->
-<?php if (!$isAjax && !empty($_SESSION['flash'])): ?>
+<?php if (!empty($_SESSION['flash'])): ?>
 <script>
     mostrarMensagem(
         "<?= addslashes($_SESSION['flash']['mensagem']) ?>",
-        "<?= $_SESSION['flash']['tipo'] === 'success' ? 'sucesso' : ($_SESSION['flash']['tipo'] === 'error' ? 'erro' : 'aviso') ?>"
+        "<?= $_SESSION['flash']['tipo'] ?>"
     );
 </script>
 <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 
-
-
-
-<!-- SCRIPTS ESPECÍFICOS DA PÁGINA -->
+<!-- Scripts específicos -->
 <?= $scripts ?? '' ?>
 
-<!-- SCRIPT GLOBAL DE MODAIS -->
 <script src="/js/global.js"></script>
+<script src="/js/modal.js"></script>
 
 </body>
 </html>
-

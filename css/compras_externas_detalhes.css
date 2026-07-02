@@ -1,0 +1,101 @@
+.detalhes-topo {
+    margin-top: 35px;
+    margin-bottom: 20px;
+}
+
+.detalhes-subtitulo {
+    color: var(--texto-principal);
+    font-size: 0.95rem;
+}
+
+.card {
+    background: var(--branco);
+    border-radius: 10px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.card-form .form-linha {
+    margin-bottom: 12px;
+}
+
+.card-form label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.card-form input,
+.card-form textarea,
+.card-form select {
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid var(--cinza-borda);
+    padding: 6px 8px;
+    font-size: 0.95rem;
+}
+
+.card-form textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.btn-salvar,
+.btn-finalizar,
+.btn-excluir,
+.btn-voltar,
+.btn-tipo {
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.btn-salvar {
+    background: var(--verde-palmeiras);
+    color: #fff;
+}
+
+.btn-finalizar {
+    background: var(--verde-palmeiras-claro);
+    color: #fff;
+    margin-right: 10px;
+}
+
+.btn-excluir {
+    background: #c62828;
+    color: #fff;
+    margin-right: 10px;
+}
+
+.btn-voltar {
+    background: #757575;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-tipo {
+    background: #eeeeee;
+    color: var(--texto-principal);
+    margin-right: 8px;
+}
+
+.btn-tipo.ativo {
+    background: var(--verde-palmeiras);
+    color: #fff;
+}
+
+.card-acoes {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}

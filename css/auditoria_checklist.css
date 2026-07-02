@@ -1,0 +1,554 @@
+/* ================================
+   OCULTAR
+================================ */
+.oculto {
+    display: none !important;
+}
+
+/* ================================
+   CONTAINER GERAL
+================================ */
+.container-avaliacao {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.avaliacao-wrapper {
+    background: #ffffff;
+    padding: 35px 40px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    margin-top: 30px;
+    margin-bottom: 45px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Títulos */
+.titulo-pagina {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #333;
+}
+
+.subtitulo-pagina {
+    margin-top: 0;
+    margin-bottom: 28px;
+    color: #666;
+    font-size: 15px;
+}
+
+/* ================================
+   CARDS
+================================ */
+.card-premium {
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.card-titulo {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+/* ================================
+   CAMPOS
+================================ */
+.label-premium {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+    color: #444;
+}
+
+.input-premium,
+.select-premium,
+textarea.input-premium {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #fff;
+    transition: 0.2s;
+}
+
+.input-premium:focus,
+.select-premium:focus,
+textarea.input-premium:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25,118,210,0.15);
+    outline: none;
+}
+
+/* ================================
+   CARROSSEL
+================================ */
+.carrossel-container {
+    position: relative;
+    width: 100%;
+    min-height: 380px;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 12px;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+.carrossel-slide {
+    display: none;
+    animation: fadeIn 0.35s ease;
+    padding: 10px 5px;
+}
+
+.carrossel-slide:not(.oculto) {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ================================
+   BOTÕES SIM / PARCIAL / NÃO
+================================ */
+.grupo-botoes {
+    display: flex;
+    gap: 18px;
+    margin: 25px 0;
+    justify-content: center;
+}
+
+.btn-nota {
+    flex: 1;
+    padding: 18px 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: #e9e9e9;
+    transition: 0.2s;
+    text-align: center;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
+
+.btn-nota:hover {
+    background: #dcdcdc;
+    transform: translateY(-2px);
+}
+
+.btn-nota.ativo[data-valor="100"] {
+    background: #e8f5e9;
+    border: 2px solid #43a047;
+    color: #1b5e20;
+}
+
+.btn-nota.ativo[data-valor="50"] {
+    background: #fff8e1;
+    border: 2px solid #ffb300;
+    color: #ff6f00;
+}
+
+.btn-nota.ativo[data-valor="0"] {
+    background: #ffebee;
+    border: 2px solid #e53935;
+    color: #b71c1c;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+    .grupo-botoes {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .btn-nota {
+        padding: 20px 16px;
+        font-size: 1.3rem;
+    }
+}
+
+/* ================================
+   NAVEGAÇÃO DO CARROSSEL
+================================ */
+.carrossel-nav {
+    margin-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.btn-nav-premium {
+    flex: 1;
+    background: linear-gradient(135deg, #1976d2, #125a9c);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    transition: 0.2s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+.btn-nav-premium:hover {
+    background: linear-gradient(135deg, #1565c0, #0f4a82);
+    transform: translateY(-2px);
+}
+
+/* ================================
+   SLIDE FINAL
+================================ */
+#slide-final {
+    animation: fadeIn 0.35s ease;
+    padding: 20px;
+}
+
+/* ================================
+   ASSINATURA
+================================ */
+.assinatura-box {
+    margin-top: 20px;
+}
+
+#signature-pad {
+    width: 100%;
+    height: 260px;
+    background: #ffffff;
+    border-radius: 6px;
+    border: 2px solid #bbb;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.15);
+}
+
+.btn-limpar {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.grafico-geral-wrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+}
+
+.grafico-geral-texto {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    pointer-events: none;
+}
+
+/* ================================
+   RESUMO — BARRAS PREMIUM
+================================ */
+.resumo-item {
+    margin-bottom: 15px;
+}
+
+.resumo-item-titulo {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.resumo-barra {
+    height: 22px;
+    border-radius: 5px;
+    background: #ddd;
+    overflow: hidden;
+}
+
+.resumo-barra-preenchida {
+    height: 100%;
+    text-align: right;
+    padding-right: 8px;
+    color: #fff;
+    font-weight: bold;
+    line-height: 22px;
+}
+
+.barra-ruim { background: #d9534f; }
+.barra-parcial { background: #f0ad4e; }
+.barra-bom { background: #5cb85c; }
+
+/* ================================
+   TABELA — ÚLTIMAS AUDITORIAS
+================================ */
+.tabela-premium {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+.tabela-premium th {
+    text-align: left;
+    padding: 12px;
+    background: #0b7410;
+    font-weight: 600;
+    border-bottom: 2px solid #f5eded;
+    color: white;
+}
+
+.tabela-premium td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.tabela-premium tr:hover {
+    background: #f2f8ff;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.table-responsive table {
+    width: 100%;
+    min-width: 350px;
+}
+
+
+/* ================================
+   BOTÕES DA TABELA
+================================ */
+.btn-icone {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: #e5e5e5;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-detalhes::before { content: "🔍"; }
+.btn-excluir::before { content: "🗑️"; }
+
+.col-acoes {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ================================
+   DETALHES — PADRÃO AVALIAÇÃO LOJA
+================================ */
+
+/* Container geral */
+.detalhes-conteudo {
+    width: 100%;
+    padding: 25px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+}
+
+/* Topo dividido em 2 colunas */
+.detalhes-topo {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.detalhes-col-esq {
+    flex: 1;
+}
+
+.detalhes-col-dir {
+    flex: 0 0 260px;
+}
+
+/* Cabeçalho */
+.detalhes-header h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #333;
+}
+
+.detalhes-header p {
+    margin: 4px 0;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Nota geral */
+.nota-geral-box {
+    background: #0b7410;
+    color: #fff;
+    font-size: 26px;
+    font-weight: bold;
+    padding: 8px 18px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-top: 12px;
+}
+
+/* Assinatura */
+.detalhes-assinatura {
+    background: #fafafa;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.detalhes-assinatura img {
+    width: 100%;
+    max-width: 240px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* BARRAS EMBAIXO */
+.detalhes-barras {
+    width: 100%;
+}
+
+/* Cada item */
+.detalhe-item {
+    margin-bottom: 20px;
+}
+
+/* Pergunta */
+.detalhe-pergunta {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* Barra base */
+.resumo-barra {
+    width: 100%;
+    background: #e0e0e0;
+    height: 18px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+/* Barra preenchida */
+.resumo-barra-preenchida {
+    height: 100%;
+    line-height: 18px;
+    padding-left: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* Cores */
+.barra-bom { background: #4CAF50 !important; }
+.barra-parcial { background: #FFC107 !important; color: #000 !important; }
+.barra-ruim { background: #F44336 !important; }
+
+/* Observação */
+.detalhe-observacao {
+    background: #fff8e1;
+    padding: 8px;
+    border-left: 4px solid #ffca28;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+/* ================================
+   MOBILE — AJUSTE DO LAYOUT
+================================ */
+@media (max-width: 600px) {
+
+    /* Container geral */
+    .detalhes-conteudo {
+        padding: 15px;
+    }
+
+    /* Topo vira coluna */
+    .detalhes-topo {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Coluna esquerda ocupa 100% */
+    .detalhes-col-esq {
+        flex: 1 1 100%;
+    }
+
+    /* Assinatura também ocupa 100% */
+    .detalhes-col-dir {
+        flex: 1 1 100%;
+    }
+
+    /* Assinatura centralizada */
+    .detalhes-assinatura {
+        text-align: center;
+    }
+
+    .detalhes-assinatura img {
+        margin: 0 auto;
+        max-width: 200px;
+    }
+
+    /* Barras ocupam 100% */
+    .detalhes-barras {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Perguntas e barras com mais respiro */
+    .detalhe-item {
+        margin-bottom: 22px;
+    }
+
+    .detalhe-pergunta {
+        font-size: 15px;
+    }
+
+    .resumo-barra {
+        height: 20px;
+    }
+
+    .resumo-barra-preenchida {
+        font-size: 12px;
+        line-height: 20px;
+    }
+
+    /* Nota geral centralizada */
+    .nota-geral-box {
+        font-size: 22px;
+        padding: 6px 14px;
+        display: inline-block;
+        margin: 10px auto;
+    }
+}

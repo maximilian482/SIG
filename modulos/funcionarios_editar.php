@@ -11,7 +11,7 @@ $conn = conectar();
 // CONFIGURAÇÕES DO LAYOUT
 // ===============================
 $titulo = "Editar Funcionário";
-$cssExtra = "/css/funcionarios.css"; // usa o mesmo CSS da listagem
+$cssExtra = "/css/funcionarios.css";
 
 // ===============================
 // VALIDAR PARÂMETROS
@@ -20,7 +20,10 @@ $id   = intval($_GET['id'] ?? 0);
 $loja = intval($_GET['loja'] ?? 0);
 
 if ($id <= 0 || $loja <= 0) {
-    $_SESSION['erro'] = "❌ Parâmetros inválidos.";
+    $_SESSION['flash'] = [
+        'mensagem' => '❌ Parâmetros inválidos.',
+        'tipo' => 'erro'
+    ];
     header("Location: funcionarios.php");
     exit;
 }
@@ -42,7 +45,10 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    $_SESSION['erro'] = "❌ Funcionário não encontrado.";
+    $_SESSION['flash'] = [
+        'mensagem' => '❌ Funcionário não encontrado.',
+        'tipo' => 'erro'
+    ];
     header("Location: funcionarios.php");
     exit;
 }
@@ -106,14 +112,8 @@ ob_start();
 
     <h2 class="titulo-pagina">✏️ Editar Funcionário</h2>
 
-    <?php if (!empty($_SESSION['erros_funcionario'])): ?>
-        <div class="alert alert-danger">
-            <?php foreach ($_SESSION['erros_funcionario'] as $erro): ?>
-                <p><?= $erro ?></p>
-            <?php endforeach; ?>
-        </div>
-        <?php unset($_SESSION['erros_funcionario']); ?>
-    <?php endif; ?>
+    <!-- Removido bloco antigo de alertas -->
+    <!-- Agora o layout.php exibe automaticamente via mostrarMensagem() -->
 
     <form method="POST" action="funcionarios_salvar_edicao.php" class="form-padrao">
 
@@ -133,7 +133,7 @@ ob_start();
         <input type="text" name="endereco" value="<?= htmlspecialchars($f['endereco']) ?>">
 
         <label>CPF:</label>
-        <input type="text" name="cpf" value="<?= htmlspecialchars($f['cpf']) ?>" pattern="\d{11}" required>
+        <input type="text" name="cpf" value="<?= htmlspecialchars($f['cpf']) ?>" required>
 
         <label>Cargo:</label>
         <select name="cargo_id" required>
@@ -174,8 +174,8 @@ ob_start();
                 </option>
             <?php endforeach; ?>
         </select>
-        <br><br>
 
+        <br><br>
 
         <label>Email:</label>
         <input type="email" name="email" value="<?= htmlspecialchars($f['email']) ?>">
@@ -197,12 +197,7 @@ ob_start();
 </div>
 
 <?php
-// ===============================
-// FINALIZAR HTML E RENDERIZAR LAYOUT
-// ===============================
 $cssExtra = "/css/funcionarios_editar.css";
 $conteudo = ob_get_clean();
 include ROOT_PATH . '/includes/layout.php';
-
-
 ?>

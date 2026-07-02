@@ -27,34 +27,49 @@ $usuarioId     = intval($_SESSION['funcionario_id'] ?? ($_SESSION['id_funcionari
 // ===============================
 ob_start();
 ?>
-<link rel="stylesheet" href="/css/chamados.css">
 
 <div class="pagina-chamados-menu">
 
     <h2 class="titulo-pagina">O que você deseja fazer?</h2>
     <p class="subtitulo-pagina">Escolha abaixo o tipo de atendimento que deseja abrir ou acompanhar.</p>
 
-    <div class="grid-opcoes-chamados">
+    <!-- GRID GLOBAL DE CARDS -->
+    <div class="cards-grid">
 
         <!-- SETORES -->
-        <a href="chamados_setores_publico.php" class="card-opcao">
-            <div class="icone-opcao">🏢</div>
-            <h3>Chamados para Setores</h3>
-            <p>Abrir solicitações internas para TI, RH, Financeiro, Compras e outros setores.</p>
+        <a href="chamados_setores_publico.php" class="card-global">
+            <div class="card-global-icon">🏢</div>
+            <h3 class="card-global-title">Chamados para Setores</h3>
+            <p class="card-global-text">
+                Abrir solicitações internas para TI, RH, Financeiro, Compras e outros setores.
+            </p>
         </a>
 
         <!-- LOJAS -->
-        <a href="chamados_lojas_publico.php" class="card-opcao">
-            <div class="icone-opcao">🏬</div>
-            <h3>Chamados para Lojas</h3>
-            <p>Enviar solicitações diretamente para qualquer filial da rede.</p>
+        <a href="chamados_lojas_publico.php" class="card-global">
+            <div class="card-global-icon">🏬</div>
+            <h3 class="card-global-title">Chamados para Lojas</h3>
+            <p class="card-global-text">
+                Enviar solicitações diretamente para qualquer filial da rede.
+            </p>
         </a>
 
         <!-- TRILHO -->
-        <a href="chamados_trilho.php" class="card-opcao destaque-trilho">
-            <div class="icone-opcao">🚚</div>
-            <h3>Trilho Logístico</h3>
-            <p>Acompanhar, criar e gerenciar protocolos de transporte entre lojas.</p>
+        <a href="chamados_trilho.php" class="card-global" style="border-color:#1e88e5;">
+            <div class="card-global-icon">🚚</div>
+            <h3 class="card-global-title">Trilho Logístico</h3>
+            <p class="card-global-text">
+                Acompanhar, criar e gerenciar protocolos de transporte entre lojas.
+            </p>
+        </a>
+
+        <!-- COMPRAS -->
+        <a href="compras_externas.php" class="card-global">
+            <div class="card-global-icon">🛒</div>
+            <h3 class="card-global-title">Compras Externas</h3>
+            <p class="card-global-text">
+                Solicitar e acompanhar compras feitas fora do sistema.
+            </p>
         </a>
 
     </div>

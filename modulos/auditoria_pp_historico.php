@@ -63,6 +63,7 @@ include ROOT_PATH . '/includes/flash.php';
             </div>
 
             <!-- TABELA -->
+             <div class="table-responsive">
             <table class="tabela-premium" id="tabela-historico">
                 <thead>
                     <tr>
@@ -74,6 +75,7 @@ include ROOT_PATH . '/includes/flash.php';
                 </thead>
                 <tbody id="lista-historico"></tbody>
             </table>
+                    </div>
 
             <!-- PAGINAÇÃO -->
             <div class="paginacao-premium">

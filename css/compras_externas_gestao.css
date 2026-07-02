@@ -1,0 +1,120 @@
+/* ===============================
+   PALETA OFICIAL — VERDE PALMEIRAS
+=============================== */
+:root {
+  --verde-palmeiras: #006437;
+  --verde-palmeiras-escuro: #004B2C;
+  --verde-palmeiras-claro: #00A859;
+
+  --branco: #FFFFFF;
+  --cinza-fundo: #F4F6F8;
+  --cinza-borda: #DDE2E5;
+  --texto-principal: #1C1C1C;
+}
+
+/* ===============================
+   BASE
+=============================== */
+body {
+  background-color: var(--cinza-fundo);
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--texto-principal);
+}
+
+/* ===============================
+   LINKS
+=============================== */
+a {
+  color: var(--verde-palmeiras);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a:hover {
+  color: var(--verde-palmeiras-escuro);
+  text-decoration: underline;
+}
+
+/* ===============================
+   TÍTULOS
+=============================== */
+h1, h2, h3 {
+  color: var(--verde-palmeiras-escuro);
+  font-weight: 700;
+}
+
+/* ===============================
+   CONTAINER PRINCIPAL
+=============================== */
+.container.py-4 {
+  background: var(--branco);
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  margin-top: 35px;
+}
+
+/* ===============================
+   BOTÕES
+=============================== */
+.btn-icon {
+  font-size: 1.2rem;
+  padding: 4px 8px;
+}
+
+/* ===============================
+   BADGES DE STATUS
+=============================== */
+.badge-status-aberto {
+  background-color: #1e88e5 !important;
+}
+
+.badge-status-em-compra {
+  background-color: var(--verde-palmeiras) !important;
+}
+
+.badge-status-aguardando {
+  background-color: #8e24aa !important;
+}
+
+.badge-status-concluido {
+  background-color: var(--verde-palmeiras-claro) !important;
+}
+
+/* ===============================
+   TABELA
+=============================== */
+.table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.table thead {
+  background: var(--verde-palmeiras-escuro) !important;
+  color: var(--branco) !important;
+}
+
+/* ===============================
+   CARDS
+=============================== */
+.card {
+  border: none;
+  border-left: 5px solid var(--verde-palmeiras);
+  border-radius: 6px;
+}
+
+
+
+/* tabela responsiva */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.table-responsive table {
+    width: 100%;
+    min-width: 350px;
+}

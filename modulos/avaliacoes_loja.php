@@ -151,6 +151,7 @@ include ROOT_PATH . '/includes/flash.php';
         <div id="ultimas-avaliacoes" class="card-premium lista-avaliacoes-container">
             <br><br><h3 class="card-titulo" align="center">10 Últimas Avaliações</h3>
             
+            <div class="table-responsive">
             <table class="tabela-premium" id="tabela-avaliacoes">
                 <thead>
                     <tr>
@@ -162,6 +163,7 @@ include ROOT_PATH . '/includes/flash.php';
                 </thead>
                 <tbody id="lista-avaliacoes"></tbody>
             </table>
+            </div>
         </div>
 
     </div>

@@ -174,166 +174,204 @@ function tempoDeEmpresa($inicio, $fim) {
 ob_start();
 ?>
 
-<h2>🚫 Funcionários Inativos</h2>
+<h2 class="mb-4">🚫 Funcionários Inativos</h2>
 
-<?php if (isset($_SESSION['alerta'])): ?>
-  <div class="<?= strpos($_SESSION['alerta'], '✅') !== false ? 'alert-sucesso' : 'alert-erro' ?>">
-    <?= $_SESSION['alerta'] ?>
+<?php if (isset($_SESSION['flash'])): ?>
+  <div class="alert alert-<?= $_SESSION['flash']['tipo'] === 'sucesso' ? 'success' : 'danger' ?>">
+    <?= $_SESSION['flash']['mensagem'] ?>
   </div>
-  <?php unset($_SESSION['alerta']); ?>
+  <?php unset($_SESSION['flash']); ?>
 <?php endif; ?>
 
 <!-- ===============================
      FILTROS
 =============================== -->
-<div class="filtro-container">
-<form method="GET" class="filtro-form">
+<div class="card p-3 mb-4">
+  <form method="GET" class="row g-3">
 
-  <div class="filtro-grupo">
-    <label>Loja:</label>
-    <select name="loja" onchange="this.form.submit()">
-      <option value="">Todas</option>
-      <?php foreach ($lojas as $id => $nome): ?>
-        <option value="<?= $id ?>" <?= (string)$id === (string)$lojaSelecionada ? 'selected' : '' ?>>
-          <?= htmlspecialchars($nome) ?>
-        </option>
-      <?php endforeach; ?>
-    </select>
-  </div>
-
-  <div class="filtro-grupo">
-    <label>Cargo:</label>
-    <select name="cargo" onchange="this.form.submit()">
-      <option value="">Todos</option>
-      <?php foreach ($cargos as $idCargo => $nomeCargo): ?>
-        <option value="<?= $nomeCargo ?>" <?= $nomeCargo === $cargoSelecionado ? 'selected' : '' ?>>
-          <?= htmlspecialchars($nomeCargo) ?>
-        </option>
-      <?php endforeach; ?>
-    </select>
-  </div>
-
-  <div class="filtro-grupo">
-    <label>Pesquisar:</label>
-    <div class="filtro-pesquisa">
-      <input type="text" name="busca" value="<?= htmlspecialchars($busca) ?>" placeholder="Nome ou código">
-      <button type="submit" class="btn-small">🔍</button>
+    <div class="col-md-4">
+      <label class="form-label">Loja</label>
+      <select name="loja" class="form-select" onchange="this.form.submit()">
+        <option value="">Todas</option>
+        <?php foreach ($lojas as $id => $nome): ?>
+          <option value="<?= $id ?>" <?= (string)$id === (string)$lojaSelecionada ? 'selected' : '' ?>>
+            <?= htmlspecialchars($nome) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
     </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Cargo</label>
+      <select name="cargo" class="form-select" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        <?php foreach ($cargos as $idCargo => $nomeCargo): ?>
+          <option value="<?= $nomeCargo ?>" <?= $nomeCargo === $cargoSelecionado ? 'selected' : '' ?>>
+            <?= htmlspecialchars($nomeCargo) ?>
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Pesquisar</label>
+      <div class="input-group">
+        <input type="text" name="busca" class="form-control" value="<?= htmlspecialchars($busca) ?>" placeholder="Nome ou código">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">🔍</button>
+      </div>
+    </div>
+
+    <div class="col-12 text-end">
+      <a href="funcionarios_inativos.php" class="btn btn-secondary">Limpar</a>
+    </div>
+
+  </form>
+
+  <div class="mt-3 text-muted">
+    <strong>Total de inativos encontrados:</strong> <?= $totalFiltrados ?>
   </div>
-
-  <a href="funcionarios_inativos.php" class="btn-secondary btn-limpar">Limpar</a>
-
-</form>
 </div>
 
-<p><strong>Total de inativos encontrados:</strong> <?= $totalFiltrados ?></p>
-
 <!-- ===============================
-     TABELA REDUZIDA
+     TABELA
 =============================== -->
-<div class="card">
-<table class="tabela-funcionarios">
-  <tr>
-    <th>Cód Vetor</th>
-    <th>Nome</th>
-    <th>Desligamento</th>
-    <th>Tempo de empresa</th>
-    <th>Ações</th>
-  </tr>
+<div class="card p-3">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Cód Vetor</th>
+          <th>Nome</th>
+          <th>Desligamento</th>
+          <th>Tempo de empresa</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
 
-<?php foreach ($listaPaginada as $item):
-  $f = $item['dados'];
-?>
-  <tr>
-    <td><?= htmlspecialchars($f['codigo'] ?? '0') ?></td>
-    <td><?= htmlspecialchars($f['nome_reduzido']) ?></td>
-    <td><?= htmlspecialchars($f['desligamento'] ?? '—') ?></td>
-    <td><?= tempoDeEmpresa($f['contratacao'], $f['desligamento']) ?></td>
-    <td class="acoes">
-      <button class="btn-small"
-              onclick='abrirModalReativacao(<?= json_encode($f, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>)'>
-        ♻️ Reativar
-      </button>
-    </td>
-  </tr>
-<?php endforeach; ?>
-</table>
+      <tbody>
+      <?php foreach ($listaPaginada as $item):
+        $f = $item['dados'];
+      ?>
+        <tr>
+          <td><?= htmlspecialchars($f['codigo'] ?? '0') ?></td>
+          <td><?= htmlspecialchars($f['nome_reduzido']) ?></td>
+          <td><?= htmlspecialchars($f['desligamento'] ?? '—') ?></td>
+          <td><?= tempoDeEmpresa($f['contratacao'], $f['desligamento']) ?></td>
+          <td>
+            <a class="btn btn-sm btn-warning"
+              href="funcionarios_reativar.php?loja=<?= $f['loja_id'] ?>&id=<?= $f['id'] ?>">
+              ♻️ Reativar
+            </a>
+          </td>
+
+        </tr>
+      <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <br>
-<a href="funcionarios.php" class="btn">🔙 Voltar para ativos</a>
+<a href="funcionarios.php" class="btn btn-primary">🔙 Voltar para ativos</a>
 
 <!-- ===============================
-     MODAL DE REATIVAÇÃO
+     MODAL DE REATIVAÇÃO (COMPATÍVEL COM modal.js)
 =============================== -->
-<div id="modalReativacao" class="modal">
-  <div class="modal-conteudo">
+<div id="modalReativacao" class="modal-custom">
+  <div class="modal-custom-content">
+
     <h3>♻️ Reativar Funcionário</h3>
 
-    <form method="POST" action="funcionarios_salvar_reativacao.php" id="formReativacao">
+    <form method="POST" action="funcionarios_salvar_reativacao.php" id="formReativacao" class="mt-3">
 
       <input type="hidden" name="loja_original" id="loja_original">
       <input type="hidden" name="id" id="id">
 
-      <label>Nome:</label>
-      <input type="text" name="nome" id="nome" required>
+      <div class="mb-2">
+        <label class="form-label">Nome:</label>
+        <input type="text" name="nome" id="nome" class="form-control" required>
+      </div>
 
-      <label>CPF:</label>
-      <input type="text" name="cpf" id="cpf" readonly>
+      <div class="mb-2">
+        <label class="form-label">CPF:</label>
+        <input type="text" name="cpf" id="cpf" class="form-control" readonly>
+      </div>
 
-      <label>Código Vetor:</label>
-      <input type="text" name="codigo" id="codigo" value="0">
+      <div class="mb-2">
+        <label class="form-label">Código Vetor:</label>
+        <input type="text" name="codigo" id="codigo" class="form-control" value="0">
+      </div>
 
-      <label>Código CC:</label>
-      <input type="text" name="cc" id="cc" value="0">
+      <div class="mb-2">
+        <label class="form-label">Código CC:</label>
+        <input type="text" name="cc" id="cc" class="form-control" value="0">
+      </div>
 
-      <label>Cargo:</label>
-      <select name="cargo_id" id="cargo_id" required>
-        <?php foreach ($cargos as $idCargo => $nomeCargo): ?>
-          <option value="<?= $idCargo ?>"><?= htmlspecialchars($nomeCargo) ?></option>
-        <?php endforeach; ?>
-      </select>
+      <div class="mb-2">
+        <label class="form-label">Cargo:</label>
+        <select name="cargo_id" id="cargo_id" class="form-select" required>
+          <?php foreach ($cargos as $idCargo => $nomeCargo): ?>
+            <option value="<?= $idCargo ?>"><?= htmlspecialchars($nomeCargo) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
 
-      <label>Loja:</label>
-      <select name="loja_id" id="loja_id" required>
-        <?php foreach ($lojas as $idLoja => $nomeLoja): ?>
-          <option value="<?= $idLoja ?>"><?= htmlspecialchars($nomeLoja) ?></option>
-        <?php endforeach; ?>
-      </select>
+      <div class="mb-2">
+        <label class="form-label">Loja:</label>
+        <select name="loja_id" id="loja_id" class="form-select" required>
+          <?php foreach ($lojas as $idLoja => $nomeLoja): ?>
+            <option value="<?= $idLoja ?>"><?= htmlspecialchars($nomeLoja) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
 
-      <label>Setor:</label>
-      <select name="setor_id" id="setor_id" required>
-        <?php foreach ($setores as $idSetor => $nomeSetor): ?>
-          <option value="<?= $idSetor ?>"><?= htmlspecialchars($nomeSetor) ?></option>
-        <?php endforeach; ?>
-      </select>
+      <div class="mb-2">
+        <label class="form-label">Setor:</label>
+        <select name="setor_id" id="setor_id" class="form-select" required>
+          <?php foreach ($setores as $idSetor => $nomeSetor): ?>
+            <option value="<?= $idSetor ?>"><?= htmlspecialchars($nomeSetor) ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
 
-      <label>Nova data de contratação:</label>
-      <input type="date" name="contratacao" id="contratacao" required>
+      <div class="mb-2">
+        <label class="form-label">Nova data de contratação:</label>
+        <input type="date" name="contratacao" id="contratacao" class="form-control" required>
+      </div>
 
-      <label>Telefone:</label>
-      <input type="text" name="telefone" id="telefone">
+      <div class="mb-2">
+        <label class="form-label">Telefone:</label>
+        <input type="text" name="telefone" id="telefone" class="form-control">
+      </div>
 
-      <label>Email:</label>
-      <input type="email" name="email" id="email">
+      <div class="mb-2">
+        <label class="form-label">Email:</label>
+        <input type="email" name="email" id="email" class="form-control">
+      </div>
 
-      <label>Endereço:</label>
-      <input type="text" name="endereco" id="endereco">
+      <div class="mb-2">
+        <label class="form-label">Endereço:</label>
+        <input type="text" name="endereco" id="endereco" class="form-control">
+      </div>
 
-      <label>Aniversário:</label>
-      <input type="date" name="aniversario" id="aniversario">
+      <div class="mb-2">
+        <label class="form-label">Aniversário:</label>
+        <input type="date" name="aniversario" id="aniversario" class="form-control">
+      </div>
 
-      <div class="modal-botoes">
-        <button type="submit" class="btn">Confirmar reativação</button>
-        <button type="button" class="btn-secondary" onclick="fecharModal()">Cancelar</button>
+      <div class="d-flex gap-2 mt-3">
+        <button type="submit" class="btn btn-success">Confirmar reativação</button>
+        <button type="button" class="btn btn-secondary" onclick="fecharModal('modalReativacao')">Cancelar</button>
       </div>
 
     </form>
+
   </div>
 </div>
 
 <script>
 function abrirModalReativacao(funcionario) {
+
   document.getElementById('loja_original').value = funcionario.loja_id;
   document.getElementById('id').value = funcionario.id;
 
@@ -346,23 +384,19 @@ function abrirModalReativacao(funcionario) {
   document.getElementById('loja_id').value = funcionario.loja_id || '';
   document.getElementById('setor_id').value = funcionario.id_setor || '';
 
-// Preenche com a data de hoje no formato YYYY-MM-DD
-const hoje = new Date().toISOString().split('T')[0];
-document.getElementById('contratacao').value = hoje;
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('contratacao').value = hoje;
 
   document.getElementById('telefone').value = funcionario.telefone || '';
   document.getElementById('email').value = funcionario.email || '';
   document.getElementById('endereco').value = funcionario.endereco || '';
   document.getElementById('aniversario').value = funcionario.nascimento || '';
 
-  document.getElementById('modalReativacao').style.display = 'flex';
-}
-
-function fecharModal() {
-  document.getElementById('modalReativacao').style.display = 'none';
+  abrirModal('modalReativacao');
 }
 </script>
 
 <?php
 $conteudo = ob_get_clean();
 include ROOT_PATH . "/includes/layout.php";
+?>

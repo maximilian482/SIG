@@ -32,7 +32,7 @@ $filialUsuario = $dadosUser['loja_id'] ?? null;
 $cargoUsuario  = $dadosUser['cargo_id'] ?? null;
 
 // CEO = 8, SUPER = 19
-$ehAdmin = in_array($cargoUsuario, [8, 19]);
+$ehAdmin = in_array($cargoUsuario, [8, 19, 4]);
 
 // Se for admin, pode escolher a filial pela URL
 if ($ehAdmin) {

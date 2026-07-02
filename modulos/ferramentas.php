@@ -22,61 +22,70 @@ $cargo   = strtolower($_SESSION['cargo'] ?? '');
 // SUPER / CEO têm acesso total
 $acessoTotal = in_array($cargo, ['super', 'ceo']);
 
-// Contador do inventário (mesma função do Gestão)
+// Contador do inventário
 $totalItensInventario = contarItensInventario($conn);
 
+// ===============================
+// CONTEÚDO PRINCIPAL
+// ===============================
 ob_start();
 ?>
 
-<link rel="stylesheet" href="/css/ferramentas.css">
-
-<h1>🧰 Módulo de Ferramentas</h1>
+<h1 class="mb-3">🧰 Módulo de Ferramentas</h1>
 <p>Olá, <strong><?= htmlspecialchars($usuario) ?></strong>. Selecione a ferramenta desejada:</p>
 
-<div class="cards-container">
+<div class="cards-grid">
 
     <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_avaliacoes")): ?>
-    <div class="card">
-        <h2>🏪 Avaliação de Loja</h2>
-        <p>Avaliação dos setores, limpeza, organização e indicadores.</p>
-        <a href="avaliacoes_loja.php">Acessar</a>
-    </div>
+        <a href="avaliacoes_loja.php" class="card-global">
+            <div class="card-global-icon">🏪</div>
+            <h3 class="card-global-title">Avaliação de Loja</h3>
+            <p class="card-global-text">Avaliação dos setores, limpeza, organização e indicadores.</p>
+        </a>
     <?php endif; ?>
 
     <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_auditoria_pp")): ?>
-        <div class="card">
-            <h2>🛡️ Auditoria Prevenção e Perdas</h2>
-            <p>Auditoria completa de funcionamento, estrutura e segurança.</p>
-            <a href="auditoria_pp.php">Acessar</a>
-        </div>
+        <a href="auditoria_pp.php" class="card-global">
+            <div class="card-global-icon">🛡️</div>
+            <h3 class="card-global-title">Auditoria Prevenção e Perdas</h3>
+            <p class="card-global-text">Auditoria completa de funcionamento, estrutura e segurança.</p>
+        </a>
     <?php endif; ?>
 
+    <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_auditoria_checklist")): ?>
+        <a href="auditoria_checklist.php" class="card-global">
+            <div class="card-global-icon">📋</div>
+            <h3 class="card-global-title">Auditoria Checklist</h3>
+            <p class="card-global-text">Avaliação completa baseada em checklist operacional.</p>
+        </a>
+    <?php endif; ?>
 
     <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_inventario")): ?>
-    <div class="card">
-        <h2>📦 Inventário</h2>
-        <p>Gestão de equipamentos, itens e ativos por loja.</p>
-        <p style="font-weight:bold; color:#34495e;">Itens registrados: <?= $totalItensInventario ?></p>
-        <a href="inventario.php">Acessar</a>
-    </div>
+        <a href="inventario.php" class="card-global">
+            <div class="card-global-icon">📦</div>
+            <h3 class="card-global-title">Inventário</h3>
+            <p class="card-global-text">Gestão de equipamentos, itens e ativos por loja.</p>
+            <p class="card-global-text" style="font-weight:bold; color:#34495e;">
+                Itens registrados: <?= $totalItensInventario ?>
+            </p>
+        </a>
     <?php endif; ?>
 
     <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_controlados")): ?>
-    <div class="card">
-        <h2>💊 Controlados</h2>
-        <p>Registro e controle de medicamentos controlados.</p>
-        <a href="controlados.php">Acessar</a>
-    </div>
+        <a href="controlados.php" class="card-global">
+            <div class="card-global-icon">💊</div>
+            <h3 class="card-global-title">Controlados</h3>
+            <p class="card-global-text">Registro e controle de medicamentos controlados.</p>
+        </a>
     <?php endif; ?>
 
     <?php if ($acessoTotal || temAcesso($conn, $cpf, "ferramentas_controlados_farmaceutico")): ?>
-    <div class="card">
-        <h2>💊 Controlados Farmacêutico</h2>
-        <p>Conferência de medicamentos controlados.</p>
-        <a href="controlados_registros_farmaceutico.php">Acessar</a>
-    </div>
+        <a href="controlados_registros_farmaceutico.php" class="card-global">
+            <div class="card-global-icon">💊</div>
+            <h3 class="card-global-title">Controlados Farmacêutico</h3>
+            <p class="card-global-text">Conferência de medicamentos controlados.</p>
+        </a>
     <?php endif; ?>
-
 
 </div>
 

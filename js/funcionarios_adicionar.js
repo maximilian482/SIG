@@ -11,39 +11,34 @@ document.addEventListener("DOMContentLoaded", function () {
             const cargoId = parseInt(this.value);
             const setorId = mapaCargoSetor[cargoId] ?? setorGeral;
 
-            // Preenche o setor sugerido
             setorSelect.value = setorId;
 
-            // Destaque visual
             setorSelect.classList.add('setor-sugerido');
             setTimeout(() => setorSelect.classList.remove('setor-sugerido'), 1500);
         });
     }
 
-
     // ===============================
     // MODAL: CARGO
     // ===============================
     window.abrirModalCargo = function () {
-        document.getElementById('modalCargo').style.display = 'flex';
+        abrirModal('modalCargo'); // usa sistema global
     };
 
     window.fecharModalCargo = function () {
-        document.getElementById('modalCargo').style.display = 'none';
+        fecharModal('modalCargo'); // usa sistema global
     };
-
 
     // ===============================
     // MODAL: SETOR
     // ===============================
     window.abrirModalSetor = function () {
-        document.getElementById('modalSetor').style.display = 'flex';
+        abrirModal('modalSetor'); // usa sistema global
     };
 
     window.fecharModalSetor = function () {
-        document.getElementById('modalSetor').style.display = 'none';
+        fecharModal('modalSetor'); // usa sistema global
     };
-
 
     // ===============================
     // SALVAR NOVO CARGO
@@ -79,7 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(() => mostrarMensagem("Erro ao criar cargo.", "erro"));
     };
 
-
     // ===============================
     // SALVAR NOVO SETOR
     // ===============================
@@ -111,31 +105,5 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(() => mostrarMensagem("Erro ao criar setor.", "erro"));
     };
-
-
-    // ===============================
-    // FECHAR MODAIS AO CLICAR FORA
-    // ===============================
-    window.addEventListener('click', function (event) {
-        const modalCargo = document.getElementById('modalCargo');
-        const modalSetor = document.getElementById('modalSetor');
-
-        if (event.target === modalCargo) modalCargo.style.display = 'none';
-        if (event.target === modalSetor) modalSetor.style.display = 'none';
-    });
-
-
-    // ===============================
-    // FECHAR MODAIS COM ESC
-    // ===============================
-    window.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape') {
-            const modalCargo = document.getElementById('modalCargo');
-            const modalSetor = document.getElementById('modalSetor');
-
-            if (modalCargo) modalCargo.style.display = 'none';
-            if (modalSetor) modalSetor.style.display = 'none';
-        }
-    });
 
 });

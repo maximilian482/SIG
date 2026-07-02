@@ -67,6 +67,8 @@
     border: 1px solid #e2e2e2;
     transition: 0.2s ease;
     cursor: pointer;
+    position: relative;
+    padding-right: 60px;
 }
 
 .item-setor:hover {
@@ -74,7 +76,7 @@
     border-color: #bcdcff;
 }
 
-/* Checkbox maior e mais bonito */
+/* Checkbox maior */
 .item-setor input[type="checkbox"] {
     width: 18px;
     height: 18px;
@@ -87,6 +89,30 @@
     line-height: 18px;
     cursor: pointer;
     color: #333;
+}
+
+/* ============================
+   BOTÕES EDITAR / EXCLUIR
+============================ */
+.btn-editar,
+.btn-excluir {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.4;
+    transition: 0.2s;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.btn-editar { right: 35px; }
+.btn-excluir { right: 10px; }
+
+.item-setor:hover .btn-editar,
+.item-setor:hover .btn-excluir {
+    opacity: 1;
 }
 
 /* ============================
@@ -149,40 +175,9 @@
     background: #388e3c;
 }
 
-/* botoes editar excluir */
-
-.item-setor {
-    position: relative;
-    padding-right: 60px;
-}
-
-.btn-editar,
-.btn-excluir {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    opacity: 0.4;
-    transition: 0.2s;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-.btn-editar {
-    right: 35px;
-}
-
-.btn-excluir {
-    right: 10px;
-}
-
-.item-setor:hover .btn-editar,
-.item-setor:hover .btn-excluir {
-    opacity: 1;
-}
-
-/* botão voltar */
+/* ============================
+   BOTÃO VOLTAR
+============================ */
 .btn-voltar-premium {
     display: inline-block;
     margin: 10px 0 20px 0;
@@ -198,4 +193,55 @@
 .btn-voltar-premium:hover {
     background: #159167;
     text-decoration: none;
+}
+
+/* ============================
+   MOBILE — AJUSTES
+============================ */
+@media (max-width: 600px) {
+
+    .container-setores {
+        padding: 10px;
+    }
+
+    .card-premium {
+        padding: 16px 14px;
+    }
+
+    .titulo-pagina {
+        font-size: 22px;
+    }
+
+    .subtitulo-pagina {
+        font-size: 14px;
+    }
+
+    .lista-setores {
+        grid-template-columns: 1fr;
+    }
+
+    .item-setor {
+        padding-right: 50px;
+    }
+
+    .btn-editar,
+    .btn-excluir {
+        font-size: 14px;
+        right: 12px;
+    }
+
+    .novo-setor-linha {
+        flex-direction: column;
+    }
+
+    .btn-add-premium {
+        width: 100%;
+        padding: 10px;
+        font-size: 15px;
+    }
+
+    .btn-voltar-premium {
+        padding: 10px 14px;
+        font-size: 15px;
+    }
 }

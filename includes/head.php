@@ -4,13 +4,15 @@
 
   <title><?= $titulo ?? 'Portal Corporativo' ?></title>
 
-  <!-- CSS global -->
+  <!-- BOOTSTRAP 5.3.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- CSS GLOBAL DO SISTEMA -->
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/cards.css">
+  <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/menu_perfil.css">
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="/css/cards.css">
-  
-  
 
   <!-- FontAwesome -->
   <link rel="stylesheet" href="/assets/fontawesome/css/all.css">

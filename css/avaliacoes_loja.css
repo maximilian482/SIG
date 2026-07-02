@@ -153,3 +153,17 @@
     position: relative;
 }
 
+
+
+/* TABELA RESPONSIVA */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.table-responsive table {
+    width: 100%;
+    min-width: 480px;
+}

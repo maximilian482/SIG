@@ -55,6 +55,7 @@ $modulosPermitidos = [
     'gestao_funcionarios'    => '👥 Funcionários',
     'gestao_lojas'           => '🏬 Lojas',
     'gestao_acessos'         => '🔐 Gestão de Acessos',
+    'gestao_compras_externas' => '🛒 Gestão de Compras Externas',
 
     // Módulos de setores (Pendências)
     'setor_entregas'         => '🚚 Setor Entregas',
@@ -68,13 +69,14 @@ $modulosPermitidos = [
     'setor_escritorio'       => '🏢 Setor Escritório',
 
     // Ferramentas
-    'ferramentas_avaliacoes' => '🏪 Avaliação de Loja',
-    'ferramentas_auditoria'  => '📝 Auditoria',
-    'ferramentas_auditoria_pp' => '🛡️ Auditoria PP',   // <-- ADICIONAR AQUI
-    'ferramentas_inventario' => '📦 Inventário',
-    'ferramentas_controlados'=> '💊 Controlados',
+    'ferramentas_avaliacoes'            => '🏪 Avaliação de Loja',
+    'ferramentas_auditoria'             => '📝 Auditoria (Antiga)',
+    'ferramentas_auditoria_pp'          => '🛡️ Auditoria PP',
+    'ferramentas_auditoria_checklist'   => '📋 Auditoria Checklist', // NOVO
+    'ferramentas_inventario'            => '📦 Inventário',
+    'ferramentas_controlados'           => '💊 Controlados',
     'ferramentas_controlados_farmaceutico' => '💊 Controlados Farmacêutico',
-
+    'ferramentas_compras_externas' => '🛒 Compras Externas',
 
     // Permissões especiais
     'acesso_painel_loja'     => '🏪 Acesso ao painel da própria loja',

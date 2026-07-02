@@ -1,0 +1,267 @@
+/* ===============================
+   LAYOUT DO MÓDULO DE COMPRAS EXTERNAS
+=============================== */
+
+/* Container geral */
+.compras-container {
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
+
+/* Cabeçalho */
+.topo-chamados {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 35px;
+    margin-bottom: 25px;
+}
+
+.topo-chamados h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333;
+}
+
+/* Botão Nova Solicitação */
+.btn-abrir-chamado {
+    background: #2ecc71;
+    padding: 10px 18px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-abrir-chamado:hover {
+    background: #27ae60;
+}
+
+/* ===============================
+   TABELA
+=============================== */
+.tabela-compras {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-compras th {
+    background: #f4f4f4;
+    padding: 12px;
+    text-align: left;
+    font-size: 14px;
+    color: #555;
+}
+
+.tabela-compras td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 15px;
+}
+
+/* ===============================
+   STATUS
+=============================== */
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+}
+
+.status-aberto { 
+    background: #3498db20; 
+    color: #2980b9; 
+    border: 1px solid #3498db50; 
+}
+
+.status-andamento { 
+    background: #f39c1220; 
+    color: #d35400; 
+    border: 1px solid #f39c1250; 
+}
+
+.status-pendente { 
+    background: #f1c40f20; 
+    color: #b7950b; 
+    border: 1px solid #f1c40f50; 
+}
+
+.status-concluido { 
+    background: #2ecc7120; 
+    color: #27ae60; 
+    border: 1px solid #2ecc7150; 
+}
+
+/* ===============================
+   BOTÕES DE AÇÃO
+=============================== */
+.btn-acao {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 8px;
+    font-size: 18px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.btn-ver { background: #3498db; color: #fff; }
+.btn-ver:hover { background: #2980b9; }
+
+.btn-finalizar { background: #2ecc71; color: #fff; }
+.btn-finalizar:hover { background: #27ae60; }
+
+.btn-excluir {
+    background: #e74c3c;
+    color: #fff !important;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(231, 76, 60, 0.35);
+    transition: 0.2s ease-in-out;
+}
+
+.btn-excluir:hover {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(192, 57, 43, 0.45);
+}
+
+/* ===============================
+   FORMULÁRIO DE NOVA SOLICITAÇÃO
+=============================== */
+.card-form {
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-chamado label {
+    font-weight: 600;
+    margin-top: 12px;
+    display: block;
+    color: #444;
+}
+
+.form-chamado textarea {
+    resize: vertical;
+}
+
+.botoes-form {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-enviar {
+    background: #2ecc71;
+    padding: 10px 18px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-enviar:hover {
+    background: #27ae60;
+}
+
+.btn-voltar {
+    background: #3498db;
+    padding: 10px 18px;
+    border-radius: 8px;
+    color: #fff !important;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-voltar:hover {
+    background: #2980b9;
+}
+
+/* ===============================
+   ERROS
+=============================== */
+.erro-msg {
+    background: #e74c3c20;
+    color: #c0392b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ===============================
+   RÁDIO COM NOTA / SEM NOTA
+=============================== */
+.form-check-input:checked {
+    background-color: var(--verde-palmeiras);
+    border-color: var(--verde-palmeiras-escuro);
+}
+
+.form-check-input:focus {
+    border-color: var(--verde-palmeiras-claro);
+    box-shadow: 0 0 5px rgba(0,100,55,0.4);
+}
+
+.form-check-label {
+    font-weight: 600;
+    color: var(--verde-palmeiras-escuro);
+}
+
+
+/* COMPRAS EXTERNAS LADO USUARIO */
+h2 {
+    font-weight: 600;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.btn-outline-primary, .btn-outline-danger {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* TABELA RESPONSIVA */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.table-responsive table {
+    width: 100%;
+    min-width: 350px;
+}

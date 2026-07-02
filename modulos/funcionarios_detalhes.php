@@ -95,9 +95,6 @@ function tempoDeEmpresaLocal($data) {
 $tempoEmpresa = tempoDeEmpresaLocal($f['contratacao']);
 ?>
 
-<!-- ===============================
-     CSS EXCLUSIVO PARA O MODAL
-=============================== -->
 <style>
 .modal-detalhes {
     padding: 10px 5px;
@@ -128,23 +125,20 @@ $tempoEmpresa = tempoDeEmpresaLocal($f['contratacao']);
     margin-top: 18px;
 }
 
-.btn-acoes a,
-.btn-acoes button {
-    padding: 10px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
-
 .btn-editar {
     background: #1E513D;
     color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
 }
 
 .btn-inativar {
     background: #b30000;
     color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: bold;
 }
 </style>
 
@@ -171,12 +165,20 @@ $tempoEmpresa = tempoDeEmpresaLocal($f['contratacao']);
     <div class="detalhes-box"><strong>Nascimento:</strong> <?= $nascimento ?></div>
 
     <div class="btn-acoes">
-        <a class="btn-editar" href="funcionarios_editar.php?loja=<?= $f['loja_id'] ?>&id=<?= $f['id'] ?>">✏️ Editar</a>
 
-        <button class="btn-inativar"
-            onclick="abrirModalInativar('<?= htmlspecialchars($f['nome']) ?>', '<?= $f['loja_id'] ?>', '<?= $f['id'] ?>')">
+        <div class="btn-acoes">
+
+            <a class="btn-editar"
+            href="funcionarios_editar.php?loja=<?= $f['loja_id'] ?>&id=<?= $f['id'] ?>">
+            ✏️ Editar
+            </a>
+
+            <a class="btn-inativar"
+            href="funcionarios_inativar.php?loja=<?= $f['loja_id'] ?>&id=<?= $f['id'] ?>">
             🗑️ Inativar
-        </button>
-    </div>
+            </a>
+
+        </div>
+
 
 </div>

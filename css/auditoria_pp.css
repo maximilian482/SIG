@@ -349,6 +349,22 @@ textarea.input-premium:focus {
     align-items: center;
 }
 
+/* ============================================
+   TABELAS — Compatibilidade com Bootstrap 5
+   ============================================ */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+}
+
+.table-responsive table {
+    width: 100%;
+    min-width: 350px; /* evita quebra no mobile */
+}
+
 /* ================================
    DETALHES — PADRÃO AVALIAÇÃO LOJA
 ================================ */

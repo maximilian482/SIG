@@ -4,7 +4,10 @@ require_once '../dados/conexao.php';
 
 $conn = conectar();
 if (!$conn) {
-    $_SESSION['erro'] = "❌ Falha ao conectar ao banco de dados.";
+    $_SESSION['flash'] = [
+        'mensagem' => "❌ Falha ao conectar ao banco de dados.",
+        'tipo' => 'erro'
+    ];
     header("Location: funcionarios.php");
     exit;
 }
@@ -18,7 +21,10 @@ $id = intval($_POST['id'] ?? 0);
 $loja_original = intval($_POST['loja_original'] ?? 0);
 
 if ($id <= 0) {
-    $_SESSION['erro'] = "❌ Funcionário inválido.";
+    $_SESSION['flash'] = [
+        'mensagem' => "❌ Funcionário inválido.",
+        'tipo' => 'erro'
+    ];
     header("Location: funcionarios.php");
     exit;
 }
@@ -80,7 +86,10 @@ if ($cc !== '0') {
 }
 
 if (!empty($erros)) {
-    $_SESSION['erros_funcionario'] = $erros;
+    $_SESSION['flash'] = [
+        'mensagem' => implode("<br>", $erros),
+        'tipo' => 'erro'
+    ];
     header("Location: funcionarios_editar.php?id=$id&loja=$loja_original");
     exit;
 }
@@ -103,7 +112,10 @@ $stmt->bind_param(
 );
 
 if (!$stmt->execute()) {
-    $_SESSION['erro'] = "❌ Erro ao atualizar: " . $stmt->error;
+    $_SESSION['flash'] = [
+        'mensagem' => "❌ Erro ao atualizar: " . $stmt->error,
+        'tipo' => 'erro'
+    ];
     header("Location: funcionarios_editar.php?id=$id&loja=$loja_original");
     exit;
 }
@@ -128,7 +140,11 @@ if ($funcao_secundaria_id > 0) {
 // ===============================
 // SUCESSO
 // ===============================
-$_SESSION['sucesso'] = "✔ Funcionário <strong>$nome</strong> atualizado com sucesso.";
+$_SESSION['flash'] = [
+    'mensagem' => "✔ Funcionário <strong>$nome</strong> atualizado com sucesso.",
+    'tipo' => 'sucesso'
+];
+
 header("Location: funcionarios.php");
 exit;
 ?>
