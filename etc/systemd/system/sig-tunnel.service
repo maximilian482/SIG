@@ -1,0 +1,11 @@
+[Unit]
+Description=Túnel SSH para SIG
+After=network.target
+
+[Service]
+User=tec
+ExecStart=/usr/bin/ssh -N -L 3307:srv848.hstgr.io:3306 u355470762@45.132.157.76 -p 65002
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

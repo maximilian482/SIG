@@ -6,14 +6,28 @@ $conn = conectar();
 require_once __DIR__ . '/../config/bootstrap.php';
 require_once ROOT_PATH . '/includes/funcoes.php';
 
+// Verifica login
+if (!isset($_SESSION['cpf'])) {
+    header("Location: /login.php");
+    exit;
+}
+
+$cpfLogado = preg_replace('/\D/', '', $_SESSION['cpf']);
+
+/* ============================
+   VERIFICA PARÂMETROS
+============================ */
 if (!isset($_GET['id']) || !isset($_GET['filial'])) {
-    header("Location: controlados_registros.php");
+    $_SESSION['flash'] = [
+        'mensagem' => 'Parâmetros inválidos.',
+        'tipo' => 'erro'
+    ];
+    header("Location: controlados.php");
     exit;
 }
 
 $id     = intval($_GET['id']);
 $filial = intval($_GET['filial']);
-$cpfLogado = preg_replace('/\D/', '', $_SESSION['cpf']);
 
 /* ============================
    BUSCA O REGISTRO
@@ -26,26 +40,28 @@ $registro = $stmt->get_result()->fetch_assoc();
 if (!$registro) {
     $_SESSION['flash'] = [
         'mensagem' => 'Registro não encontrado.',
-        'tipo' => 'error'
+        'tipo' => 'erro'
     ];
-    header("Location: controlados_registros.php?filial=$filial");
+    header("Location: controlados.php?filial=$filial");
     exit;
 }
 
 /* ============================
-   BLOQUEIO DE EDIÇÃO
+   BLOQUEIO DE EDIÇÃO (LÓGICA CORRETA)
 ============================ */
-$registradoBruto = trim($registro['registrado_por']);
+$registradoBruto = trim($registro['registrado_por']);   // CPF ou primeiro nome
 $registradoCPF   = preg_replace('/\D/', '', $registradoBruto);
 
-$nomeLogado      = trim($_SESSION['usuario']);
+$nomeLogado         = trim($_SESSION['usuario']);
 $primeiroNomeLogado = explode(' ', $nomeLogado)[0];
 
 $autorizado = false;
 
+// Caso novo: registrado_por é CPF
 if ($registradoCPF !== '' && $registradoCPF === $cpfLogado) {
     $autorizado = true;
 }
+// Caso antigo: registrado_por é primeiro nome
 elseif ($registradoCPF === '' && strcasecmp($registradoBruto, $primeiroNomeLogado) === 0) {
     $autorizado = true;
 }
@@ -53,9 +69,9 @@ elseif ($registradoCPF === '' && strcasecmp($registradoBruto, $primeiroNomeLogad
 if (!$autorizado) {
     $_SESSION['flash'] = [
         'mensagem' => 'Somente o criador do protocolo pode editar.',
-        'tipo' => 'error'
+        'tipo' => 'erro'
     ];
-    header("Location: controlados_registros.php?filial=$filial");
+    header("Location: controlados.php?filial=$filial");
     exit;
 }
 
@@ -67,20 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data           = $_POST['data_venda'];
     $codigoProduto  = $_POST['codigo_produto'];
     $produto        = $_POST['produto'];
-
-    // Novo padrão: orçamento → cupom
     $orcamento      = trim($_POST['orcamento']);
-    $cupom          = $orcamento;
-
     $vendedor       = $_POST['vendedor'];
     $lote           = $_POST['lote'];
     $quantidade     = intval($_POST['quantidade']);
-
     $observacao     = trim($_POST['observacao'] ?? '');
 
     $stmt = $conn->prepare("
         UPDATE controlados
-        SET data_venda = ?, codigo_produto = ?, produto = ?, cupom = ?, vendedor = ?, lote = ?, quantidade = ?, observacao = ?
+        SET data_venda = ?, codigo_produto = ?, produto = ?, orcamento = ?, vendedor = ?, lote = ?, quantidade = ?, observacao = ?
         WHERE id = ?
     ");
 
@@ -89,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data,
         $codigoProduto,
         $produto,
-        $cupom,
+        $orcamento,
         $vendedor,
         $lote,
         $quantidade,
@@ -101,22 +112,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $_SESSION['flash'] = [
         'mensagem' => 'Registro atualizado com sucesso!',
-        'tipo' => 'success'
+        'tipo' => 'sucesso'
     ];
 
-    header("Location: controlados_registros.php?filial=$filial");
+    $origem = $_POST['origem'] ?? ($_GET['origem'] ?? '');
+
+    if ($origem === 'registros') {
+        header("Location: controlados_registros.php?filial=$filial");
+    } else {
+        header("Location: controlados.php?filial=$filial");
+    }
     exit;
 }
 
 ob_start();
 ?>
 
-<div class="controlados-container">
+<link rel="stylesheet" href="/css/controlados.css">
+<link rel="stylesheet" href="/css/controlados_novo.css?v=<?= time() ?>">
 
-    <h2>✏️ Editar Registro</h2>
+<div class="controlados-container novo-registro">
 
-    <div class="bloco">
+    <div class="header-controlados">
+        <div class="titulo-filial">
+            ✏️ Editar Registro – Filial <?= htmlspecialchars($filial) ?>
+        </div>
+
+        <div class="botoes-topo">
+            <?php $origem = $_GET['origem'] ?? ''; ?>
+            <?php if ($origem === 'registros'): ?>
+                <a href="controlados_registros.php?filial=<?= $filial ?>" class="btn btn-cinza">⬅ Voltar</a>
+            <?php else: ?>
+                <a href="controlados.php?filial=<?= $filial ?>" class="btn btn-cinza">⬅ Voltar</a>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <div class="form-wrapper">
+        <h3>Editar Registro</h3>
+
         <form method="POST" class="form-padrao">
+
+            <input type="hidden" name="origem" value="<?= htmlspecialchars($_GET['origem'] ?? '') ?>">
 
             <label>Data da Venda:</label>
             <input type="date" name="data_venda" value="<?= $registro['data_venda'] ?>" required>
@@ -128,7 +165,7 @@ ob_start();
             <input type="text" name="produto" value="<?= $registro['produto'] ?>" required>
 
             <label>Número do Orçamento:</label>
-            <input type="text" name="orcamento" value="<?= $registro['cupom'] ?>" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            <input type="text" name="orcamento" value="<?= $registro['orcamento'] ?>" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 
             <label>Vendedor:</label>
             <input type="text" name="vendedor" value="<?= $registro['vendedor'] ?>" required>
@@ -143,7 +180,12 @@ ob_start();
             <textarea name="observacao" rows="3"><?= htmlspecialchars($registro['observacao']) ?></textarea>
 
             <button class="btn btn-novo">💾 Salvar Alterações</button>
-            <a href="controlados_registros.php?filial=<?= $filial ?>" class="btn btn-cinza">Cancelar</a>
+
+            <?php if ($origem === 'registros'): ?>
+                <a href="controlados_registros.php?filial=<?= $filial ?>" class="btn btn-cinza">Cancelar</a>
+            <?php else: ?>
+                <a href="controlados.php?filial=<?= $filial ?>" class="btn btn-cinza">Cancelar</a>
+            <?php endif; ?>
 
         </form>
     </div>

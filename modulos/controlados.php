@@ -13,11 +13,11 @@ if (!isset($_SESSION['cpf'])) {
 }
 
 $usuarioLogado = $_SESSION['usuario'];
-$cpfLogado     = trim(preg_replace('/\D/', '', $_SESSION['cpf'])); // CPF sem máscara + trim
+$cpfLogado     = trim(preg_replace('/\D/', '', $_SESSION['cpf']));
 
 /* ============================================================
    1) BUSCA FILIAL E CARGO DO USUÁRIO
-   ============================================================ */
+============================================================ */
 $stmt = $conn->prepare("SELECT loja_id, cargo_id FROM funcionarios WHERE cpf = ?");
 $stmt->bind_param("s", $_SESSION['cpf']);
 $stmt->execute();
@@ -26,12 +26,11 @@ $dadosUser = $stmt->get_result()->fetch_assoc();
 $filialUsuario = $dadosUser['loja_id'];
 $cargoUsuario  = $dadosUser['cargo_id'];
 
-// CEO = 8, SUPER = 19
-$ehAdmin = in_array($cargoUsuario, [8, 19]);
+$ehAdmin = in_array($cargoUsuario, [8, 19]); // CEO / SUPER
 
 /* ============================================================
-   2) DEFINIÇÃO DA FILIAL SELECIONADA
-   ============================================================ */
+   2) FILIAL SELECIONADA
+============================================================ */
 $filialSelecionada = $_GET['filial'] ?? '';
 
 if (!$ehAdmin) {
@@ -43,16 +42,16 @@ if (!$filialSelecionada) {
 }
 
 /* ============================================================
-   3) BUSCA NOME DA FILIAL ATUAL
-   ============================================================ */
+   3) NOME DA FILIAL
+============================================================ */
 $stmt = $conn->prepare("SELECT nome FROM lojas WHERE id = ?");
 $stmt->bind_param("i", $filialSelecionada);
 $stmt->execute();
 $nomeFilialAtual = $stmt->get_result()->fetch_assoc()['nome'];
 
 /* ============================================================
-   4) LISTA DE FILIAIS (somente para CEO/SUPER)
-   ============================================================ */
+   4) LISTA DE FILIAIS (somente admin)
+============================================================ */
 $filiais = $conn->query("
     SELECT id, nome 
     FROM lojas 
@@ -74,7 +73,6 @@ ob_start();
             💊 Controle – <?= htmlspecialchars($nomeFilialAtual) ?>
         </div><br>
 
-       <!-- SELETOR DE FILIAL -->
         <?php if ($ehAdmin): ?>
             <form method="GET">
                 <div class="aviso-filial">
@@ -82,14 +80,12 @@ ob_start();
                 </div>
 
                 <select name="filial" onchange="this.form.submit()">
-                    <!-- Placeholder -->
                     <option value="" <?= empty($filialSelecionada) ? 'selected disabled' : '' ?>>
                         Selecionar...
                     </option>
 
-                    <!-- Filiais -->
                     <?php while ($f = $filiais->fetch_assoc()): ?>
-                        <option value="<?= $f['id'] ?>" <?= (!empty($filialSelecionada) && $filialSelecionada == $f['id']) ? 'selected' : '' ?>>
+                        <option value="<?= $f['id'] ?>" <?= ($filialSelecionada == $f['id']) ? 'selected' : '' ?>>
                             <?= htmlspecialchars($f['nome']) ?>
                         </option>
                     <?php endwhile; ?>
@@ -97,64 +93,13 @@ ob_start();
             </form>
         <?php endif; ?>
 
-
         <!-- BOTÕES -->
         <div class="botoes-topo">
             <a href="ferramentas.php" class="btn btn-cinza">⬅ Voltar</a>
             <a href="controlados_registros.php?filial=<?= $filialSelecionada ?>" class="btn">📄 Ver Registros</a>
-            <button class="btn btn-novo" onclick="abrirModal()">➕ Novo Registro</button>
+            <a href="controlados_novo.php?filial=<?= $filialSelecionada ?>" class="btn btn-novo">➕ Novo Registro</a>
         </div>
 
-    </div>
-
-
-
-    <!-- MODAL DE NOVO REGISTRO -->
-    <div id="modalRegistro" class="modal">
-        <div class="modal-content">
-
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3>Novo Registro</h3>
-                <button onclick="fecharModal()" style="background:none; border:none; font-size:22px; cursor:pointer;">✖</button>
-            </div>
-
-            <form method="POST" action="controlados_salvar.php" class="form-padrao">
-
-                <input type="hidden" name="filial" value="<?= $filialSelecionada ?>">
-
-                <label>Data da Venda:</label>
-                <input type="date" name="data_venda" required>
-
-                <label>Código do Produto:</label>
-                <input type="text" name="codigo_produto" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-
-                <label>Nome do Produto:</label>
-                <input type="text" name="produto" required>
-
-                <label>Número do Orçamento:</label>
-                <div class="alerta-orcamento">
-                    ⚠️ <strong>Atenção:</strong> Agora utilize o <strong>número de orçamento</strong> neste campo.
-                </div>
-                <input type="text" name="orcamento" required oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-
-                <label>Vendedor:</label>
-                <input type="text" name="vendedor" required>
-
-                <label>Lote:</label>
-                <input type="text" name="lote" required>
-
-                <label>Quantidade:</label>
-                <input type="number" name="quantidade" min="1" required>
-
-                <label>Observação (opcional):</label>
-                <textarea name="observacao" rows="3" placeholder="Digite algo se necessário..."></textarea>
-
-
-                <button class="btn btn-novo">💾 Salvar</button>
-                <button type="button" class="btn btn-cinza" onclick="fecharModal()">Cancelar</button>
-            </form>
-
-        </div>
     </div>
 
     <!-- LISTA DOS ÚLTIMOS 10 -->
@@ -180,7 +125,6 @@ ob_start();
                 <th>Vendedor</th>
                 <th>Conf.</th>
                 <th></th>
-
             </tr>
 
             <?php while ($r = $historico->fetch_assoc()): ?>
@@ -190,63 +134,57 @@ ob_start();
                 <td><?= htmlspecialchars($r['vendedor']) ?></td>
                 <td><?= $r['conferido'] ? '✔️' : '❌' ?></td>
 
-
                 <td>
                     <button class="btn-toggle" onclick="toggleDetalhes(<?= $r['id'] ?>)">🔽</button>
                 </td>
             </tr>
 
             <tr id="detalhes-<?= $r['id'] ?>" class="detalhes-linha">
-            <td colspan="5">
-                <div class="detalhes-box">
+                <td colspan="5">
+                    <div class="detalhes-box">
 
-                    <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
-                    <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
-                    <p><strong>Orçamento (Observar se não é Número de cupom):</strong> <?= htmlspecialchars($r['cupom']) ?></p>
-                    <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
-                    <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
-                    <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
-                    <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
-                    <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
-                    <?php if (!empty($r['observacao'])): ?>
-                        <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
-                    <?php endif; ?>
+                        <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
+                        <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
+                        <p><strong>Orçamento:</strong> <?= htmlspecialchars($r['orcamento']) ?></p>
+                        <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
+                        <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
+                        <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
+                        <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
+                        <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
 
-
-                    <p>
-                        <strong>Conferido:</strong>
-                        <?php if ($r['conferido']): ?>
-                            <span style="color:#27ae60; font-weight:bold;">✔️ Sim</span>
-                        <?php else: ?>
-                            <span style="color:#e74c3c; font-weight:bold;">❌ Não</span>
+                        <?php if (!empty($r['observacao'])): ?>
+                            <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
                         <?php endif; ?>
-                    </p>
 
-                    <?php if ($r['conferido']): ?>
-                        <p><strong>Conferido por:</strong> <?= htmlspecialchars($r['conferido_por']) ?></p>
-                        <p><strong>Conferido em:</strong> <?= date('d/m/Y H:i', strtotime($r['conferido_em'])) ?></p>
-                    <?php endif; ?>
+                        <p>
+                            <strong>Conferido:</strong>
+                            <?= $r['conferido'] ? '<span style="color:#27ae60;font-weight:bold;">✔️ Sim</span>' : '<span style="color:#e74c3c;font-weight:bold;">❌ Não</span>' ?>
+                        </p>
 
-                    <div class="acoes-detalhes">
+                        <?php if ($r['conferido']): ?>
+                            <p><strong>Conferido por:</strong> <?= htmlspecialchars($r['conferido_por']) ?></p>
+                            <p><strong>Conferido em:</strong> <?= date('d/m/Y H:i', strtotime($r['conferido_em'])) ?></p>
+                        <?php endif; ?>
 
-                        <a href="controlados_editar.php?id=<?= $r['id'] ?>&filial=<?= $filialSelecionada ?>" 
-                            class="btn-acao editar"
-                            data-registrado="<?= trim($r['registrado_por']) ?>">
-                            ✏️ Editar
-                        </a>
+                        <div class="acoes-detalhes">
 
-                        <a href="controlados_excluir.php?id=<?= $r['id'] ?>&filial=<?= $filialSelecionada ?>"
-                            class="btn-acao excluir"
-                            data-registrado="<?= trim($r['registrado_por']) ?>">
-                            🗑️ Excluir
-                        </a>
+                            <a href="controlados_editar.php?id=<?= $r['id'] ?>&filial=<?= $filialSelecionada ?>" 
+                                class="btn-acao editar"
+                                data-registrado="<?= trim($r['registrado_por']) ?>">
+                                ✏️ Editar
+                            </a>
+
+                            <a href="controlados_excluir.php?id=<?= $r['id'] ?>&filial=<?= $filialSelecionada ?>"
+                                class="btn-acao excluir"
+                                data-registrado="<?= trim($r['registrado_por']) ?>">
+                                🗑️ Excluir
+                            </a>
+
+                        </div>
 
                     </div>
-
-                </div>
-            </td>
-</tr>
-
+                </td>
+            </tr>
 
             <?php endwhile; ?>
         </table>
@@ -254,15 +192,13 @@ ob_start();
 
 </div>
 
-<!-- JS SEPARADO -->
 <script src="/js/controlados.js?v=<?= time() ?>"></script>
+
 <?php if (isset($_GET['ok'])): ?>
 <script>
     mostrarMensagem("Registro criado com sucesso!", "sucesso");
 </script>
 <?php endif; ?>
-
-
 
 <?php
 $conteudo = ob_get_clean();

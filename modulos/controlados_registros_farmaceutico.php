@@ -18,7 +18,7 @@ $cpf = $_SESSION['cpf'];
 
 // Verifica permissão do farmacêutico
 if (!temAcesso($conn, $cpf, "ferramentas_controlados_farmaceutico")) {
-    echo "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar esta área.</h2>";
+    echo "<h2 class='text-center text-danger mt-4'>❌ Você não tem permissão para acessar esta área.</h2>";
     exit;
 }
 
@@ -31,22 +31,20 @@ $dadosUser = $stmt->get_result()->fetch_assoc();
 $filialUsuario = $dadosUser['loja_id'] ?? null;
 $cargoUsuario  = $dadosUser['cargo_id'] ?? null;
 
-// CEO = 8, SUPER = 19
+// CEO = 8, SUPER = 19, ADMIN = 4
 $ehAdmin = in_array($cargoUsuario, [8, 19, 4]);
 
 // Se for admin, pode escolher a filial pela URL
 if ($ehAdmin) {
     $filial = $_GET['filial'] ?? $filialUsuario;
 } else {
-    // Funcionário comum: sempre sua própria filial
     $filial = $filialUsuario;
 }
 
 if (!$filial) {
-    echo "<h2 style='color:red; text-align:center;'>❌ Filial não encontrada para este usuário.</h2>";
+    echo "<h2 class='text-center text-danger'>❌ Filial não encontrada para este usuário.</h2>";
     exit;
 }
-
 
 // Buscar nome da filial
 $stmt = $conn->prepare("SELECT nome FROM lojas WHERE id = ?");
@@ -55,14 +53,14 @@ $stmt->execute();
 $nomeFilial = $stmt->get_result()->fetch_assoc()['nome'] ?? '';
 
 /* ============================================================
-   FILTRO: CUPOM
+   FILTRO: ORÇAMENTO
    ============================================================ */
-$fCupom = $_GET['cupom'] ?? '';
+$fOrcamento = $_GET['orcamento'] ?? '';
 
-$whereCupom = "";
-if ($fCupom !== "") {
-    $cupomEsc = $conn->real_escape_string($fCupom);
-    $whereCupom = " AND cupom LIKE '%$cupomEsc%' ";
+$whereOrcamento = "";
+if ($fOrcamento !== "") {
+    $orcEsc = $conn->real_escape_string($fOrcamento);
+    $whereOrcamento = " AND orcamento LIKE '%$orcEsc%' ";
 }
 
 /* ============================================================
@@ -71,7 +69,6 @@ if ($fCupom !== "") {
 $limite = isset($_GET['limite']) ? max(1, intval($_GET['limite'])) : 10;
 $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
 $offset = ($pagina - 1) * $limite;
-
 
 $ordem = $_GET['ordem'] ?? 'desc';
 $ordemSQL = ($ordem === 'asc') ? 'ASC' : 'DESC';
@@ -82,7 +79,7 @@ $sqlCount = "
     FROM controlados
     WHERE filial_id = $filial
       AND conferido = 0
-      $whereCupom
+      $whereOrcamento
 ";
 $totalRegistros = $conn->query($sqlCount)->fetch_assoc()['total'];
 $totalPaginas = ceil($totalRegistros / $limite);
@@ -93,7 +90,7 @@ $sql = "
     FROM controlados
     WHERE filial_id = $filial
       AND conferido = 0
-      $whereCupom
+      $whereOrcamento
     ORDER BY id $ordemSQL
     LIMIT $offset, $limite
 ";
@@ -112,80 +109,90 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 <?php unset($_SESSION['flash']); endif; ?>
 
-<h2>💊 Controlados — Farmacêutico  
-    <br><small style="color:#555;">Filial: <?= htmlspecialchars($nomeFilial) ?></small>
+<h2 class="mb-3">
+    💊 Controlados — Farmacêutico  
+    <br><small class="text-muted">Filial: <?= htmlspecialchars($nomeFilial) ?></small>
 </h2>
 
 <?php if ($ehAdmin): ?>
-
-<div class="bloco" style="margin-bottom:20px;">
-    <form method="GET">
+<div class="bloco mb-3">
+    <form method="GET" class="row g-3">
         <input type="hidden" name="pagina" value="1">
 
-        <label><strong>Selecionar Filial:</strong></label>
+        <div class="col-md-4">
+            <label class="form-label"><strong>Selecionar Filial:</strong></label>
+            <select name="filial" class="form-select" onchange="this.form.submit()">
+                <option value="">Selecionar...</option>
 
-        <select name="filial" onchange="this.form.submit()">
-            <option value="">Selecionar...</option>
+                <?php
+                $filiais = $conn->query("
+                    SELECT id, nome 
+                    FROM lojas 
+                    WHERE nome NOT IN ('CAV', 'ESCRITÓRIO', 'CD')
+                    ORDER BY nome ASC
+                ");
 
-            <?php
-            $filiais = $conn->query("
-                SELECT id, nome 
-                FROM lojas 
-                WHERE nome NOT IN ('CAV', 'ESCRITÓRIO', 'CD')
-                ORDER BY nome ASC
-            ");
-
-            while ($f = $filiais->fetch_assoc()):
-            ?>
-                <option value="<?= $f['id'] ?>" <?= ($filial == $f['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($f['nome']) ?>
-                </option>
-            <?php endwhile; ?>
-        </select>
+                while ($f = $filiais->fetch_assoc()):
+                ?>
+                    <option value="<?= $f['id'] ?>" <?= ($filial == $f['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($f['nome']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
     </form>
 </div>
-
 <?php endif; ?>
 
-<div class="acoes-topo">
-    <a href="/modulos/ferramentas.php" class="btn btn-cinza">⬅️ Voltar</a>
-    <a href="controlados_registros_farmaceutico_ver.php?filial=<?= $filial ?>" class="btn btn-azul">📄 Ver Registros</a>
+<div class="acoes-topo mb-3">
+    <a href="/modulos/ferramentas.php" class="btn btn-secondary">⬅️ Voltar</a>
+    <a href="controlados_registros_farmaceutico_ver.php?filial=<?= $filial ?>" class="btn btn-primary">📄 Ver Registros</a>
 </div>
 
 <div class="bloco">
-    <h3>Registros Pendentes de Conferência: 
-        <span style="color:#c0392b; font-weight:bold;"><?= $totalRegistros ?></span>
+    <h3>
+        Registros Pendentes de Conferência: 
+        <span class="text-danger fw-bold"><?= $totalRegistros ?></span>
     </h3>
 
-    <!-- Ordenação + Cupom -->
-    <form method="GET" class="form-ordenacao">
+    <!-- Ordenação + Orçamento -->
+    <form method="GET" class="form-ordenacao row g-3 mb-3">
         <input type="hidden" name="pagina" value="1">
 
-        <label>Organizar por:</label>
-        <select name="ordem" onchange="this.form.submit()">
-            <option value="desc" <?= $ordem === 'desc' ? 'selected' : '' ?>>Mais novo</option>
-            <option value="asc" <?= $ordem === 'asc' ? 'selected' : '' ?>>Mais antigo</option>
-        </select>
+        <div class="col-md-3">
+            <label class="form-label">Organizar por:</label>
+            <select name="ordem" class="form-select" onchange="this.form.submit()">
+                <option value="desc" <?= $ordem === 'desc' ? 'selected' : '' ?>>Mais novo</option>
+                <option value="asc" <?= $ordem === 'asc' ? 'selected' : '' ?>>Mais antigo</option>
+            </select>
+        </div>
 
-        <label style="margin-left:20px;">Cupom:</label>
-        <input type="text" name="cupom" value="<?= htmlspecialchars($fCupom) ?>" placeholder="Número do cupom" style="width:140px;">
-        
-        <button class="btn" style="margin-left:10px;">🔍 Buscar</button>
+        <div class="col-md-3">
+            <label class="form-label">Orçamento:</label>
+            <input type="text" name="orcamento" value="<?= htmlspecialchars($fOrcamento) ?>" class="form-control" placeholder="Número do orçamento">
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100">🔍 Buscar</button>
+        </div>
     </form>
 
     <?php if ($totalRegistros == 0): ?>
-        <p style="padding:20px; text-align:center; font-size:18px; color:#27ae60;">
+        <p class="text-center text-success fs-5 py-3">
             ✔️ Nenhum registro pendente. Tudo conferido!
         </p>
     <?php endif; ?>
 
-    <table class="tabela-mobile">
-        <tr>
-            <th>Produto</th>
-            <th>Vendedor</th>
-            <th></th>
-        </tr>
+    <table class="table table-striped table-hover tabela-mobile">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Vendedor</th>
+                <th></th>
+            </tr>
+        </thead>
 
+        <tbody>
         <?php while ($r = $registros->fetch_assoc()): ?>
 
         <?php
@@ -200,7 +207,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <td><?= htmlspecialchars($r['produto']) ?></td>
             <td><?= htmlspecialchars($vendedorFormatado) ?></td>
             <td>
-                <button class="btn-toggle" onclick="toggleDetalhes(<?= $r['id'] ?>)">🔽</button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="toggleDetalhes(<?= $r['id'] ?>)">🔽</button>
             </td>
         </tr>
 
@@ -208,9 +215,9 @@ document.addEventListener("DOMContentLoaded", function() {
             <td colspan="3">
                 <div class="detalhes-box">
 
-                   <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
+                    <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
                     <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
-                    <p><strong>Orçamento (Confirmar se não é número de cupom):</strong> <?= htmlspecialchars($r['cupom']) ?></p>
+                    <p><strong>Orçamento:</strong> <?= htmlspecialchars($r['orcamento']) ?></p>
                     <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
                     <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
                     <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
@@ -221,36 +228,35 @@ document.addEventListener("DOMContentLoaded", function() {
                         <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
                     <?php endif; ?>
 
-                    <div class="acoes-detalhes">
+                    <div class="acoes-detalhes mt-3">
                         <a href="controlados_registros_farmaceutico_conferir.php?id=<?= $r['id'] ?>&filial=<?= $filial ?>"
-                        class="btn btn-conferir"
-                        onclick="return confirmarConferencia();">
-                        ✔️ Conferir
+                           class="btn btn-success"
+                           onclick="return confirmarConferencia();">
+                           ✔️ Conferir
                         </a>
                     </div>
-
 
                 </div>
             </td>
         </tr>
 
         <?php endwhile; ?>
-
+        </tbody>
     </table>
 
-    <!-- PAGINAÇÃO PREMIUM -->
-    <div class="paginacao">
+    <!-- PAGINAÇÃO -->
+    <div class="paginacao d-flex justify-content-between align-items-center mt-3">
 
         <div class="grupo-botoes">
             <?php if ($pagina > 1): ?>
-               <a class="btn btn-cinza" 
-                href="?pagina=<?= $pagina-1 ?>&ordem=<?= $ordem ?>&cupom=<?= $fCupom ?>&limite=<?= $limite ?>">⬅ Anterior</a>
-                <?php endif; ?>
+                <a class="btn btn-secondary" 
+                   href="?pagina=<?= $pagina-1 ?>&ordem=<?= $ordem ?>&orcamento=<?= $fOrcamento ?>&limite=<?= $limite ?>">⬅ Anterior</a>
+            <?php endif; ?>
 
             <?php if ($pagina < $totalPaginas): ?>
-                    <a class="btn" 
-                    href="?pagina=<?= $pagina+1 ?>&ordem=<?= $ordem ?>&cupom=<?= $fCupom ?>&limite=<?= $limite ?>">Próxima ➡</a>
-                    <?php endif; ?>
+                <a class="btn btn-primary" 
+                   href="?pagina=<?= $pagina+1 ?>&ordem=<?= $ordem ?>&orcamento=<?= $fOrcamento ?>&limite=<?= $limite ?>">Próxima ➡</a>
+            <?php endif; ?>
         </div>
 
         <div class="info-pagina">
@@ -259,7 +265,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         <div>
             <label><strong>Mostrar:</strong></label>
-            <select onchange="window.location='?pagina=1&ordem=<?= $ordem ?>&cupom=<?= $fCupom ?>&limite='+this.value">
+            <select class="form-select d-inline-block w-auto"
+                    onchange="window.location='?pagina=1&ordem=<?= $ordem ?>&orcamento=<?= $fOrcamento ?>&limite='+this.value">
                 <option value="10" selected>10</option>
                 <option value="20">20</option>
                 <option value="30">30</option>
@@ -280,7 +287,6 @@ function toggleDetalhes(id) {
 function confirmarConferencia() {
     return confirm("⚠️ VOCÊ VAI MARCAR ESTE REGISTRO COMO CONFERIDO.\n\n❗ ESSA AÇÃO NÃO PODE SER DESFEITA.\n\nTem certeza disso?");
 }
-
 </script>
 
 <script src="/js/controlados.js?v=<?= time() ?>"></script>

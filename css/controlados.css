@@ -67,7 +67,6 @@
     }
 }
 
-
 .btn {
     padding: 14px;
     background: #27ae60;
@@ -162,16 +161,26 @@
 .btn-acao.excluir { background: #e74c3c; }
 
 /* ================================
-   MODAL
+   MODAL — CORRIGIDO E BLINDADO
 ================================ */
+
+/* Bootstrap força display:none !important em .modal.
+   Aqui nós sobrescrevemos isso com uma classe .ativo. */
+
 .modal {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.5);
-    display: none;
+    display: none !important; /* Bootstrap esconde */
     justify-content: center;
     align-items: center;
     padding: 15px;
+    z-index: 9999;
+}
+
+/* Quando o JS ativa o modal, ele aparece */
+.modal.ativo {
+    display: flex !important;
 }
 
 .modal-content {
@@ -331,3 +340,4 @@
     margin-bottom: 15px;
     font-size: 14px;
 }
+

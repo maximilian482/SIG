@@ -85,6 +85,18 @@ ob_start();
         </a>
     <?php endif; ?>
 
+  <?php if ($acessoTotal || temAcesso($conn, $cpf, "cartoes")): ?>
+        <a href="/modulos/cartoes/cartoes_mestre.php" class="card-global">
+            <div class="card-global-icon">💳</div>
+            <h3 class="card-global-title">Cartões Corporativos</h3>
+            <p class="card-global-text">Controle mestre, ocorrências e utilizações.</p>
+        </a>
+    <?php endif; ?>
+
+
+
+
+
 </div>
 
 <?php

@@ -1,0 +1,78 @@
+/* ============================================================
+   CONTAINER DO FORMULÁRIO – BONITO E RESPONSIVO
+============================================================ */
+
+.form-wrapper {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 25px 30px;
+    max-width: 650px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* Título dentro do container */
+.form-wrapper h3 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* Inputs */
+.form-wrapper .form-padrao label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-wrapper .form-padrao input,
+.form-wrapper .form-padrao textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fafafa;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.form-wrapper .form-padrao input:focus,
+.form-wrapper .form-padrao textarea:focus {
+    border-color: #3498db;
+    background: #fff;
+    outline: none;
+}
+
+/* Botões */
+.form-wrapper .form-padrao button,
+.form-wrapper .form-padrao a.btn-cinza {
+    padding: 12px 22px;
+    font-size: 15px;
+    border-radius: 6px;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .form-wrapper {
+        padding: 20px;
+        border-radius: 8px;
+        margin: 10px;
+    }
+
+    .form-wrapper h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-wrapper .form-padrao button,
+    .form-wrapper .form-padrao a.btn-cinza {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+}

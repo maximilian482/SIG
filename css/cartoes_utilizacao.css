@@ -1,0 +1,240 @@
+/* ===========================
+   LAYOUT GERAL
+   =========================== */
+
+.cartoes-modulo-gestor {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.cartoes-modulo-gestor h1 {
+    font-size: 32px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.subtitulo {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 15px;
+}
+
+
+/* ===========================
+   FILTROS
+   =========================== */
+
+.filtros {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    border: 1px solid #e3e3e3;
+}
+
+.filtros input,
+.filtros select {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 180px;
+}
+
+.btn-filtrar {
+    background: #007bff;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-filtrar:hover {
+    background: #0056b3;
+}
+
+.btn-limpar {
+    background: #6c757d;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-limpar:hover {
+    background: #565e64;
+}
+
+
+/* ===========================
+   TABELA DE GASTOS
+   =========================== */
+
+.tabela-gastos {
+    margin-top: 25px;
+}
+
+.tabela-gastos table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.tabela-gastos thead {
+    background: #f1f3f5;
+}
+
+.tabela-gastos th {
+    padding: 14px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.tabela-gastos td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+.tabela-gastos tr:hover {
+    background: #fafafa;
+}
+
+
+/* ===========================
+   STATUS
+   =========================== */
+
+.status {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.status.pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status.completo {
+    background: #d4edda;
+    color: #155724;
+}
+
+
+/* ===========================
+   AÇÕES
+   =========================== */
+
+.btn-acao {
+    background: #17a2b8;
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.btn-acao:hover {
+    background: #117a8b;
+}
+
+
+/* ===========================
+   EXPORTAR
+   =========================== */
+
+.btn-exportar {
+    display: inline-block;
+    margin-top: 25px;
+    background: #28a745;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.btn-exportar:hover {
+    background: #1e7e34;
+}
+
+
+/* ===========================
+   RESPONSIVIDADE
+   =========================== */
+
+@media (max-width: 900px) {
+
+    .filtros {
+        flex-direction: column;
+    }
+
+    .tabela-gastos table,
+    .tabela-gastos thead,
+    .tabela-gastos tbody,
+    .tabela-gastos th,
+    .tabela-gastos td,
+    .tabela-gastos tr {
+        display: block;
+    }
+
+    .tabela-gastos tr {
+        margin-bottom: 15px;
+        background: #fff;
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .tabela-gastos td {
+        border: none;
+        padding: 6px 0;
+    }
+
+    .tabela-gastos th {
+        display: none;
+    }
+}
+
+
+/* Estilo total de gastos */
+
+.total-gastos {
+    background: #f8f9fa;
+    padding: 12px 18px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    border-left: 4px solid #4CAF50;
+}
+
+.total-gastos .valor-total {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2e7d32;
+}
+
+.quantidade-itens {
+    margin-top: 8px;
+    font-size: 17px;
+    color: #444;
+}
+
+.valor-qtd {
+    font-weight: bold;
+    color: #2e7d32;
+}

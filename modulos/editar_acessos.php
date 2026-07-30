@@ -13,7 +13,7 @@ if (empty($cpfFuncionarioAtual)) {
     exit;
 }
 
-// Verifica permissão
+// Verifica permissão do usuário que está editando acessos
 if (!temAcesso($conn, $cpfFuncionarioAtual, 'gestao_acessos')) {
     echo "<h2 style='color:red; text-align:center; margin-top:40px;'>❌ Você não tem permissão para acessar esta área.</h2>";
     exit;
@@ -57,6 +57,9 @@ $modulosPermitidos = [
     'gestao_acessos'         => '🔐 Gestão de Acessos',
     'gestao_compras_externas' => '🛒 Gestão de Compras Externas',
 
+    // MÓDULO COMPLETO DE CARTÕES (GESTÃO)
+    'cartoes'                => '💳 Gestão de Cartões Corporativos',
+
     // Módulos de setores (Pendências)
     'setor_entregas'         => '🚚 Setor Entregas',
     'setor_vendas'           => '🛒 Setor Vendas',
@@ -72,7 +75,7 @@ $modulosPermitidos = [
     'ferramentas_avaliacoes'            => '🏪 Avaliação de Loja',
     'ferramentas_auditoria'             => '📝 Auditoria (Antiga)',
     'ferramentas_auditoria_pp'          => '🛡️ Auditoria PP',
-    'ferramentas_auditoria_checklist'   => '📋 Auditoria Checklist', // NOVO
+    'ferramentas_auditoria_checklist'   => '📋 Auditoria Checklist',
     'ferramentas_inventario'            => '📦 Inventário',
     'ferramentas_controlados'           => '💊 Controlados',
     'ferramentas_controlados_farmaceutico' => '💊 Controlados Farmacêutico',
@@ -103,11 +106,10 @@ while ($row = $res->fetch_assoc()) {
 }
 
 // ===============================
-// SALVAR ALTERAÇÕES (AQUI!)
+// SALVAR ALTERAÇÕES
 // ===============================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Comparar acessos antigos x novos
     $ativados = 0;
     $desativados = 0;
 
@@ -137,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
     }
 
-    // Redirecionar com os valores corretos
     header("Location: editar_acessos.php?cpf=$cpf&sucesso=1&ativados=$ativados&desativados=$desativados");
     exit;
 }
@@ -146,34 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // INÍCIO DO CONTEÚDO
 // ===============================
 ob_start();
-
 ?>
-
-<?php if (isset($_GET['sucesso'])): ?>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-
-    const ativados = <?= intval($_GET['ativados'] ?? 0) ?>;
-    const desativados = <?= intval($_GET['desativados'] ?? 0) ?>;
-
-    let msg = "";
-
-    if (ativados === 0 && desativados === 0) {
-        msg = "Nenhuma alteração realizada.";
-        mostrarMensagem(msg, "alerta");
-        return;
-    }
-
-    msg = "Acessos atualizados com sucesso!";
-
-    if (ativados > 0) msg += "🔓 " + ativados + " permissões ativadas<br>";
-    if (desativados > 0) msg += "🔒 " + desativados + " permissões removidas";
-
-    mostrarMensagem(msg, "sucesso");
-});
-</script>
-<?php endif; ?>
-
 
 <link rel="stylesheet" href="../css/acessos.css">
 
@@ -184,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         <tr><th colspan="2" class="secao-titulo">📊 Acessos de Gestão</th></tr>
         <?php foreach ($modulosPermitidos as $modulo => $label): ?>
-            <?php if (str_starts_with($modulo, 'gestao_')): ?>
+            <?php if (str_starts_with($modulo, 'gestao_') || $modulo === 'cartoes'): ?>
                 <tr>
                     <td><?= $label ?></td>
                     <td>
@@ -249,9 +223,6 @@ document.addEventListener("DOMContentLoaded", function() {
 </form>
 
 <?php
-// ===============================
-// FINALIZAÇÃO DO CONTEÚDO
-// ===============================
 $conteudo = ob_get_clean();
 include ROOT_PATH . '/includes/layout.php';
 ?>

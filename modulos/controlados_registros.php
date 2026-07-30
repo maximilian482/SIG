@@ -11,6 +11,8 @@ if (!isset($_SESSION['cpf'])) {
     exit;
 }
 
+$cpfLogado = preg_replace('/\D/', '', $_SESSION['cpf']);
+
 $filial = $_GET['filial'] ?? '';
 if (!$filial) {
     header("Location: controlados.php");
@@ -18,25 +20,20 @@ if (!$filial) {
 }
 
 // BUSCAR FILIAL
-
-$nomeFilialAtual = '';
-if ($filial) {
-    $stmt = $conn->prepare("SELECT nome FROM lojas WHERE id = ?");
-    $stmt->bind_param("i", $filial);
-    $stmt->execute();
-    $nomeFilialAtual = $stmt->get_result()->fetch_assoc()['nome'] ?? '';
-}
-
+$stmt = $conn->prepare("SELECT nome FROM lojas WHERE id = ?");
+$stmt->bind_param("i", $filial);
+$stmt->execute();
+$nomeFilialAtual = $stmt->get_result()->fetch_assoc()['nome'] ?? '';
 
 /* ============================
    FILTROS
 ============================ */
-$fData  = $_GET['data']      ?? '';
-$fProd  = $_GET['produto']   ?? '';
-$fCod   = $_GET['codigo']    ?? '';
-$fVend  = $_GET['vendedor']  ?? '';
-$fReg   = $_GET['registrado']?? '';
-$fConf  = $_GET['conferido'] ?? '';
+$fData      = $_GET['data']      ?? '';
+$fOrcamento = $_GET['orcamento'] ?? '';
+$fCod       = $_GET['codigo']    ?? '';
+$fVend      = $_GET['vendedor']  ?? '';
+$fReg       = $_GET['registrado']?? '';
+$fConf      = $_GET['conferido'] ?? '';
 
 $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
 $limite = isset($_GET['limite']) ? intval($_GET['limite']) : 10;
@@ -56,9 +53,9 @@ if ($fData) {
     $types   .= "s";
 }
 
-if ($fProd) {
-    $sqlBase .= " AND c.produto LIKE ?";
-    $params[] = "%$fProd%";
+if ($fOrcamento) {
+    $sqlBase .= " AND c.orcamento LIKE ?";
+    $params[] = "%$fOrcamento%";
     $types   .= "s";
 }
 
@@ -87,7 +84,7 @@ if ($fConf !== '' && ($fConf === '0' || $fConf === '1')) {
 }
 
 /* ============================
-   TOTAL DE REGISTROS (P/ PAGINAÇÃO)
+   TOTAL DE REGISTROS
 ============================ */
 $sqlCount = "SELECT COUNT(*) AS total " . $sqlBase;
 $stmt = $conn->prepare($sqlCount);
@@ -105,11 +102,7 @@ if ($pagina > $totalPaginas) {
 /* ============================
    BUSCA REGISTROS
 ============================ */
-$sqlDados = "SELECT c.*
-             " . $sqlBase . "
-             ORDER BY c.id DESC
-             LIMIT ? OFFSET ?";
-
+$sqlDados = "SELECT c.* " . $sqlBase . " ORDER BY c.id DESC LIMIT ? OFFSET ?";
 $paramsDados = $params;
 $typesDados  = $types . "ii";
 $paramsDados[] = $limite;
@@ -120,6 +113,9 @@ $stmt->bind_param($typesDados, ...$paramsDados);
 $stmt->execute();
 $registros = $stmt->get_result();
 
+/* ============================
+   FUNÇÃO PAGINAÇÃO
+============================ */
 function gerarLinkPaginacao($filial, $pagina, $limite, $filtros) {
     $params = [
         "filial" => $filial,
@@ -130,7 +126,7 @@ function gerarLinkPaginacao($filial, $pagina, $limite, $filtros) {
         $params["limite"] = $limite;
     }
 
-    foreach (["data","produto","codigo","vendedor","registrado","conferido"] as $f) {
+    foreach (["data","orcamento","codigo","vendedor","registrado","conferido"] as $f) {
         if (isset($filtros[$f]) && $filtros[$f] !== '') {
             $params[$f] = $filtros[$f];
         }
@@ -144,31 +140,26 @@ ob_start();
 
 <link rel="stylesheet" href="/css/controlados.css">
 
-<div class="controlados-container" data-cpf="<?= preg_replace('/\D/', '', $_SESSION['cpf']) ?>">
-
+<div class="controlados-container">
 
     <h2>
-        📄 Registros de Controlados 
-        <?php if ($nomeFilialAtual): ?>
-            — <span style="color:#555;"><?= htmlspecialchars($nomeFilialAtual) ?></span>
-        <?php endif; ?>
+        📄 Registros de Controlados — <?= htmlspecialchars($nomeFilialAtual) ?>
     </h2>
-
 
     <a href="controlados.php?filial=<?= $filial ?>" class="btn btn-cinza">⬅ Voltar</a>
 
     <hr>
 
-    <!-- FILTROS COMPACTOS -->
+    <!-- FILTROS -->
     <div class="bloco filtros-compactos">
         <h3>Filtros</h3>
 
-        <form method="GET" class="form-filtros">
+        <form method="GET">
             <input type="hidden" name="filial" value="<?= $filial ?>">
 
             <div class="linha-filtros">
-                <input type="date" name="data" value="<?= htmlspecialchars($fData) ?>" placeholder="Data">
-                <input type="text" name="produto" value="<?= htmlspecialchars($fProd) ?>" placeholder="Produto">
+                <input type="date" name="data" value="<?= htmlspecialchars($fData) ?>">
+                <input type="text" name="orcamento" value="<?= htmlspecialchars($fOrcamento) ?>" placeholder="Orçamento">
             </div>
 
             <div class="linha-filtros">
@@ -177,7 +168,7 @@ ob_start();
             </div>
 
             <div class="linha-filtros">
-                <input type="text" name="registrado" value="<?= htmlspecialchars($fReg) ?>" placeholder="Registrado por (nome)">
+                <input type="text" name="registrado" value="<?= htmlspecialchars($fReg) ?>" placeholder="Registrado por">
                 <select name="conferido">
                     <option value="">Conferido?</option>
                     <option value="1" <?= $fConf==='1'?'selected':'' ?>>Sim</option>
@@ -192,7 +183,7 @@ ob_start();
         </form>
     </div>
 
-    <!-- TABELA RESUMIDA -->
+    <!-- TABELA -->
     <div class="bloco">
         <h3>Registros Encontrados (<?= $totalRegistros ?>)</h3>
 
@@ -206,80 +197,54 @@ ob_start();
 
             <?php while ($r = $registros->fetch_assoc()): ?>
 
-            <?php
-            $nome = trim($r['vendedor']);
-            $partes = explode(" ", $nome);
-            $vendedorFormatado = count($partes) >= 2
-                ? $partes[0] . " " . $partes[count($partes)-1]
-                : $nome;
-            ?>
-
             <tr class="linha-registro">
                 <td><?= htmlspecialchars($r['produto']) ?></td>
-                <td><?= htmlspecialchars($vendedorFormatado) ?></td>
+                <td><?= htmlspecialchars($r['vendedor']) ?></td>
                 <td><?= $r['conferido'] ? '✔️' : '❌' ?></td>
-                <td>
-                    <button class="btn-toggle" onclick="toggleDetalhes(<?= $r['id'] ?>)">🔽</button>
-                </td>
+                <td><button class="btn-toggle" onclick="toggleDetalhes(<?= $r['id'] ?>)">🔽</button></td>
             </tr>
 
-            <!-- DETALHES COMPLETOS -->
             <tr id="detalhes-<?= $r['id'] ?>" class="detalhes-linha">
-            <td colspan="4">
-                <div class="detalhes-box">
+                <td colspan="4">
+                    <div class="detalhes-box">
 
-                     <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
-                    <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
-                    <p><strong>Orçamento (Observar se não é Número de cupom):</strong> <?= htmlspecialchars($r['cupom']) ?></p>
-                    <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
-                    <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
-                    <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
-                    <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
-                    <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
-                    <?php if (!empty($r['observacao'])): ?>
-                        <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
-                    <?php endif; ?>
-                    <p>
-                        <strong>Conferido:</strong>
-                        <?php if ($r['conferido']): ?>
-                            <span style="color:#27ae60; font-weight:bold;">✔️ Sim</span>
-                        <?php else: ?>
-                            <span style="color:#e74c3c; font-weight:bold;">❌ Não</span>
+                        <p><strong>Data:</strong> <?= date('d/m/Y', strtotime($r['data_venda'])) ?></p>
+                        <p><strong>Código:</strong> <?= htmlspecialchars($r['codigo_produto']) ?></p>
+                        <p><strong>Orçamento:</strong> <?= htmlspecialchars($r['orcamento']) ?></p>
+                        <p><strong>Registrado por:</strong> <?= htmlspecialchars($r['registrado_nome']) ?></p>
+                        <p><strong>Vendedor:</strong> <?= htmlspecialchars($r['vendedor']) ?></p>
+                        <p><strong>Produto:</strong> <?= htmlspecialchars($r['produto']) ?></p>
+                        <p><strong>Lote:</strong> <?= htmlspecialchars($r['lote']) ?></p>
+                        <p><strong>Quantidade:</strong> <?= $r['quantidade'] ?></p>
+
+                        <?php if (!empty($r['observacao'])): ?>
+                            <p><strong>Observação:</strong> <?= nl2br(htmlspecialchars($r['observacao'])) ?></p>
                         <?php endif; ?>
-                    </p>
 
-                    <?php if ($r['conferido']): ?>
-                        <p><strong>Conferido por:</strong> <?= htmlspecialchars($r['conferido_por']) ?></p>
-                        <p><strong>Conferido em:</strong> <?= date('d/m/Y H:i', strtotime($r['conferido_em'])) ?></p>
-                    <?php endif; ?>
+                        <div class="acoes-detalhes">
 
-                    <div class="acoes-detalhes">
+                            <a href="controlados_registros_editar.php?id=<?= $r['id'] ?>&filial=<?= $filial ?>"
+                                class="btn-acao editar"
+                                data-registrado="<?= trim($r['registrado_por']) ?>">
+                                ✏️ Editar
+                            </a>
 
-                        <a href="controlados_registros_editar.php?id=<?= $r['id'] ?>&filial=<?= $filial ?>"
-                            class="btn-acao editar"
-                            data-registrado="<?= preg_replace('/\D/', '', $r['registrado_por']) ?>">
-                            ✏️ Editar
-                        </a>
+                            <a href="controlados_registros_excluir.php?id=<?= $r['id'] ?>&filial=<?= $filial ?>"
+                                class="btn-acao excluir"
+                                data-registrado="<?= trim($r['registrado_por']) ?>">
+                                🗑️ Excluir
+                            </a>
 
-                        <a href="controlados_registros_excluir.php?id=<?= $r['id'] ?>&filial=<?= $filial ?>"
-                            class="btn-acao excluir"
-                            data-registrado="<?= preg_replace('/\D/', '', $r['registrado_por']) ?>">
-                            🗑️ Excluir
-                        </a>
+                        </div>
 
                     </div>
-
-                </div>
-            </td>
-        </tr>
-
+                </td>
+            </tr>
 
             <?php endwhile; ?>
 
             <?php if ($totalRegistros == 0): ?>
-            <tr>
-                <td colspan="4">Nenhum registro encontrado.</td>
-            </tr>
+            <tr><td colspan="4">Nenhum registro encontrado.</td></tr>
             <?php endif; ?>
 
         </table>
@@ -287,46 +252,43 @@ ob_start();
         <!-- PAGINAÇÃO -->
         <div class="paginacao">
 
-    <div class="grupo-botoes">
-        <?php if ($pagina > 1): ?>
-            <a class="btn btn-cinza" 
-               href="<?= gerarLinkPaginacao($filial, $pagina-1, $limite, $_GET) ?>">⬅ Anterior</a>
-        <?php endif; ?>
+            <div class="grupo-botoes">
+                <?php if ($pagina > 1): ?>
+                    <a class="btn btn-cinza" 
+                       href="<?= gerarLinkPaginacao($filial, $pagina-1, $limite, $_GET) ?>">⬅ Anterior</a>
+                <?php endif; ?>
 
-        <?php if ($pagina < $totalPaginas): ?>
-            <a class="btn" 
-               href="<?= gerarLinkPaginacao($filial, $pagina+1, $limite, $_GET) ?>">Próxima ➡</a>
-        <?php endif; ?>
+                <?php if ($pagina < $totalPaginas): ?>
+                    <a class="btn" 
+                       href="<?= gerarLinkPaginacao($filial, $pagina+1, $limite, $_GET) ?>">Próxima ➡</a>
+                <?php endif; ?>
+            </div>
+
+            <div class="info-pagina">
+                Página <?= $pagina ?> de <?= $totalPaginas ?>
+            </div>
+
+            <div>
+                <label><strong>Mostrar:</strong></label>
+                <select onchange="window.location='<?= gerarLinkPaginacao($filial, 1, '' , $_GET) ?>&limite='+this.value">
+                    <option value="10" <?= $limite==10?'selected':'' ?>>10</option>
+                    <option value="20" <?= $limite==20?'selected':'' ?>>20</option>
+                    <option value="30" <?= $limite==30?'selected':'' ?>>30</option>
+                    <option value="50" <?= $limite==50?'selected':'' ?>>50</option>
+                </select>
+            </div>
+
+        </div>
+
     </div>
-
-    <div class="info-pagina">
-        Página <?= $pagina ?> de <?= $totalPaginas ?>
-    </div>
-
-    <div>
-        <label><strong>Mostrar:</strong></label>
-        <select onchange="window.location='<?= gerarLinkPaginacao($filial, 1, '' , $_GET) ?>&limite='+this.value">
-            <option value="10" <?= $limite==10?'selected':'' ?>>10</option>
-            <option value="20" <?= $limite==20?'selected':'' ?>>20</option>
-            <option value="30" <?= $limite==30?'selected':'' ?>>30</option>
-            <option value="50" <?= $limite==50?'selected':'' ?>>50</option>
-        </select>
-    </div>
-
-</div>
-
 
 </div>
 
 <script>
 function toggleDetalhes(id) {
-    const linha = document.getElementById("detalhes-" + id);
-    linha.classList.toggle("show");
+    document.getElementById("detalhes-" + id).classList.toggle("show");
 }
 </script>
-
-<script src="/js/controlados.js"></script>
-
 
 <?php
 $conteudo = ob_get_clean();

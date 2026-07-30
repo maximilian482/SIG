@@ -99,6 +99,37 @@ $totalBadge =
     $quantTarefasPendentes +
     $trilhoTotal;
 
+    /* CARTÕES DO FUNCIONÁRIO */
+      $temCartaoAtribuido = false;
+      $cartoesPendentesPosse = 0;
+
+      if ($cpf) {
+
+          // Verifica cartões atribuídos
+          $stmt = $conn->prepare("
+              SELECT status
+              FROM cartoes c
+              JOIN cartoes_atribuicoes a ON a.codigo_cartao = c.codigo_cartao AND a.ativo = 1
+              WHERE a.cpf_funcionario = ?
+          ");
+          $stmt->bind_param("s", $cpf);
+          $stmt->execute();
+          $res = $stmt->get_result();
+
+          while ($row = $res->fetch_assoc()) {
+
+              $temCartaoAtribuido = true;
+
+              if ($row['status'] === 'AGUARDANDO POSSE') {
+                  $cartoesPendentesPosse++;
+              }
+          }
+
+          $stmt->close();
+      }
+
+
+
 ?>
 
 <div class="perfil-topo">
@@ -121,6 +152,22 @@ $totalBadge =
     <div id="menuPerfil" class="perfil-dropdown">
 
       <a href="/perfil/perfil.php">👤 Perfil</a>
+
+     <?php if ($temCartaoAtribuido): ?>
+
+        <?php if ($cartoesPendentesPosse > 0): ?>
+            <a href="/modulos/cartoes/cartoes_funcionario.php">
+                💳 Meus Cartões 
+                <span class="badge badge-red badge-pulse">
+                    <?= $cartoesPendentesPosse ?>
+                </span>
+            </a>
+        <?php else: ?>
+            <a href="/modulos/cartoes/cartoes_funcionario.php">💳 Meus Cartões</a>
+        <?php endif; ?>
+
+    <?php endif; ?>
+
 
       <?php if ($interacoesTotal > 0): ?>
         <a href="/modulos/comunidade.php#interacoes">🔔 Interações (<?= $interacoesTotal ?>)</a>
